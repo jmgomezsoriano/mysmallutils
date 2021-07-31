@@ -7,16 +7,34 @@ configure logging, obtain metrics, download files, etc.
 
 This module is divided into the following categories:
 
-* External commands
+* [External commands](#external-commands)
 * Compressing files
 * Configuration files
 * [File access, load and save files](#file-access-load-and-save-files)
+  * [Open files](#open-files)
+  * [Load and save json files](#load-and-save-json-files)
+  * [Load and save pickle files](#load-and-save-pickle-files)
+  * [Load and save Yaml files](#load-and-save-yaml-files)
+  * [Copy files](#copy-files)
 * Logging
 * Process synchronization
 * Obtaining metrics
 * Services and Web
 
 ## External commands
+
+This module only contains a function that execute an external command and return the standard and error outputs.
+Its execution is very simple:
+
+```python
+from mysutils.command import execute_command
+# Execute the Unix shell command 'ls data/'
+std, err = execute_command(['ls', 'data/'])
+# Print the standard output
+print(std)
+# Print the error output
+print(err)
+```
 
 ## Compressing files
 
@@ -112,6 +130,18 @@ save_yaml(d, 'data/file.yml', force=True)
 # The same but wit a compressed yaml file
 save_yaml(d, 'data/file.yml.gz', force=True)
 ```
+### Copy files
+
+A very simple way to copy several files into a directory. For example:
+
+```python
+from mysutils.file import copy_files
+# Copy the files 'file1.txt' and 'file2.txt' to the folder 'data/'. If the directory does not exist, then create it.
+copy_files('data/', 'file1.txt', 'file2.txt')
+# To avoid create the folder if it does not exist.
+copy_files('data/', 'file1.txt', 'file2.txt', force=False)
+```
+
 
 ## Logging
 

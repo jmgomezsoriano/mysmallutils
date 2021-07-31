@@ -95,20 +95,15 @@ class FileTestCase(unittest.TestCase):
     def test_copy_files_(self) -> None:
         copy_files('data/', 'mysutils/__init__.py', 'mysutils/file.py')
         self.assertListEqual([True, True], [exists('data/__init__.py'), exists('data/file.py')])
+        self.assertTupleEqual(execute_command(['ls', 'data']), ('file.py\n__init__.py\n', ''))
         remove('data/__init__.py')
         remove('data/file.py')
         rmdir('data/')
         with self.assertRaises(FileNotFoundError):
             copy_files('data/', 'mysutils/__init__.py', 'mysutils/file.py', force=False)
-
-    def test_command(self) -> None:
-        copy_files('data/', 'mysutils/__init__.py', 'mysutils/file.py')
-        self.assertTupleEqual(execute_command(['ls', 'data']), ('file.py\n__init__.py\n', ''))
-        remove('data/__init__.py')
-        remove('data/file.py')
-        rmdir('data/')
         self.assertTupleEqual(execute_command(['ls', 'data']),
                               ('', "ls: cannot access 'data': No such file or directory\n"))
+
 
 
 if __name__ == '__main__':
