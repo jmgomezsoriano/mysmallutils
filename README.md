@@ -10,7 +10,7 @@ This module is divided into the following categories:
 * External commands
 * Compressing files
 * Configuration files
-* File access, load and save files
+* [File access, load and save files](#file-access)
 * Logging
 * Process synchronization
 * Obtaining metrics
