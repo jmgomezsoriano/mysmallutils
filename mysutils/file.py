@@ -3,7 +3,7 @@ import pickle
 from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
 from os import makedirs
-from os.path import exists, dirname
+from os.path import exists, dirname, join, basename
 from shutil import copyfile
 from typing import Union, Optional, TextIO, Any
 
@@ -16,7 +16,7 @@ def open_file(filename: Union[str, bytes, int],
               encoding: Optional[str] = None,
               errors: Optional[str] = None,
               newline: Optional[str] = None,
-              closefd: bool = True,
+              close_fd: bool = True,
               opener: Optional = None) -> Union[IO, TextIO]:
     """ Open file and return a stream. Raise OSError upon failure.
     This function is the same as open() but it is able to open a gzip file automatically only taking into account the
@@ -43,7 +43,7 @@ def open_file(filename: Union[str, bytes, int],
       permitted encoding error strings.
     :param newline: newline controls how universal newlines works (it only applies to text mode).
       See open() function for more information.
-    :param closefd: If closefd is False, the underlying file descriptor will be kept open when the file is closed.
+    :param close_fd: If close_fd is False, the underlying file descriptor will be kept open when the file is closed.
       This does not work when a file name is given and must be True in that case.
     :param opener: A custom opener can be used by passing a callable as opener. The underlying file descriptor for the
       file object is then obtained by calling opener with (file, flags). opener must return an open file descriptor
@@ -53,7 +53,7 @@ def open_file(filename: Union[str, bytes, int],
     """
     if filename.lower().endswith('.gz'):
         return gzip.open(filename, mode, encoding=encoding, errors=errors, newline=newline)
-    return open(filename, mode, buffering, encoding, errors, newline, closefd, opener)
+    return open(filename, mode, buffering, encoding, errors, newline, close_fd, opener)
 
 
 def force_open(filename: Union[str, bytes, int],
@@ -62,11 +62,11 @@ def force_open(filename: Union[str, bytes, int],
                encoding: Optional[str] = None,
                errors: Optional[str] = None,
                newline: Optional[str] = None,
-               closefd: bool = True,
+               close_fd: bool = True,
                opener: Optional = None) -> Union[IO, TextIO]:
     """ Open file and return a stream. Raise OSError upon failure.
     This function is the same as open_file() but if the file folder does not exist, then create all the necessary
-    folders before openning the file.
+    folders before opening the file.
 
     :param filename: is either a text or byte string giving the name (and the path if the file isn't in the current
       working directory) of the file to be opened or an integer file descriptor of the file to be wrapped.
@@ -88,7 +88,7 @@ def force_open(filename: Union[str, bytes, int],
       permitted encoding error strings.
     :param newline: newline controls how universal newlines works (it only applies to text mode).
       See open() function for more information.
-    :param closefd: If closefd is False, the underlying file descriptor will be kept open when the file is closed.
+    :param close_fd: If close_fd is False, the underlying file descriptor will be kept open when the file is closed.
       This does not work when a file name is given and must be True in that case.
     :param opener: A custom opener can be used by passing a callable as opener. The underlying file descriptor for the
       file object is then obtained by calling opener with (file, flags). opener must return an open file descriptor
@@ -98,45 +98,54 @@ def force_open(filename: Union[str, bytes, int],
     """
     if not exists(dirname(filename)):
         makedirs(dirname(filename))
-    return open_file(filename, mode, buffering, encoding, errors, newline, closefd, opener=opener)
+    return open_file(filename, mode, buffering, encoding, errors, newline, close_fd, opener=opener)
 
 
 def copy_files(dest: str, *files, force: bool = True) -> None:
-    """ Copy a list of files into dest.
-    :param force: Force the creation of the path folders if they do not exist.
+    """ Copy a list of files into destination folder.
     :param dest: The destination folder.
     :param files: The list of files to copy.
+    :param force: Force the creation of the path folders if they do not exist.
     """
     if not exists(dest) and force:
         makedirs(dest)
     for file in files:
-        copyfile(file, dest)
+        copyfile(file, join(dest, basename(file)))
 
 
-def save_json(data: Any, filename: str, force: bool = False) -> None:
-    """ Save a data into a json file.
-    :param data: The object to save.
+def save_json(obj: Any, filename: str, force: bool = False) -> None:
+    """ Save an object into a json file.
+    :param obj: The object to save.
     :param filename: The path to the output file.
     :param force: Force the creation of the path folders if they do not exist.
     """
     with force_open(filename, 'wt') if force else open_file(filename, 'wt') as file:
-        dump(data, file, indent=2)
+        dump(obj, file, indent=2)
 
 
 def load_json(filename: str) -> Any:
-    """ Load a json file and build a dictionary or dictionary with its data.
+    """ Load a json file and return a object with its data.
     :param filename: The json file.
-    :return: A objet with the json data.
+    :return: An object with the json data.
     """
     with open_file(filename, 'rt') as file:
         return load(file)
 
 
-def save_pickle(obj: object, fname: str, force: bool = False) -> None:
-    with force_open(fname, 'wb') if force else open_file(fname, 'wb') as file:
+def save_pickle(obj: object, filename: str, force: bool = False) -> None:
+    """ Save an object into a pickle file.
+    :param obj: The object to save.
+    :param filename: The path to the output file.
+    :param force: Force the creation of the path folders if they do not exist.
+    """
+    with force_open(filename, 'wb') if force else open_file(filename, 'wb') as file:
         pickle.dump(obj, file)
 
 
-def load_pickle(fname: str) -> Any:
-    with open_file(fname, 'rb') as file:
+def load_pickle(filename: str) -> Any:
+    """ Load an object from pickle file.
+    :param filename: The pickle file path.
+    :return: An object with the pickle file data.
+    """
+    with open_file(filename, 'rb') as file:
         return pickle.load(file)
