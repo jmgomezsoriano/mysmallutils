@@ -1,9 +1,9 @@
 import unittest
-from os import remove, rmdir
+from os import remove
 from os.path import exists
 
 from mysutils.command import execute_command
-from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files
+from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -28,13 +28,12 @@ class FileTestCase(unittest.TestCase):
         save_json(d, 'data/test1.json', force=True)
         d2 = load_json('data/test1.json')
         self.assertDictEqual(d, d2)
-        remove('data/test1.json')
-        rmdir('data/')
+        remove_files('data/test1.json', 'data/')
+        self.assertListEqual([False, False], [exists('data/test1.json'), exists('data/')])
         save_json(d, 'data/test1.json.gz', force=True)
         d2 = load_json('data/test1.json.gz')
         self.assertDictEqual(d, d2)
-        remove('data/test1.json.gz')
-        rmdir('data/')
+        remove_files('data/test1.json.gz', 'data/')
 
     def test_pickle(self) -> None:
         d = {
@@ -56,13 +55,11 @@ class FileTestCase(unittest.TestCase):
         save_pickle(d, 'data/test1.pkl', force=True)
         d2 = load_pickle('data/test1.pkl')
         self.assertDictEqual(d, d2)
-        remove('data/test1.pkl')
-        rmdir('data/')
+        remove_files('data/test1.pkl', 'data/')
         save_pickle(d, 'data/test1.pkl.gz', force=True)
         d2 = load_pickle('data/test1.pkl.gz')
         self.assertDictEqual(d, d2)
-        remove('data/test1.pkl.gz')
-        rmdir('data/')
+        remove_files('data/test1.pkl.gz', 'data/')
 
     def test_yaml(self) -> None:
         d = {
@@ -84,26 +81,21 @@ class FileTestCase(unittest.TestCase):
         save_yaml(d, 'data/test1.pkl', force=True)
         d2 = load_yaml('data/test1.pkl')
         self.assertDictEqual(d, d2)
-        remove('data/test1.pkl')
-        rmdir('data/')
+        remove_files('data/test1.pkl', 'data/')
         save_yaml(d, 'data/test1.pkl.gz', force=True)
         d2 = load_yaml('data/test1.pkl.gz')
         self.assertDictEqual(d, d2)
-        remove('data/test1.pkl.gz')
-        rmdir('data/')
+        remove_files('data/test1.pkl.gz', 'data/')
 
     def test_copy_files_(self) -> None:
         copy_files('data/', 'mysutils/__init__.py', 'mysutils/file.py')
         self.assertListEqual([True, True], [exists('data/__init__.py'), exists('data/file.py')])
         self.assertTupleEqual(execute_command(['ls', 'data']), ('file.py\n__init__.py\n', ''))
-        remove('data/__init__.py')
-        remove('data/file.py')
-        rmdir('data/')
+        remove_files('data/__init__.py', 'data/file.py', 'data/')
         with self.assertRaises(FileNotFoundError):
             copy_files('data/', 'mysutils/__init__.py', 'mysutils/file.py', force=False)
         self.assertTupleEqual(execute_command(['ls', 'data']),
                               ('', "ls: cannot access 'data': No such file or directory\n"))
-
 
 
 if __name__ == '__main__':

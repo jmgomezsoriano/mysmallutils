@@ -2,8 +2,8 @@ import gzip
 import pickle
 from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
-from os import makedirs
-from os.path import exists, dirname, join, basename
+from os import makedirs, remove, rmdir
+from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile
 from typing import Union, Optional, TextIO, Any
 
@@ -149,3 +149,42 @@ def load_pickle(filename: str) -> Any:
     """
     with open_file(filename, 'rb') as file:
         return pickle.load(file)
+
+
+def gzip_decompress(input_file: str, output_file: str) -> None:
+    """ Decompress a file using gzip compression.
+    :param input_file: The file to compress.
+    :param output_file: The compressed file with all the information of the input file.
+    """
+    if input_file == output_file:
+        raise ValueError('The input file and the output file must be different.')
+    with open(output_file, 'wb') as writer:
+        with gzip.open(input_file, 'rb') as reader:
+            for chunk in reader:
+                writer.write(chunk)
+
+
+def gzip_compress(input_file: str, output_file: str) -> None:
+    """ Compress a file using gzip compression.
+    :param input_file: The file to compress.
+    :param output_file: The compressed file with all the information of the input file.
+    """
+    if input_file == output_file:
+        raise ValueError('The input file and the output file must be different.')
+    with gzip.open(output_file, 'wb') as writer:
+        with open(input_file, 'rb') as reader:
+            for chunk in reader:
+                writer.write(chunk)
+
+
+def remove_files(*files: str) -> None:
+    """ Remove several files and empty directories at once.
+
+    :param files: The list of files or empty directories to remove. To remove directories with files or subidrectories,
+      please, use shutil.rmtree().
+    """
+    for file in files:
+        if isdir(file):
+            rmdir(file)
+        else:
+            remove(file)
