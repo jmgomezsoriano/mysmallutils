@@ -19,6 +19,10 @@ class MyTestCase(unittest.TestCase):
         # Load and compare the decompress file
         d2 = load_json('test2.json')
         self.assertDictEqual(d, d2)
+        with self.assertRaises(ValueError):
+            gzip_compress('test.json', 'test.json')
+        with self.assertRaises(ValueError):
+            gzip_decompress('test.json.gz', 'test.json.gz')
 
         remove_files('test.json', 'test.json.gz', 'test2.json')
 

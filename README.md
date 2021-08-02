@@ -187,7 +187,8 @@ save_json(d, 'file.json')
 
 # Compress the file
 gzip_compress('file.json', 'file.json.gz')
-
+# Decompress the file
+gzip_decompress('file.json.gz', 'file2.json')
 ```
 
 
