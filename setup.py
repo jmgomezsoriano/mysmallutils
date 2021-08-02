@@ -41,7 +41,7 @@ setuptools.setup(
     },
     name='mysmallutils',
     version='0.0.1',
-    url='',
+    url='https://github.com/jmgomezsoriano/mysmallutils',
     license='LGPL2',
     author='José Manuel Gómez Soriano',
     author_email='jmgomez.soriano@gmail.com',

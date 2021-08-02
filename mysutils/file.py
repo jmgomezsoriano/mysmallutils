@@ -101,7 +101,7 @@ def force_open(filename: Union[str, bytes, int],
     return open_file(filename, mode, buffering, encoding, errors, newline, close_fd, opener=opener)
 
 
-def copy_files(dest: str, *files, force: bool = True) -> None:
+def copy_files(dest: str, *files: str, force: bool = True) -> None:
     """ Copy a list of files into destination folder.
     :param dest: The destination folder.
     :param files: The list of files to copy.
