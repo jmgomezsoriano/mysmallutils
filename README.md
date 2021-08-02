@@ -7,41 +7,19 @@ configure logging, obtain metrics, download files, etc.
 
 This module is divided into the following categories:
 
-* [External commands](#external-commands)
-* Compressing files
-* Configuration files
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Load and save json files](#load-and-save-json-files)
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)
   * [Copy files](#copy-files)
+* Compressing files
+* [External commands](#external-commands)
+* Configuration files
 * Logging
 * Process synchronization
 * Obtaining metrics
 * Services and Web
-
-## External commands
-
-This module only contains a function that execute an external command and return the standard and error outputs.
-Its execution is very simple:
-
-```python
-from mysutils.command import execute_command
-
-# Execute the Unix shell command 'ls data/'
-std, err = execute_command(['ls', 'data/'])
-
-# Print the standard output
-print(std)
-
-# Print the error output
-print(err)
-```
-
-## Compressing files
-
-## Configuration files
 
 ## File access, load and save files
 
@@ -176,6 +154,62 @@ copy_files('data/', 'file1.txt', 'file2.txt')
 # To avoid create the folder if it does not exist.
 copy_files('data/', 'file1.txt', 'file2.txt', force=False)
 ```
+
+### Remove files
+
+You can also remove several files and empty folders with just one sentence, using the remove_files() function:
+
+```python
+from mysutils.file import remove_files
+
+remove_files('test2.json', 'data/test1.json', 'data/')
+```
+
+If the file to remove is a directory, it has to be empty. If you want to remove directories with subdirectories or 
+files, use shutil.rmtree().
+
+
+## Compressing files
+
+With this library there are two ways to compress files: single gzip files and tar files.
+
+### Compressing a single gzip file
+
+```python
+from mysutils.file import gzip_compress, gzip_decompress, save_json
+
+# Create a file
+d = {
+    'version': 1.0,
+    'file_list': ['1.txt', '2.txt']
+}
+save_json(d, 'file.json')
+
+# Compress the file
+gzip_compress('file.json', 'file.json.gz')
+
+```
+
+
+## External commands
+
+This module only contains a function that execute an external command and return the standard and error outputs.
+Its execution is very simple:
+
+```python
+from mysutils.command import execute_command
+
+# Execute the Unix shell command 'ls data/'
+std, err = execute_command(['ls', 'data/'])
+
+# Print the standard output
+print(std)
+
+# Print the error output
+print(err)
+```
+
+## Configuration files
 
 ## Logging
 
