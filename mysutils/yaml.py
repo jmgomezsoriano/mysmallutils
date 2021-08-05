@@ -1,5 +1,8 @@
+import gzip
 from collections import OrderedDict, Hashable
 from typing import Union, Dict, Any
+
+from mysutils.tar import open_tar_file
 
 try:
     from yaml import add_representer, dump, load, SafeLoader
@@ -28,3 +31,10 @@ def load_yaml(fname: str) -> Union[Dict[Hashable, Any], list, None]:
     """
     with open_file(fname, 'rt') as file:
         return load(file, SafeLoader)
+
+
+def open_tar_yaml(tar_file: str, filename: str) -> Any:
+    with open_tar_file(tar_file, filename) as file:
+        if filename.lower().endswith('.gz'):
+            return load(gzip.open(file))
+        return load(file)

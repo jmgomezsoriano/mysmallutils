@@ -3,7 +3,8 @@ from os import remove
 from os.path import exists
 
 from mysutils.command import execute_command
-from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files
+from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
+    gzip_decompress
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -96,6 +97,28 @@ class FileTestCase(unittest.TestCase):
             copy_files('data/', 'mysutils/__init__.py', 'mysutils/file.py', force=False)
         self.assertTupleEqual(execute_command(['ls', 'data']),
                               ('', "ls: cannot access 'data': No such file or directory\n"))
+
+    def test_compress_gzip(self):
+        # Create a file
+        d = {
+            'version': 1.0,
+            'file_list': ['1.txt', '2.txt']
+        }
+        save_json(d, 'test.json')
+
+        # Compress the file
+        gzip_compress('test.json', 'test.json.gz')
+        # Decompress the file
+        gzip_decompress('test.json.gz', 'test2.json')
+        # Load and compare the decompress file
+        d2 = load_json('test2.json')
+        self.assertDictEqual(d, d2)
+        with self.assertRaises(ValueError):
+            gzip_compress('test.json', 'test.json')
+        with self.assertRaises(ValueError):
+            gzip_decompress('test.json.gz', 'test.json.gz')
+
+        remove_files('test.json', 'test.json.gz', 'test2.json')
 
 
 if __name__ == '__main__':
