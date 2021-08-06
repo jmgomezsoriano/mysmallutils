@@ -1,6 +1,3 @@
-from typing import List
-
-
 def dh(d: dict, top: int = 10) -> dict:
     """ Obtain the first top elements of a dictionary.
 
