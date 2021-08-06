@@ -33,7 +33,13 @@ def load_yaml(fname: str) -> Union[Dict[Hashable, Any], list, None]:
         return load(file, SafeLoader)
 
 
-def open_tar_yaml(tar_file: str, filename: str) -> Any:
+def load_tar_yaml(tar_file: str, filename: str) -> Any:
+    """ Load an object from a YAML file stored in a tar file.
+
+    :param tar_file: The path to the tar file-.
+    :param filename: The path inside of the tar to the file to extract.
+    :return: The loaded object.
+    """
     with open_tar_file(tar_file, filename) as file:
         if filename.lower().endswith('.gz'):
             return load(gzip.open(file))

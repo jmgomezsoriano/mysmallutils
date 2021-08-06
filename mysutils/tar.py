@@ -7,9 +7,9 @@ from tarfile import TarInfo
 from os.path import basename, isdir, join, exists, splitext, dirname
 from typing import List, Any
 
-# Import tqdm if it is istalled, otherwise a dummy tqdm is used.
 from typing.io import IO
 
+# Import tqdm if it is installed, otherwise a dummy tqdm function is used.
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError as e:
@@ -63,14 +63,26 @@ def open_tar_file(tar_file: str, filename: str) -> IO:
     return file
 
 
-def open_tar_json(tar_file: str, filename: str) -> Any:
+def load_tar_json(tar_file: str, filename: str) -> Any:
+    """ Load an object from a JSON file stored in a tar file.
+
+    :param tar_file: The path to the tar file-.
+    :param filename: The path inside of the tar to the file to extract.
+    :return: The loaded object.
+    """
     with open_tar_file(tar_file, filename) as file:
         if filename.lower().endswith('.gz'):
             return json.load(gzip.open(file))
         return json.load(file)
 
 
-def open_tar_pickle(tar_file: str, filename: str) -> Any:
+def load_tar_pickle(tar_file: str, filename: str) -> Any:
+    """ Load an object from a pickle file stored in a tar file.
+
+    :param tar_file: The path to the tar file-.
+    :param filename: The path inside of the tar to the file to extract.
+    :return: The loaded object.
+    """
     with open_tar_file(tar_file, filename) as file:
         if filename.lower().endswith('.gz'):
             return pickle.load(gzip.open(file))
