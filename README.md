@@ -7,6 +7,7 @@ configure logging, obtain metrics, download files, etc.
 
 This module is divided into the following categories:
 
+* [Collections][#collection]
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Load and save json files](#load-and-save-json-files)
@@ -20,6 +21,37 @@ This module is divided into the following categories:
 * Process synchronization
 * Obtaining metrics
 * Services and Web
+
+## Collections
+Small utils for different set and directory.
+
+### Set head
+Select the top elements of a set (it is not optimized).
+
+```python
+from mysutils.collections import sh
+
+# A set of latin characters
+set1 = {chr(97 + i) for i in range(26)}
+# Select the first 5 elements of the set
+set2 = sh(set1, 5)
+# By default select 10 elements
+set2 = sh(set1)
+```
+
+### Dictionary head
+Select the first n items of a dictionary.
+
+```python
+from mysutils.collections import dh
+
+# A dictionary of latin characters
+dict1 = {i: chr(97 + i) for i in range(26)}
+# Select the first 5 items of the dictionary
+dict2 = dh(dict1, 5)
+# By default select 10 items
+dict2 = dh(dict1)
+```
 
 ## File access, load and save files
 
