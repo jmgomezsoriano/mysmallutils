@@ -11,7 +11,6 @@ class MyTestCase(unittest.TestCase):
 
     def test_failure_command(self):
         out, err = execute_command(['ls', '-l', '*.py'])
-        print(out, err)
         self.assertEqual(err, 'ls: cannot access \'*.py\': No such file or directory\n')
         self.assertEqual(out, '')
 
