@@ -251,7 +251,6 @@ gzip_compress('file.json', 'file.json.gz')
 gzip_decompress('file.json.gz', 'file2.json')
 ```
 
-
 ## External commands
 
 This module only contains a function that execute an external command and return the standard and error outputs.
@@ -271,6 +270,40 @@ print(err)
 ```
 
 ## Configuration files
+
+Too many times, when you deal with config files or some kind of configuration cluster server, you become crazy
+because there are a small spelling mistake in the name of a configuration parameter and you code does not work properly.
+With the function parse_config() you can easily define an array with the configuration parameter that you need and
+this function throws an exception if there are any error or the parameters in the configuration file does not match
+with the defined ones. For example:
+
+```python
+from mysutils.config import parse_config
+
+PARAM_DEFINITION = [('server_host', False, 'http://0.0.0.0'), ('server_port', False, 8080),
+                    ('database_name', True, None)]
+# Check if all the required parameters are in the configuration file and there are anymore (double check)
+config = {
+  'database_name': 'Test'
+}
+values = parse_config(config, PARAM_DEFINITION, True)  # Returns the default values of the parameters
+
+# With double_check to False instead of True, the configuration file can have other no defined parameters
+config = {
+  'database_name': 'Test',
+  'new_parameter': 1
+}
+values = parse_config(config, PARAM_DEFINITION, False)
+
+# This will raise an error because double_check is activated and the configuration file has a non-defined value.
+config = {
+  'database_name': 'Test',
+  'new_parameter': 1
+}
+parse_config(config, PARAM_DEFINITION, True)
+```
+
+
 
 ## Logging
 
