@@ -177,14 +177,26 @@ def gzip_compress(input_file: str, output_file: str) -> None:
                 writer.write(chunk)
 
 
-def remove_files(*files: str) -> None:
+def remove_files(*files: str, ignore_errors: bool = False) -> None:
     """ Remove several files and empty directories at once.
 
-    :param files: The list of files or empty directories to remove. To remove directories with files or subidrectories,
+    :param files: The list of files or empty directories to remove. To remove directories with files or subdirectories,
       please, use shutil.rmtree().
+    :param ignore_errors: If True, ignore the error if the file or directory does not exist.
     """
     for file in files:
         if isdir(file):
             rmdir(file)
-        else:
+        elif not ignore_errors or exists(file):
             remove(file)
+
+
+def first_line(filename: str) -> str:
+    """ Read the first line of a file removing the final \n if it exists.
+
+    :param filename: The filename to read.
+    :return: A string with the first line.
+    """
+    with open_file(filename) as file:
+        line = file.readline()
+        return line[:-1] if line.endswith('\n') else line

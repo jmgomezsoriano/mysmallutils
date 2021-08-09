@@ -97,6 +97,17 @@ with force_open('file.txt.gz', 'w') as file:
     pass
 ```
 
+### Read the first line of a file
+This function only reads the first line of a text file (gzip compressed or not) and returns it without the \n if 
+it exists.
+
+```python
+from mysutils.file import first_line
+
+# Read the first line of the file token.txt ignoring the character \n at the end of the line.
+token = first_line('token.txt')
+```
+
 ### Load and save json files
 ```python
 from mysutils.file import load_json, save_json

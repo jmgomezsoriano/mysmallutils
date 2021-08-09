@@ -4,7 +4,7 @@ from os.path import exists
 
 from mysutils.command import execute_command
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
-    gzip_decompress
+    gzip_decompress, open_file, first_line
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -98,7 +98,7 @@ class FileTestCase(unittest.TestCase):
         self.assertTupleEqual(execute_command(['ls', 'data']),
                               ('', "ls: cannot access 'data': No such file or directory\n"))
 
-    def test_compress_gzip(self):
+    def test_compress_gzip(self) -> None:
         # Create a file
         d = {
             'version': 1.0,
@@ -119,6 +119,24 @@ class FileTestCase(unittest.TestCase):
             gzip_decompress('test.json.gz', 'test.json.gz')
 
         remove_files('test.json', 'test.json.gz', 'test2.json')
+
+    def test_first_line(self) -> None:
+        # Test with \n at the end
+        with open_file('test/text.txt.gz', 'wt') as file:
+            print('First line', file=file)
+            print('Second line', file=file)
+        line = first_line('test/text.txt.gz')
+        self.assertEqual(line, 'First line')
+        # Test empty file
+        with open_file('test/text.txt.gz', 'wt'):
+            pass
+        line = first_line('test/text.txt.gz')
+        self.assertEqual(line, '')
+        # Test without \n at the end
+        with open_file('test/text.txt', 'wt') as file:
+            file.write('First line')
+        line = first_line('test/text.txt')
+        self.assertEqual(line, 'First line')
 
 
 if __name__ == '__main__':
