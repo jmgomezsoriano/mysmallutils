@@ -1,6 +1,6 @@
 import unittest
 
-from mysutils.collections import dh, sh
+from mysutils.collections import dh, sh, head
 
 
 class MyTestCase(unittest.TestCase):
@@ -15,6 +15,19 @@ class MyTestCase(unittest.TestCase):
         s2 = sh(s, 5)
         self.assertEqual(len(s2), 5)
         self.assertSetEqual(s2, {'d', 'b', 'a', 'c', 'e'})
+
+    def test_head(self) -> None:
+        dict1 = {i: chr(97 + i) for i in range(26)}
+        self.assertDictEqual(head(dict1),
+                             {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h', 8: 'i', 9: 'j'})
+        self.assertEqual(len(head(dict1)), 10)
+        self.assertDictEqual(head(dict1, 5), {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e'})
+        self.assertEqual(len(head(dict1, 5)), 5)
+        set1 = {chr(97 + i) for i in range(26)}
+        self.assertSetEqual(head(set1), {'f', 'd', 'j', 'a', 'b', 'e', 'h', 'i', 'c', 'g'})
+        self.assertEqual(len(head(set1)), 10)
+        self.assertSetEqual(head(set1, 5), {'d', 'a', 'b', 'e', 'c'})
+        self.assertEqual(len(head(set1, 5)), 5)
 
 
 if __name__ == '__main__':
