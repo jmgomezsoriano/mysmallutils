@@ -7,25 +7,22 @@ configure logging, obtain metrics, download files, etc.
 
 This module is divided into the following categories:
 
-* [Collections](#collection)
+* [Collections](#collections)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Load and save json files](#load-and-save-json-files)
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)
   * [Copy files](#copy-files)
-* Compressing files
+* [Compressing files](#compressing-files)
 * [External commands](#external-commands)
-* Configuration files
+* [Configuration files](#configuration-files)
 * Logging
 * Process synchronization
 * Obtaining metrics
 * Services and Web
 
 ## Collections
-Small utils for different set and directory.
-
-### Head
 Get the first n elements of a dictionary or a set.
 
 ```python
@@ -54,9 +51,9 @@ from mysutils.collections import sh
 # A set of latin characters
 set1 = {chr(97 + i) for i in range(26)}
 # Select the first 5 elements of the set
-set2 = sh(set1, 5)
+sh(set1, 5)
 # By default select 10 elements
-set2 = sh(set1)
+sh(set1)
 ```
 
 ```python
@@ -65,9 +62,9 @@ from mysutils.collections import dh
 # A dictionary of latin characters
 dict1 = {i: chr(97 + i) for i in range(26)}
 # Select the first 5 items of the dictionary
-dict2 = dh(dict1, 5)
+dh(dict1, 5)
 # By default select 10 items
-dict2 = dh(dict1)
+dh(dict1)
 ```
 
 ## File access, load and save files
@@ -233,8 +230,6 @@ files, use shutil.rmtree().
 
 With this library there are two ways to compress files: single gzip files and tar files.
 
-### Compressing a single gzip file
-
 ```python
 from mysutils.file import gzip_compress, gzip_decompress, save_json
 
@@ -272,7 +267,8 @@ print(err)
 ## Configuration files
 
 Too many times, when you deal with config files or some kind of configuration cluster server, you become crazy
-because there are a small spelling mistake in the name of a configuration parameter and you code does not work properly.
+because there are a small spelling mistake in the name of a configuration parameter, and you code does not work 
+properly.
 With the function parse_config() you can easily define an array with the configuration parameter that you need and
 this function throws an exception if there are any error or the parameters in the configuration file does not match
 with the defined ones. For example:
@@ -302,8 +298,6 @@ config = {
 }
 parse_config(config, PARAM_DEFINITION, True)
 ```
-
-
 
 ## Logging
 
