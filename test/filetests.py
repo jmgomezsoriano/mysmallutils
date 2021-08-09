@@ -137,6 +137,7 @@ class FileTestCase(unittest.TestCase):
             file.write('First line')
         line = first_line('test/text.txt')
         self.assertEqual(line, 'First line')
+        remove_files('test/text.txt', 'test/text.txt.gz')
 
 
 if __name__ == '__main__':
