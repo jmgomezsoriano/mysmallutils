@@ -7,7 +7,7 @@ configure logging, obtain metrics, download files, etc.
 
 This module is divided into the following categories:
 
-* [Collections][#collection]
+* [Collections](#collection)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Load and save json files](#load-and-save-json-files)
@@ -25,8 +25,28 @@ This module is divided into the following categories:
 ## Collections
 Small utils for different set and directory.
 
-### Set head
-Select the top elements of a set (it is not optimized).
+### Head
+Get the first n elements of a dictionary or a set.
+
+```python
+from mysutils.collections import head
+
+# A set of latin characters
+set1 = {chr(97 + i) for i in range(26)}
+# Select the first 5 elements of the set
+head(set1, 5)  # returns {'d', 'a', 'b', 'e', 'c'}
+# By default select 10 elements
+head(set1)  # returns {'f', 'd', 'j', 'a', 'b', 'e', 'h', 'i', 'c', 'g'}
+
+# A dictionary of latin characters
+dict1 = {i: chr(97 + i) for i in range(26)}
+# Select the first 5 items of the dictionary
+head(dict1, 5)  # Returns {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e'}
+# By default select 10 items
+head(dict1)  # Returns {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h', 8: 'i', 9: 'j'}
+```
+
+Also, you can use the specific functions for set and dictionaries: **sh()** for set head and **dh()** for dictionaries.
 
 ```python
 from mysutils.collections import sh
@@ -38,9 +58,6 @@ set2 = sh(set1, 5)
 # By default select 10 elements
 set2 = sh(set1)
 ```
-
-### Dictionary head
-Select the first n items of a dictionary.
 
 ```python
 from mysutils.collections import dh

@@ -1,3 +1,20 @@
+from typing import Union
+
+
+def head(obj: Union[dict, set], top: int = 10) -> Union[dict, set]:
+    """ Obtain the first top elements of a dictionary o a set.
+
+    :param obj: A dictionary or a set.
+    :param top: The number of elements to return, by default 10.
+    :return: The first top elements of the given dictionary or set.
+    """
+    if isinstance(obj, dict):
+        return dh(obj, top)
+    if isinstance(obj, set):
+        return sh(obj, top)
+    raise ValueError('The object must be a dictionary or a set.')
+
+
 def dh(d: dict, top: int = 10) -> dict:
     """ Obtain the first top elements of a dictionary.
 
