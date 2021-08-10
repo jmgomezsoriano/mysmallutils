@@ -4,7 +4,7 @@ from os.path import exists
 
 from mysutils.command import execute_command
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
-    gzip_decompress, open_file, first_line
+    gzip_decompress, open_file, first_line, exist_files
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -138,6 +138,11 @@ class FileTestCase(unittest.TestCase):
         line = first_line('test/text.txt')
         self.assertEqual(line, 'First line')
         remove_files('test/text.txt', 'test/text.txt.gz')
+
+    def test_exist_files(self) -> None:
+        self.assertTrue(exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py'))
+        self.assertFalse(exist_files('mysutils/collections.py', 'test/filetests.py', 'test/mysutils/file.py'))
+        self.assertFalse(exist_files('data/test/filetests.py', 'test/mysutils/file.py'))
 
 
 if __name__ == '__main__':

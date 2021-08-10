@@ -10,10 +10,13 @@ This module is divided into the following categories:
 * [Collections](#collections)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
+  * [Read the first line of a file](#read-the-first-line-of-a-file)
   * [Load and save json files](#load-and-save-json-files)
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)
   * [Copy files](#copy-files)
+  * [Remove files](#remove-files)
+  * [Check if exists several files](#check-if-exists-several-files)
 * [Compressing files](#compressing-files)
 * [External commands](#external-commands)
 * [Configuration files](#configuration-files)
@@ -225,6 +228,16 @@ remove_files('test2.json', 'data/test1.json', 'data/')
 If the file to remove is a directory, it has to be empty. If you want to remove directories with subdirectories or 
 files, use shutil.rmtree().
 
+### Check if exists several files
+With the function exist_files() you can check if several files exist or not.
+Its usage is very simple, for example:
+
+```python
+from mysutils.file import exist_files
+
+# Returns True if all the files exist, otherwise False.
+exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+```
 
 ## Compressing files
 

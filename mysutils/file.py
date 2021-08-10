@@ -2,7 +2,7 @@ import gzip
 import pickle
 from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
-from os import makedirs, remove, rmdir
+from os import makedirs, remove, rmdir, PathLike
 from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile
 from typing import Union, Optional, TextIO, Any
@@ -200,3 +200,15 @@ def first_line(filename: str) -> str:
     with open_file(filename) as file:
         line = file.readline()
         return line[:-1] if line.endswith('\n') else line
+
+
+def exist_files(*files: Union[str, bytes]) -> bool:
+    """ Check if a sequence of files exist.
+
+    :param files: The list of file paths to check.
+    :return: True if all the files exist, otherwise False.
+    """
+    for file in files:
+        if not exists(file):
+            return False
+    return True
