@@ -112,14 +112,14 @@ def extract_tar_file(tar_file: str, dest: str, filename: str) -> None:
     dest = join(dest, filename) if isdir(dest) else dest
     with tarfile.open(tar_file, f'r:{compress_method}') as tar:
         with tar.extractfile(filename) as reader:
-            if not exists(dirname(dest)):
+            if dirname(dest) and not exists(dirname(dest)):
                 makedirs(dirname(dest))
             with open(dest, 'wb') as writer:
                 for chunk in reader:
                     writer.write(chunk)
 
 
-def extract_tar_files(tar_file: str, dest: str, *files: str, force: bool = False) -> None:
+def extract_tar_files(tar_file: str, dest: str, *files: str, force: bool = False, verbose: bool = False) -> None:
     """ Extract a file inside of a tar archive.
 
     :param tar_file: The path to the tar file.
@@ -133,7 +133,7 @@ def extract_tar_files(tar_file: str, dest: str, *files: str, force: bool = False
     if not isdir(dest):
         raise ValueError(f'The destination is not an existing folder.')
     files = files if files else [file.path for file in list_tar(tar_file)]
-    for file in files:
+    for file in tqdm(files, desc='Extracting files', disable=not verbose):
         extract_tar_file(tar_file, dest, file)
 
 

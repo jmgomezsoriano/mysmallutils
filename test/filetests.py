@@ -122,25 +122,25 @@ class FileTestCase(unittest.TestCase):
 
     def test_first_line(self) -> None:
         # Test with \n at the end
-        with open_file('test/text.txt.gz', 'wt') as file:
+        with open_file('text.txt.gz', 'wt') as file:
             print('First line', file=file)
             print('Second line', file=file)
-        line = first_line('test/text.txt.gz')
+        line = first_line('text.txt.gz')
         self.assertEqual(line, 'First line')
         # Test empty file
-        with open_file('test/text.txt.gz', 'wt'):
+        with open_file('text.txt.gz', 'wt'):
             pass
-        line = first_line('test/text.txt.gz')
+        line = first_line('text.txt.gz')
         self.assertEqual(line, '')
         # Test without \n at the end
-        with open_file('test/text.txt', 'wt') as file:
+        with open_file('text.txt', 'wt') as file:
             file.write('First line')
-        line = first_line('test/text.txt')
+        line = first_line('text.txt')
         self.assertEqual(line, 'First line')
-        remove_files('test/text.txt', 'test/text.txt.gz')
+        remove_files('text.txt', 'text.txt.gz')
 
     def test_exist_files(self) -> None:
-        self.assertTrue(exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py'))
+        self.assertTrue(exist_files('mysutils/collections.py', 'filetests.py', 'mysutils/file.py'))
         self.assertFalse(exist_files('mysutils/collections.py', 'test/filetests.py', 'test/mysutils/file.py'))
         self.assertFalse(exist_files('data/test/filetests.py', 'test/mysutils/file.py'))
 

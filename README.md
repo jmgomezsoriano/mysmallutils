@@ -285,7 +285,7 @@ gzip_decompress('file.json.gz', 'file2.json')
 ### Tar
 Some utils to create, extract and use tar files.
 
-All the examples of this section assume you have the files 'test/test.json' and 'test.json.gz', for instance, with
+All the examples of this section assume you have the files 'test.json' and 'test.json.gz', for instance, with
 this code:
 
 ```python
@@ -295,8 +295,8 @@ d = {
     'version': 1.0,
     'file_list': ['1.txt', '2.txt']
 }
-save_json(d, 'test/test.json')
-save_json(d, 'test/test.json.gz')
+save_json(d, 'test.json')
+save_json(d, 'test.json.gz')
 ```
 
 #### Create a tar file
@@ -306,16 +306,16 @@ With create_tar() you can create a tar file (compressed or not) and include a li
 from mysutils.tar import create_tar
 
 # Create a normal tar file
-create_tar('test/test.tar', 'test/test.json', 'test/test.json.gz')
+create_tar('test.tar', 'test.json', 'test.json.gz')
 
 # Create a gzip compressed tar file
-create_tar('test/test.tar.gz', 'test/test.json', 'test/test.json.gz')
+create_tar('test.tar.gz', 'test.json', 'test.json.gz')
 
 # Create a bzip2 compressed tar file
-create_tar('test/test.tar.bz2', 'test/test.json', 'test/test.json.gz')
+create_tar('test.tar.bz2', 'test.json', 'test.json.gz')
 
 # create a xz compressed tar file
-create_tar('test/test.tar.xz', 'test/test.json', 'test/test.json.gz')
+create_tar('test.tar.xz', 'test.json', 'test.json.gz')
 ```
 
 #### List the content of a tar file
@@ -323,7 +323,7 @@ create_tar('test/test.tar.xz', 'test/test.json', 'test/test.json.gz')
 ```python
 from mysutils.tar import list_tar
 
-lst = list_tar('test/test.tar.gz')
+lst = list_tar('test.tar.gz')
 print(lst[0].path)
 ```
 
@@ -331,18 +331,34 @@ print(lst[0].path)
 ```python
 from mysutils.tar import extract_tar_file
 
-# Extract the file 'test.json' to 'test/test2.json' from 'test/test.tar.gz'. 
-extract_tar_file('test/test.tar.gz', 'test/test2.json', 'test.json')
+# Extract the file 'test.json' to 'test2.json' from 'test.tar.gz'. 
+extract_tar_file('test.tar.gz', 'test2.json', 'test.json')
 
-# Extract the file 'test.json' and save it into 'data/' folder from 'test/test.tar.gz'.
-extract_tar_file('test/test.tar.gz', 'data/', 'test.json')
+# Extract the file 'test.json' and save it into 'data/' folder from 'test.tar.gz'.
+extract_tar_file('test.tar.gz', 'data/', 'test.json')
 ```
 
 #### Extract several files into a folder
 ```python
-from mysutils.tar import extract_tar_files
+from mysutils.tar import extract_tar_files, extract_tar
 
-# TO DO
+# Extract 'test.json' and 'test.json.gz' from 'test.tar.gz2' and store them into 'data/' if it exists.
+extract_tar_files('test.tar.bz2', 'data/', 'test.json', 'test.json.gz')
+
+# The same as before but creates the folder 'data/' if it does not exist.
+extract_tar_files('test.tar.bz2', 'data/', 'test.json', 'test.json.gz', force=True)
+
+# Extract files showing a progress bar
+extract_tar_files('test.tar.bz2', 'data/', 'test.json', 'test.json.gz', verbose=True)
+
+# Extract all the files into the folder 'data/' if it exists
+extract_tar('test.tar', 'data/', False)
+
+# Extract all the files forcing the folder creation
+extract_tar('test.tar', 'data/', True)
+
+# Show a progress bar
+extract_tar('test.tar', 'data/', verbose=True)
 ```
 
 ## External commands
