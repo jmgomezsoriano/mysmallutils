@@ -125,6 +125,7 @@ def extract_tar_files(tar_file: str, dest: str, *files: str, force: bool = False
     :param tar_file: The path to the tar file.
     :param dest: The folder where the tar archive should be extracted.
     :param files: The relative path inside of the tar file to extract.
+    :param force: If True, create the destination directory if it doesn't exist.
       If files is not given, then extract all the files.
     """
     if not exists(dest) and force:

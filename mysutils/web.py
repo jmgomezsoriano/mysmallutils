@@ -1,13 +1,19 @@
 import requests
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 
-def download(url: str, fname: str) -> None:
+def download(url: str, filename: str, verbose: bool = True) -> None:
+    """  Download a file.
+
+    :param url: The URL where the file should be downloaded.
+    :param filename: The file path where the file should be stored.
+    :param verbose: True, if a progress bar is shown. Otherwise, False.
+    """
     request = requests.get(url, stream=True)
     total = int(request.headers['content-length']) if 'content-length' in request.headers else 0
     with request as reader:
-        with open(fname, 'wb') as writer:
-            with tqdm(desc=f'Downloading file {fname}', total=total) as t:
+        with open(filename, 'wb') as writer:
+            with tqdm(desc=f'Downloading file {filename}', total=total, disable=not verbose) as t:
                 for chunk in reader.iter_content(chunk_size=8192):
                     t.update(len(chunk))
                     writer.write(chunk)
