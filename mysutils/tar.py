@@ -155,4 +155,4 @@ def extract_tar(tar_file: str, dest: str, force: bool = False, verbose: bool = F
         if file.isdir():
             makedirs(join(dest, file.path))
         else:
-            extract_tar_file(tar_file, file.path, dest)
+            extract_tar_file(tar_file, dest, file.path)
