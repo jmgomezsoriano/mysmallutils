@@ -415,6 +415,26 @@ parse_config(config, PARAM_DEFINITION, True)
 ```
 
 ## Logging
+Some functions to configure and to get information about logging. 
+
+```python
+from mysutils.logging import get_log_level_names, get_log_levels, get_log_level, config_log
+
+# Configure the logging to show only error messages
+config_log('ERROR')
+
+# Configure the logging to show INFO or higher message level and store it in a file
+config_log('ERROR', 'file.log')
+
+# Get the log level names
+get_log_level_names()
+
+# Get the log level names and its number
+get_log_levels()
+
+# Get the log level number from its name
+get_log_level('DEBUG')
+```
 
 
 
