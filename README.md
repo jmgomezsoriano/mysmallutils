@@ -18,6 +18,8 @@ This module is divided into the following categories:
   * [Remove files](#remove-files)
   * [Check if exists several files](#check-if-exists-several-files)
 * [Compressing files](#compressing-files)
+  * [Gzip](#gzip)
+  * [Tar](#tar)
 * [External commands](#external-commands)
 * [Configuration files](#configuration-files)
 * Logging
@@ -135,6 +137,12 @@ save_json(d, 'data/file.json', force=True)
 
 # The same but wit a compressed file
 save_json(d, 'data/file.json.gz', force=True)
+
+# Load from a tar file
+from mysutils.tar import load_tar_json
+
+# Load a json (data.json) from a compressed tar file (file.tar.bz2)
+d = load_tar_json('data/file.tar.bz2', 'data.json')
 ```
 
 ### Load and save pickle files
@@ -164,6 +172,12 @@ save_pickle(d, 'data/test1.pkl', force=True)
 
 # The same but wit a compressed pickle file
 save_pickle(d, 'data/test1.pkl.gz', force=True)
+
+# Load from a tar file
+from mysutils.tar import load_tar_pickle
+
+# Load a compressed pickle (data.pkl.gz) from a compressed tar file (file.tar.bz2)
+d = load_tar_pickle('data/file.tar.bz2', 'data.pkl.gz')
 ```
 
 ### Load and save Yaml files
@@ -199,7 +213,14 @@ save_yaml(d, 'data/file.yml', force=True)
 
 # The same but wit a compressed yaml file
 save_yaml(d, 'data/file.yml.gz', force=True)
+
+# Load from a tar file
+from mysutils.yaml import load_tar_yaml
+
+# Load a yaml (data.yaml) from a compressed tar file (file.tar.xz)
+d = load_tar_yaml('data/file.tar.xz', 'data.yaml')
 ```
+
 ### Copy files
 
 A very simple way to copy several files into a directory. For example:
@@ -243,6 +264,8 @@ exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 
 With this library there are two ways to compress files: single gzip files and tar files.
 
+### Gzip
+
 ```python
 from mysutils.file import gzip_compress, gzip_decompress, save_json
 
@@ -258,6 +281,10 @@ gzip_compress('file.json', 'file.json.gz')
 # Decompress the file
 gzip_decompress('file.json.gz', 'file2.json')
 ```
+
+### Tar
+
+
 
 ## External commands
 
@@ -313,6 +340,8 @@ parse_config(config, PARAM_DEFINITION, True)
 ```
 
 ## Logging
+
+
 
 ## Process synchronization
 

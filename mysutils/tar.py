@@ -26,6 +26,7 @@ def create_tar(filename: str, *files: str, verbose: bool = False) -> None:
       then the tar file will be compressed with the specify method.
     :param filename: The name of the tar file.
     :param files: The list of file paths to include in the tar file.
+    :param verbose: if True, show a bar progress.
     """
     compress_method = detect_compress_method(filename)
     with tarfile.open(filename, f'w:{compress_method}') as tar:
@@ -124,11 +125,13 @@ def extract_tar_files(tar_file: str, dest: str, *files: str, force: bool = False
     :param tar_file: The path to the tar file.
     :param dest: The folder where the tar archive should be extracted.
     :param files: The relative path inside of the tar file to extract.
+      If files is not given, then extract all the files.
     """
     if not exists(dest) and force:
-        makedirs(dirname(dest))
+        makedirs(dest)
     if not isdir(dest):
-        raise ValueError(f'The destination is not a folder.')
+        raise ValueError(f'The destination is not an existing folder.')
+    files = files if files else [file.path for file in list_tar(tar_file)]
     for file in files:
         extract_tar_file(tar_file, dest, file)
 
