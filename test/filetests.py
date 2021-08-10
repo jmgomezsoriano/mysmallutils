@@ -140,7 +140,7 @@ class FileTestCase(unittest.TestCase):
         remove_files('text.txt', 'text.txt.gz')
 
     def test_exist_files(self) -> None:
-        self.assertTrue(exist_files('mysutils/collections.py', 'filetests.py', 'mysutils/file.py'))
+        self.assertTrue(exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py'))
         self.assertFalse(exist_files('mysutils/collections.py', 'test/filetests.py', 'test/mysutils/file.py'))
         self.assertFalse(exist_files('data/test/filetests.py', 'test/mysutils/file.py'))
 
