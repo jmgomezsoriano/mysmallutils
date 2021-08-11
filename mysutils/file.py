@@ -212,3 +212,24 @@ def exist_files(*files: Union[str, bytes]) -> bool:
         if not exists(file):
             return False
     return True
+
+
+def count_lines(filename: str) -> int:
+    """ Calculate the number of lines in a file.
+
+    :param filename: The filename to calculate its size.
+    :return: The number of lines of the file.
+    """
+    count = 0
+    with open_file(filename) as file:
+        for _ in file:
+            count += 1
+    return count
+
+
+def touch(filename: str) -> None:
+    """ Create an empty file.
+
+    :param filename: The path to the file to create.
+    """
+    open(filename, 'w').close()

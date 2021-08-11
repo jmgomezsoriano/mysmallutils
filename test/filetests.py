@@ -4,7 +4,7 @@ from os.path import exists
 
 from mysutils.command import execute_command
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
-    gzip_decompress, open_file, first_line, exist_files
+    gzip_decompress, open_file, first_line, exist_files, count_lines, touch
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -144,6 +144,21 @@ class FileTestCase(unittest.TestCase):
         self.assertFalse(exist_files('mysutils/collections.py', 'test/filetests.py', 'test/mysutils/file.py'))
         self.assertFalse(exist_files('data/test/filetests.py', 'test/mysutils/file.py'))
 
+    def test_count_lines(self) -> None:
+        with open_file('text.txt.gz', 'wt') as file:
+            print('First line', file=file)
+            print('Second line', file=file)
+        self.assertEqual(count_lines('text.txt.gz'), 2)
+        remove_files('text.txt.gz')
+
+    def test_touch(self) -> None:
+        touch('text.txt')
+        self.assertExists('text.txt')
+        self.assertEqual(count_lines('text.txt'), 0)
+        remove_files('text.txt')
+
+    def assertExists(self, *files: str) -> None:
+        self.assertTrue(exist_files(*files))
 
 if __name__ == '__main__':
     unittest.main()

@@ -17,12 +17,14 @@ This module is divided into the following categories:
   * [Copy files](#copy-files)
   * [Remove files](#remove-files)
   * [Check if exists several files](#check-if-exists-several-files)
+  * [Count lines](#count-lines)
+  * [Touch](#touch)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
   * [Tar](#tar)
 * [External commands](#external-commands)
 * [Configuration files](#configuration-files)
-* Logging
+* [Logging](#logging)
 * Process synchronization
 * Obtaining metrics
 * Services and Web
@@ -260,6 +262,30 @@ from mysutils.file import exist_files
 exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 ```
 
+### Count lines 
+Count the number of lines of a file. If the file is gzip compressed, then decompress it first.
+
+```python
+from mysutils.file import open_file, count_lines
+# Create a file with two lines
+with open_file('text.txt.gz', 'wt') as file:
+    print('First line', file=file)
+    print('Second line', file=file)
+# Return 2
+count_lines('text.txt.gz')
+```
+
+### Touch
+Create an empty file.
+
+```python
+from mysutils.file import touch
+
+# Create the text.txt file without content
+touch('text.txt')
+```
+
+
 ## Compressing files
 
 With this library there are two ways to compress files: single gzip files and tar files.
@@ -436,9 +462,36 @@ get_log_levels()
 get_log_level('DEBUG')
 ```
 
+## Method synchronization
+Sometimes it is necessary to create a synchronized method.
+With @synchronized you can create a synchronized method easily:
 
+```python
+from mysutils.method import synchronized
+from time import sleep
+from threading import Thread
 
-## Process synchronization
+num = 0
+
+# Create a class with a synchronized method
+class MyClass(object):
+    @synchronized
+    def calculate(self):
+        global num
+        print(f'Starting calculation {num}.')
+        sleep(5)
+        num += 1
+        print(f'Ending calculation {num}.')
+
+# Create two instances of the same class
+obj1, obj2 = MyClass(), MyClass()
+# Execute the method of the first object as a thread 
+thread = Thread(target=obj1.calculate)
+thread.start()
+sleep(1)
+# This method will wait 4 seconds more to finish the first calculate() method.
+obj1.calculate()
+```
 
 ## Obtaining metrics
 
