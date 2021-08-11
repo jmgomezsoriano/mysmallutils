@@ -1,5 +1,11 @@
-import requests
 from tqdm.auto import tqdm
+
+try:
+    import requests
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError('ModuleNotFoundError: No module named \'requests\'. '
+                              'Please install it with the command:\n\n'
+                              'pip install requests~=2.25.1')
 
 
 def download(url: str, filename: str, verbose: bool = True) -> None:

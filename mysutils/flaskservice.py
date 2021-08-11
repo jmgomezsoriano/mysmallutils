@@ -1,8 +1,14 @@
 from urllib.parse import urlparse
-from flask import Request
+
+try:
+    from flask import Request
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError('ModuleNotFoundError: No module named \'Flask\'. '
+                              'Please install it with the command:\n\n'
+                              'pip install Flask~=2.0.1')
 
 
-def request_base(request: Request, service: str = '') -> str:
+def endpoint(request: Request, service: str = '') -> str:
     """ Obtain the final URL to the service dynamically from a request.
 
     :param request: The request to obtain the URL.

@@ -8,6 +8,9 @@ configure logging, obtain metrics, download files, etc.
 This module is divided into the following categories:
 
 * [Collections](#collections)
+* [Text](#text)
+  * [Remove urls](#remove-urls)
+  * [Clean text](#clean-text)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Read the first line of a file](#read-the-first-line-of-a-file)
@@ -25,9 +28,11 @@ This module is divided into the following categories:
 * [External commands](#external-commands)
 * [Configuration files](#configuration-files)
 * [Logging](#logging)
-* Process synchronization
+* [Method synchronization](#method-synchronization)
 * Obtaining metrics
-* Services and Web
+* [Services and Web](#services-and-web)
+  * [Download a file](#download-a-file)
+  * [Flask services](#flask-services)
 
 ## Collections
 Get the first n elements of a dictionary or a set.
@@ -72,6 +77,43 @@ dict1 = {i: chr(97 + i) for i in range(26)}
 dh(dict1, 5)
 # By default select 10 items
 dh(dict1)
+```
+
+## Text
+Simple functions related to text.
+
+### Remove urls
+Remove urls from a text.
+
+```python
+from mysutils.text import remove_urls
+
+text = 'This is a test!\n     Clean punctuation symbols and urls like this: '
+       'https://example.com/my_space/user?a=b&c=3#first '
+       'https://example.com/my_space/user#first'
+remove_urls(text)
+# Result: 
+# 'This is a test!\n     Clean punctuation symbols and urls like this:  '
+```
+
+### Clean text
+Remove punctuation symbols, urls and convert to lower.
+
+```python
+from mysutils.text import clean_text
+
+text = 'This is a test!\n     Clean punctuation symbols and urls like this: ' \
+       'https://example.com/my_space/user?a=b&c=3#first ' \
+       'https://example.com/my_space/user#first'
+
+# Remove punctuation, urls and convert to lower
+clean_text(text)
+
+# Remove punctuation and urls but do not convert to lower
+clean_text(text, lower=False)
+
+# Only remove punctuation
+clean_text(text, lower=False, url=False)
 ```
 
 ## File access, load and save files
@@ -498,16 +540,42 @@ obj1.calculate()
 ## Services and Web
 
 ### Download a file
-
 This function requires to install the Requests module with the following command:
+
 ```bash
 pip install requests~=2.25.1
 ```
 
+After module requests is installed, you can download a file with this simple command:
 
 ```python
 from mysutils.web import download
 
 # Download the file from the url to 'dest/file.txt'.
 download('<url-to-download>', 'dest/file.txt')
+```
+
+### Flask services
+In the contexts of a Flask service, you can need the base url to a service, that means, 
+the protocol, IP or hostname and path to the service. 
+You can obtain this with endpoint() function. 
+However, you first need to install the Flask module:
+
+```bash
+pip install Flask~=2.0.1
+```
+
+An example of how to use:
+
+```python
+from flask import Flask, request
+from mysutils.flaskservice import endpoint
+
+app = Flask(__name__)
+
+
+@app.route('/api/fantastic')
+def my_service():
+  url = endpoint(request, '/api/fantastic')
+  print(f'Executing service at {url}...')
 ```
