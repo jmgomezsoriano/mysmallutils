@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 
 def head(obj: Union[dict, set], top: int = 10) -> Union[dict, set]:
@@ -33,3 +33,17 @@ def sh(d: set, top: int = 10) -> set:
     :return: A set with the top first items of the given set.
     """
     return {value for i, value in enumerate(sorted(d)) if i < top}
+
+
+def list_union(*lists: list) -> list:
+    """ Create a new list with the union of the lists without repeated elements.
+
+    :param lists: The list to union.
+    :return: The union of all lists respecting the element order.
+    """
+    result = []
+    for l in lists:
+        for e in l:
+            if e not in result:
+                result.append(e)
+    return result

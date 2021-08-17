@@ -1,6 +1,7 @@
 import unittest
 
 from mysutils.collections import dh, sh, head
+from mysutils.collections import list_union
 
 
 class MyTestCase(unittest.TestCase):
@@ -28,6 +29,13 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(len(head(set1)), 10)
         self.assertSetEqual(head(set1, 5), {'d', 'a', 'b', 'e', 'c'})
         self.assertEqual(len(head(set1, 5)), 5)
+
+    def test_list_union(self) -> None:
+        l1 = [1, 2, 3]
+        l2 = [4, 5, 6, 1]
+        l3 = [2, 6, 24]
+        self.assertListEqual(list_union(l1, l2, l3), [1, 2, 3, 4, 5, 6, 24])
+        self.assertListEqual(list_union(l1, l3, l2), [1, 2, 3, 6, 24, 4, 5])
 
 
 if __name__ == '__main__':
