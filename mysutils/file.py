@@ -6,7 +6,7 @@ from os import makedirs, remove, rmdir
 from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile
 from sys import stdout
-from typing import Union, Optional, TextIO, Any
+from typing import Union, Optional, TextIO, Any, List
 
 from typing.io import IO
 
@@ -242,6 +242,17 @@ def cat(filename: str, output: TextIO = stdout) -> None:
     :param filename: The path to the file. If the file name ends with ".gz", this function decompressed it to print.
     :param output: The stream to print. By default, the standard output.
     """
-    with open_file(filename, 'r') as file:
+    with open_file(filename, 'rt') as file:
         for line in file:
             print(line, end='', file=output)
+
+
+def read_file(filename: str, line_break: bool = True) -> List[str]:
+    """ Read a file (compressed with gzip or not) and return in a list its content, each line in a list element.
+
+    :param filename: The path to the file. If the file name ends with ".gz", this function decompressed it first.
+    :param line_break: If True, the newline character is conserved, otherwise is removed.
+    :return: An array with the contents of the file.
+    """
+    with open_file(filename, 'rt') as file:
+        return [line[:-1] if not line_break and line[-1] == '\n' else line for line in file]

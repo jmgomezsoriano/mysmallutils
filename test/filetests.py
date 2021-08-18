@@ -4,7 +4,7 @@ from os.path import exists
 
 from mysutils.command import execute_command
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
-    gzip_decompress, open_file, first_line, exist_files, count_lines, touch
+    gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -157,8 +157,56 @@ class FileTestCase(unittest.TestCase):
         self.assertEqual(count_lines('text.txt'), 0)
         remove_files('text.txt')
 
+    def test_read_file(self) -> None:
+        with open_file('text.txt.gz', 'wt') as file:
+            print('First line', file=file)
+            print('Second line', file=file)
+        lines = read_file('text.txt.gz')
+        self.assertEqual(lines[0], 'First line\n')
+        self.assertEqual(lines[1], 'Second line\n')
+        self.assertEqual(len(lines), 2)
+        lines = read_file('text.txt.gz', False)
+        self.assertEqual(lines[0], 'First line')
+        self.assertEqual(lines[1], 'Second line')
+        self.assertEqual(len(lines), 2)
+        with open_file('text.txt', 'wt') as file:
+            print('First line', file=file)
+            print('Second line', file=file)
+        lines = read_file('text.txt')
+        self.assertEqual(lines[0], 'First line\n')
+        self.assertEqual(lines[1], 'Second line\n')
+        self.assertEqual(len(lines), 2)
+        lines = read_file('text.txt', False)
+        self.assertEqual(lines[0], 'First line')
+        self.assertEqual(lines[1], 'Second line')
+        self.assertEqual(len(lines), 2)
+        remove_files('text.txt.gz', 'text.txt')
+
+    def test_cat(self) -> None:
+        with open_file('text.txt.gz', 'wt') as file:
+            print('First line', file=file)
+            print('Second line', file=file)
+        with open_file('text_cat.txt.gz', 'wt') as file:
+            cat('text.txt.gz', output=file)
+        lines = read_file('text_cat.txt.gz')
+        self.assertEqual(lines[0], 'First line\n')
+        self.assertEqual(lines[1], 'Second line\n')
+        self.assertEqual(len(lines), 2)
+
+        with open_file('text.txt', 'wt') as file:
+            print('First line', file=file)
+            print('Second line', file=file)
+        with open_file('text_cat.txt', 'wt') as file:
+            cat('text.txt', output=file)
+        lines = read_file('text_cat.txt', False)
+        self.assertEqual(lines[0], 'First line')
+        self.assertEqual(lines[1], 'Second line')
+        self.assertEqual(len(lines), 2)
+        remove_files('text.txt.gz', 'text_cat.txt.gz', 'text.txt', 'text_cat.txt')
+
     def assertExists(self, *files: str) -> None:
         self.assertTrue(exist_files(*files))
+
 
 if __name__ == '__main__':
     unittest.main()

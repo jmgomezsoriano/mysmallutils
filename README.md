@@ -24,6 +24,8 @@ This module is divided into the following categories:
   * [Check if exists several files](#check-if-exists-several-files)
   * [Count lines](#count-lines)
   * [Touch](#touch)
+  * [Cat](#cat)
+  * [Read file](#read-file)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
   * [Tar](#tar)
@@ -343,6 +345,38 @@ from mysutils.file import touch
 
 # Create the text.txt file without content
 touch('text.txt')
+```
+
+### Cat<a id="cat"></a>
+Print the content of a file.
+
+```python
+from mysutils.file import cat, open_file
+
+# Print the content of text.txt in the standard output
+cat('text.txt')
+# Print the content of the compressed file text.txt.gz in the standard output
+cat('text.txt.gz')
+# Print the content of text.txt into the file text_cat.txt
+with open_file('text_cat.txt', 'wt') as file:
+    cat('text.txt', output=file)
+# Print the content of the compressed file text.txt.gz in the other compressed file text_cat.txt.gz.
+with open_file('text_cat.txt.gz', 'wt') as file:
+    cat('text.txt.gz', file)
+```
+
+### Read file<a id="read-file"></a>
+Read all the file and return a list with its lines.
+
+```python
+from mysutils.file import read_file
+
+# Read the file 'text.txt'
+lines = read_file('text.txt')
+# Read the compressed file 'text.txt.gz'
+lines = read_file('text.txt.gz')
+# Read the compressed file 'text.txt.gz' removing the newline character if it exists
+lines = read_file('text.txt.gz', False)
 ```
 
 ## Compressing files<a id="compressing-files"></a>
