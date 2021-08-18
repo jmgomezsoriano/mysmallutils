@@ -2,9 +2,10 @@ import gzip
 import pickle
 from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
-from os import makedirs, remove, rmdir, PathLike
+from os import makedirs, remove, rmdir
 from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile
+from sys import stdout
 from typing import Union, Optional, TextIO, Any
 
 from typing.io import IO
@@ -233,3 +234,14 @@ def touch(filename: str) -> None:
     :param filename: The path to the file to create.
     """
     open(filename, 'w').close()
+
+
+def cat(filename: str, output: TextIO = stdout) -> None:
+    """ Print a file content.
+
+    :param filename: The path to the file. If the file name ends with ".gz", this function decompressed it to print.
+    :param output: The stream to print. By default, the standard output.
+    """
+    with open_file(filename, 'r') as file:
+        for line in file:
+            print(line, end='', file=output)
