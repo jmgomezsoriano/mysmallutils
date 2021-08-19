@@ -605,26 +605,21 @@ download('<url-to-download>', 'dest/file.txt')
 ```
 
 ### Flask services<a id="flask-services"></a>
-In the contexts of a Flask service, you can need the base url to a service, that means, 
+In the contexts of a web service, you can need the base real final url to a service, that means, 
 the protocol, IP or hostname and path to the service. 
-You can obtain this with endpoint() function. 
-However, you first need to install the Flask module:
-
-```bash
-pip install Flask~=2.0.1
-```
+You can obtain this with endpoint() function.
 
 An example of how to use:
 
 ```python
-from flask import Flask, request
-from mysutils.flaskservice import endpoint
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from mysutils.service import endpoint
 
-app = Flask(__name__)
+app = FastAPI()
 
-
-@app.route('/api/fantastic')
+@app.getº('/api/fantastic', response_class=HTMLResponse)
 def my_service():
-  url = endpoint(request, '/api/fantastic')
+  url = endpoint('/api/fantastic')
   print(f'Executing service at {url}...')
 ```
