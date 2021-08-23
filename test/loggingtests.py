@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
     def test_config_logging(self):
         with self.assertLogs(logger, 'ERROR') as cm:
             log_messages()
-        self.assertEqual(cm.output, ['ERROR:__main__:Test error message'])
+        self.assertRegex(cm.output[0], 'ERROR:[^:]+:Test error message')
         log_messages()
         msg = first_line('file.log')
         self.assertEqual(msg[-18:], 'Test error message')

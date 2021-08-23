@@ -1,14 +1,16 @@
-import unittest
-from os import remove
+import shutil
+from os import remove, rmdir
 from os.path import exists
 
 from mysutils.command import execute_command
+from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
-    gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat
+    gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdir, move_files, \
+    first_file, last_file
 from mysutils.yaml import load_yaml, save_yaml
 
 
-class FileTestCase(unittest.TestCase):
+class FileTestCase(unittest.FileTestCase):
     def test_json(self) -> None:
         d = {
             'version': 1.0,
@@ -155,7 +157,9 @@ class FileTestCase(unittest.TestCase):
         touch('text.txt')
         self.assertExists('text.txt')
         self.assertEqual(count_lines('text.txt'), 0)
-        remove_files('text.txt')
+        touch('1.txt', '2.txt', '3.txt')
+        self.assertExists('1.txt', '2.txt', '3.txt')
+        remove_files('text.txt', '1.txt', '2.txt', '3.txt')
 
     def test_read_file(self) -> None:
         with open_file('text.txt.gz', 'wt') as file:
@@ -204,8 +208,43 @@ class FileTestCase(unittest.TestCase):
         self.assertEqual(len(lines), 2)
         remove_files('text.txt.gz', 'text_cat.txt.gz', 'text.txt', 'text_cat.txt')
 
-    def assertExists(self, *files: str) -> None:
-        self.assertTrue(exist_files(*files))
+    def test_mkdir(self) -> None:
+        # Create the folder if not exists
+        mkdir('new_folder')
+        self.assertExists('new_folder')
+        # Do nothing because the folder was already created.
+        mkdir('new_folder')
+        rmdir('new_folder')
+
+    def test_move_files(self) -> None:
+        touch('1.txt', '2.txt', '3.txt')
+        move_files('test/', '1.txt', '2.txt', '3.txt')
+        self.assertExists('test/1.txt', 'test/2.txt', 'test/3.txt')
+        self.assertNotExists('1.txt', '2.txt', '3.txt')
+        with self.assertRaises(IsADirectoryError):
+            move_files('test2/', 'test/1.txt', 'test/2.txt', 'test/3.txt')
+        move_files('test2/', 'test/1.txt', 'test/2.txt', 'test/3.txt', force=True)
+        self.assertExists('test2/1.txt', 'test2/2.txt', 'test2/3.txt')
+        self.assertNotExists('test/1.txt', 'test/2.txt', 'test/3.txt')
+        touch('1.txt', '2.txt', '3.txt')
+        with self.assertRaises(shutil.Error):
+            move_files('test2/', '1.txt', '2.txt', '3.txt')
+        move_files('test2/', '1.txt', '2.txt', '3.txt', replace=True)
+        remove_files('test2/1.txt', 'test2/2.txt', 'test2/3.txt', 'test2')
+
+    def test_first_and_last(self) -> None:
+        touch('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
+        self.assertExists('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
+        self.assertEqual(first_file(), '.git')
+        self.assertEqual(first_file('test'), '__init__.py')
+        self.assertEqual(first_file('.', r'.*\.txt$'), '1.txt')
+        self.assertEqual(first_file('.', r'.*\.out$'), 'x.out')
+        self.assertEqual(last_file(), 'z.out')
+        self.assertEqual(last_file('test'), 'webtests.py')
+        self.assertEqual(last_file('.', r'.*\.txt$'), 'requirements.txt')
+        self.assertEqual(last_file('.', r'.*\.out$'), 'z.out')
+        remove_files('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
+
 
 
 if __name__ == '__main__':

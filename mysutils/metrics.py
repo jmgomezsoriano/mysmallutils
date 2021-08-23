@@ -4,6 +4,7 @@ from typing import List, Dict, TextIO
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score, precision_score, recall_score, \
     jaccard_score
 
+# MEASURES ATTRIBUTES
 SIMPLE_ACCURACY = 'simple_accuracy'
 BALANCED_ACCURACY = 'balanced_accuracy'
 MICRO_F1 = 'micro_f1'

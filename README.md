@@ -26,6 +26,9 @@ This module is divided into the following categories:
   * [Touch](#touch)
   * [Cat](#cat)
   * [Read file](#read-file)
+  * [Make directory](#make-directory)
+  * [Move files](#move-files)
+  * [First and last file](#first-and-last-file)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
   * [Tar](#tar)
@@ -37,6 +40,7 @@ This module is divided into the following categories:
 * [Services and Web](#services-and-web)
   * [Download a file](#download-a-file)
   * [Flask services](#flask-services)
+* [File unit tests](#unit-tests)
   
 ## Collections<a id="collections"></a>
 Some util functions for list, set or dict collections.
@@ -318,10 +322,16 @@ With the function exist_files() you can check if several files exist or not.
 Its usage is very simple, for example:
 
 ```python
-from mysutils.file import exist_files
+from mysutils.file import exist_files, not_exist_files, are_dir, not_are_dir
 
-# Returns True if all the files exist, otherwise False.
+# Returns True if all of the files exist, otherwise False.
 exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+# Return True if any of the files exist, if it exists at least one, then return False
+not_exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+# Returns True if all of the files are directories, otherwise False.
+are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+# Return True if any of the files are directories, otherwise False.
+not_are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 ```
 
 ### Count lines<a id="count-lines"></a> 
@@ -338,13 +348,15 @@ count_lines('text.txt.gz')
 ```
 
 ### Touch<a id="touch"></a>
-Create an empty file.
+Create several empty files.
 
 ```python
 from mysutils.file import touch
 
 # Create the text.txt file without content
 touch('text.txt')
+# Create several empty files
+touch('1.txt', '2.txt', '3.txt')
 ```
 
 ### Cat<a id="cat"></a>
@@ -378,6 +390,53 @@ lines = read_file('text.txt.gz')
 # Read the compressed file 'text.txt.gz' removing the newline character if it exists
 lines = read_file('text.txt.gz', False)
 ```
+
+### Make directory<a id="make-directory"></a>
+Create a directory but if it already exists, then do nothing.
+
+```python
+from mysutils.file import mkdir
+
+# Create the folder if not exists
+mkdir('new_folder')
+# Do nothing because the folder was already created.
+mkdir('new_folder')
+```
+
+### Move files<a id="move-files"></a>
+Move several files at once.
+
+```python
+from mysutils.file import move_files
+
+# Move several files to test/
+move_files('test/', '1.txt', '2.txt', '3.txt')
+# Create the folder test/ if it does not exist
+move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
+# Replace the files if already exists in test/
+move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
+```
+
+### First and last file<a id="first-and-last-file"></a>
+To obtain the first or last file of a folder.
+
+```python
+from mysutils.file import first_file, last_file
+
+# Return the first file in the current folder
+first_file()
+# Return the last file in the current folder
+last_file()
+# Return the first file in the 'test' folder
+first_file('test/')
+# Return the last file in the 'test' folder
+last_file('test/')
+# Return the first file in the 'test' folder that ends with .txt
+first_file('test/', r'.*\.txt$')
+# Return the last file in the 'test' folder that ends with .txt
+last_file('test/', r'.*\.txt$')
+```
+
 
 ## Compressing files<a id="compressing-files"></a>
 With this library there are two ways to compress files: single gzip files and tar files.
@@ -622,4 +681,20 @@ app = FastAPI()
 def my_service():
   url = endpoint('/api/fantastic')
   print(f'Executing service at {url}...')
+```
+
+## File unit tests<a id="unit-tests"></a>
+A small class that inherits from TestCase and have methods to assert the typical file options like exists or isdir.
+
+```python
+from mysutils import unittest
+from mysutils.file import touch, move_files
+
+class MyTestCase(unittest.FileTestCase):
+  # Check if some files exists and they have been moved successfully
+  def test_move_files(self) -> None:
+    touch('1.txt', '2.txt', '3.txt')
+    move_files('test/', '1.txt', '2.txt', '3.txt')
+    self.assertExists('test/1.txt', 'test/2.txt', 'test/3.txt')
+    self.assertNotExists('1.txt', '2.txt', '3.txt')
 ```

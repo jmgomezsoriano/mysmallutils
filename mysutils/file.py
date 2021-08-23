@@ -1,11 +1,14 @@
 import gzip
 import pickle
+import os
+import re
 from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
-from os import makedirs, remove, rmdir
+from os import makedirs, remove, rmdir, scandir
 from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile
 from sys import stdout
+from shutil import move
 from typing import Union, Optional, TextIO, Any, List
 
 from typing.io import IO
@@ -215,6 +218,42 @@ def exist_files(*files: Union[str, bytes]) -> bool:
     return True
 
 
+def not_exist_files(*files: Union[str, bytes]) -> bool:
+    """ Check if any of the files exist.
+
+    :param files: The list of file paths to check.
+    :return: True if any of the files exist. If exists at least one, then False.
+    """
+    for file in files:
+        if exists(file):
+            return False
+    return True
+
+
+def are_dir(*files: Union[str, bytes]) -> bool:
+    """ Check if a sequence of files are directories.
+
+    :param files: The list of file paths to check.
+    :return: True if all of the files are directories, otherwise False.
+    """
+    for file in files:
+        if not isdir(file):
+            return False
+    return True
+
+
+def not_are_dir(*files: Union[str, bytes]) -> bool:
+    """ Check if any of a sequence of files are directories.
+
+    :param files: The list of file paths to check.
+    :return: True if any of the files exist, otherwise False.
+    """
+    for file in files:
+        if isdir(file):
+            return False
+    return True
+
+
 def count_lines(filename: str) -> int:
     """ Calculate the number of lines in a file.
 
@@ -228,12 +267,13 @@ def count_lines(filename: str) -> int:
     return count
 
 
-def touch(filename: str) -> None:
-    """ Create an empty file.
+def touch(*files: str) -> None:
+    """ Create several empty files.
 
-    :param filename: The path to the file to create.
+    :param files: The list of file paths to create.
     """
-    open(filename, 'w').close()
+    for file in files:
+        open(file, 'w').close()
 
 
 def cat(filename: str, output: TextIO = stdout) -> None:
@@ -256,3 +296,50 @@ def read_file(filename: str, line_break: bool = True) -> List[str]:
     """
     with open_file(filename, 'rt') as file:
         return [line[:-1] if not line_break and line[-1] == '\n' else line for line in file]
+
+
+def mkdir(path: Union[str, bytes], mode: int = 0o777, dir_fd: int = None) -> None:
+    """ Create a directory ignoring if the file already exists.
+    :param path: The path to the directory.
+    :param mode: The mode argument is ignored on Windows. By default, 0o777.
+    :param dir_fd: If dir_fd is not None, it should be a file descriptor open to a directory,
+        and path should be relative; path will then be relative to that directory.
+        dir_fd may not be implemented on your platform.
+        If it is unavailable, using it will raise a NotImplementedError.
+    """
+    if not exists(path):
+        os.mkdir(path, mode, dir_fd=dir_fd)
+
+
+def move_files(dest: Union[str, bytes], *files: Union[str, bytes], force: bool = False, replace: bool = False) -> None:
+    """ Move several files at once.
+
+    :param dest: The destination folder.
+    :param files: The files to move.
+    :param force: If True, create the folder if it doesn't exist.
+    :param replace: if any of the files exist, replace them.
+    """
+    if force:
+        mkdir(dest)
+    for file in files:
+        if exists(join(dest, file)) and replace:
+            remove(join(dest, file))
+        move(file, dest)
+
+
+def first_file(folder: str = '.', filter: str = None) -> str:
+    """ Obtain the first file name ordered alphabetically from a folder. By default, it uses the current folder.
+    :param folder: The folder path with the files.
+    :param filter: A regular expression pattern to filter the files. By default, all files are taking into account.
+    :return: The first file name.
+    """
+    return sorted([file.name for file in scandir(folder) if not filter or re.match(filter, file.name)])[0]
+
+
+def last_file(folder: str = '.', filter: str = None) -> str:
+    """ Obtain the last file name ordered alphabetically from a folder. By default, it uses the current folder.
+    :param folder: The folder path with the files. By default, all files are taking into account.
+    :param filter: A regular expression pattern to filter the files.
+    :return: The last file name.
+    """
+    return sorted([file.name for file in scandir(folder) if not filter or re.match(filter, file.name)], reverse=True)[0]

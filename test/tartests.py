@@ -1,6 +1,6 @@
 import json
 import shutil
-import unittest
+from mysutils import unittest
 from os import mkdir
 from os.path import exists
 
@@ -28,7 +28,7 @@ def create_tar_files() -> None:
     create_tar('test.tar', 'test.json', 'test.json.gz')
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(unittest.FileTestCase):
     @staticmethod
     def remove_files() -> None:
         remove_files('test.tar.gz', 'test.tar.bz2', 'test.tar.xz', 'test.tar', 'test.json', 'test.json.gz',
@@ -129,9 +129,6 @@ class MyTestCase(unittest.TestCase):
         extract_tar('test.tar', 'data/', False, True)
         self.assertExists('data/test.json', 'data/test.json.gz')
         remove_files('data/test.json', 'data/test.json.gz', 'data')
-
-    def assertExists(self, *files: str) -> None:
-        self.assertTrue(exist_files(*files))
 
 
 if __name__ == '__main__':
