@@ -258,9 +258,13 @@ class FileTestCase(unittest.FileTestCase):
         self.assertRegex(
             output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passes=300, lemma=True, stopw=False),
             r'^model/[0-9]{8}-[0-9]{6}-svm-0.7-300-lemma.tar.gz$')
-        self.assertRegex(
+        self.assertEqual(
             output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False),
-            r'^model/svm-0.7-300-lemma.tar.gz$')
+            'model/svm-0.7-300-lemma.tar.gz')
+        self.assertEqual(
+            output_file_path('model', '.tar.gz', False, method=None, k=0.7, passes=300, lemma=True, stopw=False),
+            'model/0.7-300-lemma.tar.gz'
+        )
 
 
 if __name__ == '__main__':

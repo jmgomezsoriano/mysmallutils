@@ -386,8 +386,13 @@ def output_file_path(folder: str = '.', suffix: str = '', timestamp: bool = True
       the name. If it is a bool value and it is True, then the name of the argument is add to the file name.
     :return: The full path to the file to create.
     """
-    name = [(name if value else '') if isinstance(value, bool) else str(value) for name, value in kwargs.items()]
+    name = []
     if timestamp:
-        name.insert(0, datetime.now().strftime('%Y%m%d-%H%M%S'))
+        name.append(datetime.now().strftime('%Y%m%d-%H%M%S'))
+    for param, value in kwargs.items():
+        if isinstance(value, bool):
+            name += [param] if value else []
+        elif value:
+            name.append(str(value))
 
-    return join(folder, f'{"-".join([part for part in name if part])}{suffix}')
+    return join(folder, f'{"-".join(name)}{suffix}')
