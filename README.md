@@ -29,6 +29,7 @@ This module is divided into the following categories:
   * [Make directory](#make-directory)
   * [Move files](#move-files)
   * [First and last file](#first-and-last-file)
+  * [Generate output file paths](#generate-output-file-paths)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
   * [Tar](#tar)
@@ -451,7 +452,25 @@ first_file('test/', r'.*\.txt$')
 last_file('test/', r'.*\.txt$')
 ```
 
+### Generate output file paths<a id="generate-output-file-paths"></a>
+Sometimes it is useful to generate a file name taken into account some parameters and the current timestamp.
+This function generates this file paths.
 
+```python
+from mysutils.file import output_file_path
+
+# Generate a file name in the current folder with the timestamp
+file_path = output_file_path()
+# Generate a file name in the 'model' folder with the timestamp
+file_path = output_file_path('model')
+# Generate a file name in the 'model' folder with the timestamp and .tar.gz as suffix.
+file_path = output_file_path('model', '.tar.gz')
+# Generate a file name in the 'model' folder with the timestamp, followed by the string "-svm-0.7-300-lemma",
+# and .tar.gz as suffix.
+filepath = output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passes=300, lemma=True, stopw=False)
+# Generate the same as previous but without timestamp
+output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False)
+```
 ## Compressing files<a id="compressing-files"></a>
 With this library there are two ways to compress files: single gzip files and tar files.
 

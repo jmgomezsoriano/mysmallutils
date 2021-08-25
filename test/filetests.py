@@ -6,7 +6,7 @@ from mysutils.command import execute_command
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdir, move_files, \
-    first_file, last_file, removable_files
+    first_file, last_file, removable_files, output_file_path
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -250,6 +250,17 @@ class FileTestCase(unittest.FileTestCase):
         with removable_files('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out'):
             self.assertExists('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
         self.assertNotExists('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
+
+    def test_output_file_path(self) -> None:
+        self.assertRegex(output_file_path(), r'^./[0-9]{8}-[0-9]{6}$')
+        self.assertRegex(output_file_path('model'), r'^model/[0-9]{8}-[0-9]{6}$')
+        self.assertRegex(output_file_path('model', '.tar.gz'), r'^model/[0-9]{8}-[0-9]{6}.tar.gz$')
+        self.assertRegex(
+            output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passes=300, lemma=True, stopw=False),
+            r'^model/[0-9]{8}-[0-9]{6}-svm-0.7-300-lemma.tar.gz$')
+        self.assertRegex(
+            output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False),
+            r'^model/svm-0.7-300-lemma.tar.gz$')
 
 
 if __name__ == '__main__':

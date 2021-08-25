@@ -2,6 +2,7 @@ import gzip
 import pickle
 import os
 import re
+from datetime import datetime
 from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
 from os import makedirs, remove, rmdir, scandir
@@ -374,3 +375,19 @@ def removable_files(*files: Union[str, bytes], ignore_errors: bool = False) -> o
     :return: A object with enter and exit methods.
     """
     return _Removable(*files, ignore_errors=ignore_errors)
+
+
+def output_file_path(folder: str = '.', suffix: str = '', timestamp: bool = True, **kwargs) -> str:
+    """ Build a file path in the specified folder based on the current timestamp and several attributes.
+    :param folder: The directory where the file will be located.
+    :param timestamp: If you want to add the timestamp to the file name.
+    :param suffix: If suffix file name.
+    :param kwargs: Extra arguments to form the name. If it is a str, float or int value, then the value will be add to
+      the name. If it is a bool value and it is True, then the name of the argument is add to the file name.
+    :return: The full path to the file to create.
+    """
+    name = [(name if value else '') if isinstance(value, bool) else str(value) for name, value in kwargs.items()]
+    if timestamp:
+        name.insert(0, datetime.now().strftime('%Y%m%d-%H%M%S'))
+
+    return join(folder, f'{"-".join([part for part in name if part])}{suffix}')
