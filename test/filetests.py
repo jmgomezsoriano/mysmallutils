@@ -262,8 +262,8 @@ class FileTestCase(unittest.FileTestCase):
             output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False),
             'model/svm-0.7-300-lemma.tar.gz')
         self.assertEqual(
-            output_file_path('model', '.tar.gz', False, method=None, k=0.7, passes=300, lemma=True, stopw=False),
-            'model/0.7-300-lemma.tar.gz'
+            output_file_path('model', '.tar.gz', False, method=None, k=0.7, passes='', lemma=False, stopw=True),
+            'model/0.7-stopw.tar.gz'
         )
 
 
