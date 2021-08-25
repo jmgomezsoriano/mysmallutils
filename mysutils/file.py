@@ -343,3 +343,34 @@ def last_file(folder: str = '.', filter: str = None) -> str:
     :return: The last file name.
     """
     return sorted([file.name for file in scandir(folder) if not filter or re.match(filter, file.name)], reverse=True)[0]
+
+
+class _Removable(object):
+    """ Hidden class to include enter and exit methods for removable files. """
+    def __init__(self, *files: Union[str, bytes], ignore_errors: bool = False):
+        self.files = files
+        self.ignore_errors = ignore_errors
+
+    def __enter__(self) -> None:
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        remove_files(*self.files, ignore_errors=self.ignore_errors)
+
+
+def removable_files(*files: Union[str, bytes], ignore_errors: bool = False) -> object:
+    """ This function is used with "with" python command. As following:
+
+    .. code-block:: python
+
+        from mysutils.file import removable_files, exist_files
+        # These files will be removed when the with ends
+        with removable_files('test2.json', 'data/test1.json', 'data/'):
+            exist_files('test2.json', 'data/test1.json', 'data/')  # Returns True
+        exist_files('test2.json', 'data/test1.json', 'data/')  # Returns False
+
+    :param files: The files to remove al the end.
+    :param ignore_errors: If True, ignore the errors, for example the file not found error.
+    :return: A object with enter and exit methods.
+    """
+    return _Removable(*files, ignore_errors=ignore_errors)

@@ -317,6 +317,20 @@ remove_files('test2.json', 'data/test1.json', 'data/')
 If the file to remove is a directory, it has to be empty. If you want to remove directories with subdirectories or 
 files, use shutil.rmtree().
 
+Also,you can use removable_files() to remove files after their use:
+
+```python
+from mysutils.file import removable_files
+
+# These files will be removed when the with ends
+with removable_files('test2.json', 'data/test1.json', 'data/'):
+    pass
+
+# These files will be removed when the with ends, ignoring possible errors
+with removable_files('test2.json', 'data/test1.json', 'data/', ignore_errors=True):
+    pass
+```
+
 ### Check if exists several files<a id="check-if-exists-several-files"></a>
 With the function exist_files() you can check if several files exist or not.
 Its usage is very simple, for example:
@@ -536,6 +550,30 @@ extract_tar('test.tar', 'data/', True)
 
 # Show a progress bar
 extract_tar('test.tar', 'data/', verbose=True)
+```
+
+## Open and load files inside a tar archive<a id="open-and-load-files-inside-a-tar-archive"></a>
+With these functions it is possible to open a stream to or load a yaml, json or pickle of a specific file inside a tar 
+archive.
+
+```python
+from mysutils.tar import open_tar_file, load_tar_json, load_tar_pickle
+from mysutils.yaml import load_tar_yaml
+import json
+
+# Open the file test.txt from test.tar.gz and print its content 
+with open_tar_file('test.tar.gz', 'test.txt') as file:
+    for line in file:
+      print(line, end='')
+
+# Load a json file inside a tar archive, even if it is also compressed
+d = load_tar_json('test.tar.gz', 'test.json.gz')
+
+# Load a pickle file inside a tar archive, even if it is also compressed
+o = load_tar_pickle('test.tar.gz', 'test.pkl')
+
+# Load a yaml file inside a tar archive, even if it is also compressed
+d = load_tar_yaml('test.tar.gz', 'test.yaml.gz')
 ```
 
 ## External commands<a id="external-commands"></a>
