@@ -352,7 +352,8 @@ def first_file(folder: str = '.', filter: str = None) -> str:
     :param filter: A regular expression pattern to filter the files. By default, all files are taking into account.
     :return: The first file name.
     """
-    return list_dir(folder, filter)[0]
+    files = list_dir(folder, filter)
+    return files[0] if files else []
 
 
 def last_file(folder: str = '.', filter: str = None) -> str:
@@ -361,7 +362,8 @@ def last_file(folder: str = '.', filter: str = None) -> str:
     :param filter: A regular expression pattern to filter the files.
     :return: The last file name.
     """
-    return list_dir(folder, filter, True)[0]
+    files = list_dir(folder, filter, True)
+    return files[0] if files else []
 
 
 class _Removable(object):
