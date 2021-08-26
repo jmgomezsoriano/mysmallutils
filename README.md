@@ -28,7 +28,7 @@ This module is divided into the following categories:
   * [Read file](#read-file)
   * [Make directory](#make-directory)
   * [Move files](#move-files)
-  * [First and last file](#first-and-last-file)
+  * [List files, or get the first and last file](#list-files-or-get-the-first-and-last-file)
   * [Generate output file paths](#generate-output-file-paths)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
@@ -306,13 +306,17 @@ copy_files('data/', 'file1.txt', 'file2.txt', force=False)
 ```
 
 ### Remove files<a id="remove-files"></a>
-
 You can also remove several files and empty folders with just one sentence, using the remove_files() function:
 
 ```python
 from mysutils.file import remove_files
 
+# Remove three files at once.
 remove_files('test2.json', 'data/test1.json', 'data/')
+# Remove three files at once ignoring if any does not exist.
+remove_files('test2.json', 'data/test1.json', 'data/', ignore_errors=True)
+# Remove three files or folders at once, if the folder contains more files, also will be removed.
+remove_files('test2.json', 'data/test1.json', 'data/', recursive=True)
 ```
 
 If the file to remove is a directory, it has to be empty. If you want to remove directories with subdirectories or 
@@ -329,6 +333,10 @@ with removable_files('test2.json', 'data/test1.json', 'data/'):
 
 # These files will be removed when the with ends, ignoring possible errors
 with removable_files('test2.json', 'data/test1.json', 'data/', ignore_errors=True):
+    pass
+
+# These files will be removed when the with ends, if any folder contains more files, also will be removed
+with removable_files('test2.json', 'data/test1.json', 'data/', recursive=True):
     pass
 ```
 
@@ -407,15 +415,17 @@ lines = read_file('text.txt.gz', False)
 ```
 
 ### Make directory<a id="make-directory"></a>
-Create a directory but if it already exists, then do nothing.
+Create one or more directories but if them already exist, then do nothing.
 
 ```python
-from mysutils.file import mkdir
+from mysutils.file import mkdirs
 
 # Create the folder if not exists
-mkdir('new_folder')
-# Do nothing because the folder was already created.
-mkdir('new_folder')
+mkdirs('new_folder')
+# Do nothing because the folder was already created
+mkdirs('new_folder')
+# Create several folders at once
+mkdirs('folder1', 'folder2', 'folder3')
 ```
 
 ### Move files<a id="move-files"></a>
@@ -432,23 +442,32 @@ move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
 move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
 ```
 
-### First and last file<a id="first-and-last-file"></a>
-To obtain the first or last file of a folder.
+### List files, or get the first and last file<a id="#list-files-or-get-the-first-and-last-file"></a>
+Functions to list a folder and obtain the first or last file of a folder.
 
 ```python
-from mysutils.file import first_file, last_file
+from mysutils.file import first_file, last_file, list_dir
 
-# Return the first file in the current folder
+# Return a sorted list of files of the current directory.
+list_dir()
+# Return a sorted list of files of the 'test' directory.
+list_dir('test')
+# # Return the list of files thant end with '.txt' of the 'test' directory.
+list_dir('test', '.*\.txt$')
+# Return the same list but with the inverted order
+list_dir('test', '.*\.txt$', reverse=True)
+
+# Return the path of the first file in the current folder
 first_file()
-# Return the last file in the current folder
+# Return the path of the last file in the current folder
 last_file()
-# Return the first file in the 'test' folder
+# Return the path of the first file in the 'test' folder
 first_file('test/')
-# Return the last file in the 'test' folder
+# Return the path of the last file in the 'test' folder
 last_file('test/')
-# Return the first file in the 'test' folder that ends with .txt
+# Return the path of the first file in the 'test' folder that ends with .txt
 first_file('test/', r'.*\.txt$')
-# Return the last file in the 'test' folder that ends with .txt
+# Return the path of the last file in the 'test' folder that ends with .txt
 last_file('test/', r'.*\.txt$')
 ```
 

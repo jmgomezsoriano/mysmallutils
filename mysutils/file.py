@@ -7,7 +7,7 @@ from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
 from os import makedirs, remove, rmdir, scandir
 from os.path import exists, dirname, join, basename, isdir
-from shutil import copyfile
+from shutil import copyfile, rmtree
 from sys import stdout
 from shutil import move
 from typing import Union, Optional, TextIO, Any, List
@@ -182,7 +182,7 @@ def gzip_compress(input_file: str, output_file: str) -> None:
                 writer.write(chunk)
 
 
-def remove_files(*files: str, ignore_errors: bool = False) -> None:
+def remove_files(*files: str, ignore_errors: bool = False, recursive: bool = False) -> None:
     """ Remove several files and empty directories at once.
 
     :param files: The list of files or empty directories to remove. To remove directories with files or subdirectories,
@@ -191,7 +191,10 @@ def remove_files(*files: str, ignore_errors: bool = False) -> None:
     """
     for file in files:
         if isdir(file):
-            rmdir(file)
+            if recursive:
+                rmtree(file)
+            else:
+                rmdir(file)
         elif not ignore_errors or exists(file):
             remove(file)
 
@@ -299,17 +302,18 @@ def read_file(filename: str, line_break: bool = True) -> List[str]:
         return [line[:-1] if not line_break and line[-1] == '\n' else line for line in file]
 
 
-def mkdir(path: Union[str, bytes], mode: int = 0o777, dir_fd: int = None) -> None:
-    """ Create a directory ignoring if the file already exists.
-    :param path: The path to the directory.
+def mkdirs(*paths: Union[str, bytes], mode: int = 0o777, dir_fd: int = None) -> None:
+    """ Create one or several directories ignoring the error if the file or folder already exists.
+    :param paths: The list of path to the directories.
     :param mode: The mode argument is ignored on Windows. By default, 0o777.
     :param dir_fd: If dir_fd is not None, it should be a file descriptor open to a directory,
         and path should be relative; path will then be relative to that directory.
         dir_fd may not be implemented on your platform.
         If it is unavailable, using it will raise a NotImplementedError.
     """
-    if not exists(path):
-        os.mkdir(path, mode, dir_fd=dir_fd)
+    for path in paths:
+        if not exists(path):
+            os.mkdir(path, mode, dir_fd=dir_fd)
 
 
 def move_files(dest: Union[str, bytes], *files: Union[str, bytes], force: bool = False, replace: bool = False) -> None:
@@ -321,11 +325,25 @@ def move_files(dest: Union[str, bytes], *files: Union[str, bytes], force: bool =
     :param replace: if any of the files exist, replace them.
     """
     if force:
-        mkdir(dest)
+        mkdirs(dest)
     for file in files:
         if exists(join(dest, file)) and replace:
             remove(join(dest, file))
         move(file, dest)
+
+
+def list_dir(folder: str = '.', filter: str = None, reverse: bool = False) -> List[str]:
+    """ List a directory and return a list with all file path of that directory that satisfy the given filter,
+        ordered alphabetically.
+
+    :param folder: The folder to list.
+    :param filter: The filter to apply.
+    :param reverse: If True, the list is inverted sorted. By default, False.
+    :return: The list with the path to each directory.
+    """
+    return sorted([
+        join(folder, file.name) for file in scandir(folder) if not filter or re.match(filter, file.name)
+    ], reverse=reverse)
 
 
 def first_file(folder: str = '.', filter: str = None) -> str:
@@ -334,7 +352,7 @@ def first_file(folder: str = '.', filter: str = None) -> str:
     :param filter: A regular expression pattern to filter the files. By default, all files are taking into account.
     :return: The first file name.
     """
-    return sorted([file.name for file in scandir(folder) if not filter or re.match(filter, file.name)])[0]
+    return list_dir(folder, filter)[0]
 
 
 def last_file(folder: str = '.', filter: str = None) -> str:
@@ -343,23 +361,24 @@ def last_file(folder: str = '.', filter: str = None) -> str:
     :param filter: A regular expression pattern to filter the files.
     :return: The last file name.
     """
-    return sorted([file.name for file in scandir(folder) if not filter or re.match(filter, file.name)], reverse=True)[0]
+    return list_dir(folder, filter, True)[0]
 
 
 class _Removable(object):
     """ Hidden class to include enter and exit methods for removable files. """
-    def __init__(self, *files: Union[str, bytes], ignore_errors: bool = False):
+    def __init__(self, *files: Union[str, bytes], ignore_errors: bool = False, recursive: bool = False):
         self.files = files
         self.ignore_errors = ignore_errors
+        self.recursive = recursive
 
     def __enter__(self) -> None:
         pass
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        remove_files(*self.files, ignore_errors=self.ignore_errors)
+        remove_files(*self.files, ignore_errors=self.ignore_errors, recursive=self.recursive)
 
 
-def removable_files(*files: Union[str, bytes], ignore_errors: bool = False) -> object:
+def removable_files(*files: Union[str, bytes], ignore_errors: bool = False, recursive: bool = False) -> object:
     """ This function is used with "with" python command. As following:
 
     .. code-block:: python
@@ -374,7 +393,7 @@ def removable_files(*files: Union[str, bytes], ignore_errors: bool = False) -> o
     :param ignore_errors: If True, ignore the errors, for example the file not found error.
     :return: A object with enter and exit methods.
     """
-    return _Removable(*files, ignore_errors=ignore_errors)
+    return _Removable(*files, ignore_errors=ignore_errors, recursive=recursive)
 
 
 def output_file_path(folder: str = '.', suffix: str = '', timestamp: bool = True, **kwargs) -> str:
