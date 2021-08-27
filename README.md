@@ -624,12 +624,13 @@ from mysutils.command import execute_command
 
 # Execute the Unix shell command 'ls data/'
 std, err = execute_command(['ls', 'data/'])
-
 # Print the standard output
 print(std)
-
 # Print the error output
 print(err)
+
+# Also you can introduce an unique string
+std, err = execute_command('echo -n "This is a test"')
 ```
 
 ## Configuration files<a id="configuration-files"></a>
