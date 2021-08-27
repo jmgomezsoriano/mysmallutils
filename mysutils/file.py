@@ -353,7 +353,7 @@ def first_file(folder: str = '.', filter: str = None) -> str:
     :return: The first file name.
     """
     files = list_dir(folder, filter)
-    return files[0] if files else []
+    return files[0] if files else None
 
 
 def last_file(folder: str = '.', filter: str = None) -> str:
@@ -363,7 +363,7 @@ def last_file(folder: str = '.', filter: str = None) -> str:
     :return: The last file name.
     """
     files = list_dir(folder, filter, True)
-    return files[0] if files else []
+    return files[0] if files else None
 
 
 class _Removable(object):
