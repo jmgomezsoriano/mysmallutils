@@ -40,7 +40,8 @@ This module is divided into the following categories:
 * Obtaining metrics
 * [Services and Web](#services-and-web)
   * [Download a file](#download-a-file)
-  * [Flask services](#flask-services)
+  * [Services](#services)
+  * [JSON post](#json-post)
 * [File unit tests](#unit-tests)
   
 ## Collections<a id="collections"></a>
@@ -739,25 +740,25 @@ from mysutils.web import download
 download('<url-to-download>', 'dest/file.txt')
 ```
 
-### Flask services<a id="flask-services"></a>
+### Services<a id="services"></a>
 In the contexts of a web service, you can need the base real final url to a service, that means, 
 the protocol, IP or hostname and path to the service. 
 You can obtain this with endpoint() function.
 
 An example of how to use:
 
+TO DO
+
+### JSON post<a id="json-post"></a>
+A very easy way to send a dictionary by means to http post, ot a json service.
+
 ```python
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from mysutils.service import endpoint
+from mysutils.request import json_post
 
-app = FastAPI()
-
-@app.getº('/api/fantastic', response_class=HTMLResponse)
-def my_service():
-  url = endpoint('/api/fantastic')
-  print(f'Executing service at {url}...')
+# Send the dictionary '{"msg": "Hello world!"}' to the service with that url 
+json_post('https://postman-echo.com/post', {"msg": "Hello world!"})
 ```
+
 
 ## File unit tests<a id="unit-tests"></a>
 A small class that inherits from TestCase and have methods to assert the typical file options like exists or isdir.
