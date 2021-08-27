@@ -1,5 +1,5 @@
 from json import dumps, loads
-from typing import Tuple
+from typing import Union
 
 try:
     from requests import post, RequestException
@@ -9,7 +9,7 @@ except ModuleNotFoundError as e:
                               'pip install requests~=2.25.1')
 
 
-def json_post(host: str, msg: Tuple[list, dict, str]) -> Tuple[list, dict, str]:
+def json_post(host: str, msg: Union[list, dict, str]) -> Union[list, dict, str]:
     """ Makes a http json post.
     :param host: The host.
     :param msg: Object to send to the server.
