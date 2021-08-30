@@ -3,7 +3,6 @@ from os.path import exists
 from threading import Thread, Event
 from typing import Callable, List
 
-
 try:
     import git
 except ImportError:
@@ -38,9 +37,10 @@ class GitMonitor(object):
         self.__thread = None
         self.__event = Event()
 
-    def monitor(self, update: bool = True) -> None:
+    def monitor(self, update: bool = True, **kwargs) -> None:
         """ Start the monitor.
         :param update: If the local repository is updated after to check changes.
+        :param kwargs: Extra arguments to pass to the function.
         """
         force = self.force
         if exists(self.folder):
@@ -54,7 +54,7 @@ class GitMonitor(object):
         while not self.__stop:
             changes = self.__changes(repo)
             if changes or force:
-                self.func(*changes)
+                self.func(*changes, **kwargs)
                 if update:
                     repo.git.pull()
                     updated = True
@@ -79,12 +79,12 @@ class GitMonitor(object):
         diff = fetch.commit.diff()
         return [d.a_path for d in diff]
 
-    def start(self, update: bool = True) -> None:
+    def start(self, update: bool = True, **kwargs) -> None:
         """ Start the monitor as a thread.
 
         :param update: If the local repository is updated after to check changes.
         """
-        self.__thread = Thread(target=self.monitor, args=(update,))
+        self.__thread = Thread(target=self.monitor, args=(update,), kwargs=kwargs)
         self.__thread.start()
 
     def stop(self):

@@ -40,7 +40,7 @@ setuptools.setup(
         'prepublish': PrepublishCommand,
     },
     name='mysmallutils',
-    version='0.1.7',
+    version='0.1.9',
     url='https://github.com/jmgomezsoriano/mysmallutils',
     license='LGPL2',
     author='José Manuel Gómez Soriano',
