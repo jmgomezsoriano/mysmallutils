@@ -48,16 +48,18 @@ class GitMonitor(object):
         else:
             force = True
             repo = git.Repo.clone_from(self.repository, self.folder)
-        if self.branch and repo.active_branch.name != self.branch:
+        if not self.branch:
+            self.branch = repo.active_branch.name
+        elif repo.active_branch.name != self.branch:
             repo.git.checkout(self.branch)
         updated = True
         while not self.__stop:
             changes = self.__changes(repo)
             if changes or force:
-                self.func(*changes, **kwargs)
                 if update:
                     repo.git.pull()
                     updated = True
+                self.func(*changes, **kwargs)
             if not self.interval:
                 break
             if updated:
