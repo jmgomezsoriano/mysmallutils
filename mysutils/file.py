@@ -5,17 +5,18 @@ import re
 from datetime import datetime
 from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
-from os import makedirs, remove, rmdir, scandir
+from os import makedirs, remove, rmdir, scandir, PathLike
 from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile, rmtree
 from sys import stdout
 from shutil import move
-from typing import Union, Optional, TextIO, Any, List
+from tempfile import mkdtemp, mktemp
+from typing import Union, Optional, TextIO, Any, List, Tuple
 
 from typing.io import IO
 
 
-def open_file(filename: Union[str, bytes, int],
+def open_file(filename: Union[PathLike, str, bytes],
               mode: str = 'rt',
               buffering: int = DEFAULT_BUFFER_SIZE,
               encoding: Optional[str] = None,
@@ -61,7 +62,7 @@ def open_file(filename: Union[str, bytes, int],
     return open(filename, mode, buffering, encoding, errors, newline, close_fd, opener)
 
 
-def force_open(filename: Union[str, bytes, int],
+def force_open(filename: Union[PathLike, str, bytes],
                mode: str = 'rt',
                buffering: int = DEFAULT_BUFFER_SIZE,
                encoding: Optional[str] = None,
@@ -106,7 +107,7 @@ def force_open(filename: Union[str, bytes, int],
     return open_file(filename, mode, buffering, encoding, errors, newline, close_fd, opener=opener)
 
 
-def copy_files(dest: str, *files: str, force: bool = True) -> None:
+def copy_files(dest: Union[PathLike, str, bytes], *files: Union[PathLike, str, bytes], force: bool = True) -> None:
     """ Copy a list of files into destination folder.
     :param dest: The destination folder.
     :param files: The list of files to copy.
@@ -118,7 +119,7 @@ def copy_files(dest: str, *files: str, force: bool = True) -> None:
         copyfile(file, join(dest, basename(file)))
 
 
-def save_json(obj: Any, filename: str, force: bool = False) -> None:
+def save_json(obj: Any, filename: Union[PathLike, str, bytes], force: bool = False) -> None:
     """ Save an object into a json file.
     :param obj: The object to save.
     :param filename: The path to the output file.
@@ -128,7 +129,7 @@ def save_json(obj: Any, filename: str, force: bool = False) -> None:
         dump(obj, file, indent=2)
 
 
-def load_json(filename: str) -> Any:
+def load_json(filename: Union[PathLike, str, bytes]) -> Any:
     """ Load a json file and return a object with its data.
     :param filename: The json file.
     :return: An object with the json data.
@@ -137,7 +138,7 @@ def load_json(filename: str) -> Any:
         return load(file)
 
 
-def save_pickle(obj: object, filename: str, force: bool = False) -> None:
+def save_pickle(obj: object, filename: Union[PathLike, str, bytes], force: bool = False) -> None:
     """ Save an object into a pickle file.
     :param obj: The object to save.
     :param filename: The path to the output file.
@@ -147,7 +148,7 @@ def save_pickle(obj: object, filename: str, force: bool = False) -> None:
         pickle.dump(obj, file)
 
 
-def load_pickle(filename: str) -> Any:
+def load_pickle(filename: Union[PathLike, str, bytes]) -> Any:
     """ Load an object from pickle file.
     :param filename: The pickle file path.
     :return: An object with the pickle file data.
@@ -156,7 +157,7 @@ def load_pickle(filename: str) -> Any:
         return pickle.load(file)
 
 
-def gzip_decompress(input_file: str, output_file: str) -> None:
+def gzip_decompress(input_file: Union[PathLike, str, bytes], output_file: Union[PathLike, str, bytes]) -> None:
     """ Decompress a file using gzip compression.
     :param input_file: The file to compress.
     :param output_file: The compressed file with all the information of the input file.
@@ -169,7 +170,7 @@ def gzip_decompress(input_file: str, output_file: str) -> None:
                 writer.write(chunk)
 
 
-def gzip_compress(input_file: str, output_file: str) -> None:
+def gzip_compress(input_file: Union[PathLike, str, bytes], output_file: Union[PathLike, str, bytes]) -> None:
     """ Compress a file using gzip compression.
     :param input_file: The file to compress.
     :param output_file: The compressed file with all the information of the input file.
@@ -182,7 +183,7 @@ def gzip_compress(input_file: str, output_file: str) -> None:
                 writer.write(chunk)
 
 
-def remove_files(*files: str, ignore_errors: bool = False, recursive: bool = False) -> None:
+def remove_files(*files: Union[PathLike, str, bytes], ignore_errors: bool = False, recursive: bool = False) -> None:
     """ Remove several files and empty directories at once.
 
     :param files: The list of files or empty directories to remove. To remove directories with files or subdirectories,
@@ -199,7 +200,7 @@ def remove_files(*files: str, ignore_errors: bool = False, recursive: bool = Fal
             remove(file)
 
 
-def first_line(filename: str) -> str:
+def first_line(filename: Union[PathLike, str, bytes]) -> str:
     """ Read the first line of a file removing the final \n if it exists.
 
     :param filename: The filename to read.
@@ -210,7 +211,7 @@ def first_line(filename: str) -> str:
         return line[:-1] if line.endswith('\n') else line
 
 
-def exist_files(*files: Union[str, bytes]) -> bool:
+def exist_files(*files: Union[PathLike, str, bytes]) -> bool:
     """ Check if a sequence of files exist.
 
     :param files: The list of file paths to check.
@@ -222,7 +223,7 @@ def exist_files(*files: Union[str, bytes]) -> bool:
     return True
 
 
-def not_exist_files(*files: Union[str, bytes]) -> bool:
+def not_exist_files(*files: Union[PathLike, str, bytes]) -> bool:
     """ Check if any of the files exist.
 
     :param files: The list of file paths to check.
@@ -234,7 +235,7 @@ def not_exist_files(*files: Union[str, bytes]) -> bool:
     return True
 
 
-def are_dir(*files: Union[str, bytes]) -> bool:
+def are_dir(*files: Union[PathLike, str, bytes]) -> bool:
     """ Check if a sequence of files are directories.
 
     :param files: The list of file paths to check.
@@ -246,7 +247,7 @@ def are_dir(*files: Union[str, bytes]) -> bool:
     return True
 
 
-def not_are_dir(*files: Union[str, bytes]) -> bool:
+def not_are_dir(*files: Union[PathLike, str, bytes]) -> bool:
     """ Check if any of a sequence of files are directories.
 
     :param files: The list of file paths to check.
@@ -258,7 +259,7 @@ def not_are_dir(*files: Union[str, bytes]) -> bool:
     return True
 
 
-def count_lines(filename: str) -> int:
+def count_lines(filename: Union[PathLike, str, bytes]) -> int:
     """ Calculate the number of lines in a file.
 
     :param filename: The filename to calculate its size.
@@ -271,7 +272,7 @@ def count_lines(filename: str) -> int:
     return count
 
 
-def touch(*files: str) -> None:
+def touch(*files: Union[PathLike, str, bytes]) -> None:
     """ Create several empty files.
 
     :param files: The list of file paths to create.
@@ -280,7 +281,7 @@ def touch(*files: str) -> None:
         open(file, 'w').close()
 
 
-def cat(filename: str, output: TextIO = stdout) -> None:
+def cat(filename: Union[PathLike, str, bytes], output: TextIO = stdout) -> None:
     """ Print a file content.
 
     :param filename: The path to the file. If the file name ends with ".gz", this function decompressed it to print.
@@ -291,7 +292,7 @@ def cat(filename: str, output: TextIO = stdout) -> None:
             print(line, end='', file=output)
 
 
-def read_file(filename: str, line_break: bool = True) -> List[str]:
+def read_file(filename: Union[PathLike, str, bytes], line_break: bool = True) -> List[str]:
     """ Read a file (compressed with gzip or not) and return in a list its content, each line in a list element.
 
     :param filename: The path to the file. If the file name ends with ".gz", this function decompressed it first.
@@ -302,7 +303,7 @@ def read_file(filename: str, line_break: bool = True) -> List[str]:
         return [line[:-1] if not line_break and line[-1] == '\n' else line for line in file]
 
 
-def mkdirs(*paths: Union[str, bytes], mode: int = 0o777, dir_fd: int = None) -> None:
+def mkdirs(*paths: Union[PathLike, str, bytes], mode: int = 0o777, dir_fd: int = None) -> None:
     """ Create one or several directories ignoring the error if the file or folder already exists.
     :param paths: The list of path to the directories.
     :param mode: The mode argument is ignored on Windows. By default, 0o777.
@@ -316,7 +317,8 @@ def mkdirs(*paths: Union[str, bytes], mode: int = 0o777, dir_fd: int = None) -> 
             os.mkdir(path, mode, dir_fd=dir_fd)
 
 
-def move_files(dest: Union[str, bytes], *files: Union[str, bytes], force: bool = False, replace: bool = False) -> None:
+def move_files(dest: Union[PathLike, str, bytes], *files: Union[PathLike, str, bytes],
+               force: bool = False, replace: bool = False) -> None:
     """ Move several files at once.
 
     :param dest: The destination folder.
@@ -332,7 +334,7 @@ def move_files(dest: Union[str, bytes], *files: Union[str, bytes], force: bool =
         move(file, dest)
 
 
-def list_dir(folder: str = '.', filter: str = None, reverse: bool = False) -> List[str]:
+def list_dir(folder: Union[PathLike, str, bytes] = '.', filter: str = None, reverse: bool = False) -> List[str]:
     """ List a directory and return a list with all file path of that directory that satisfy the given filter,
         ordered alphabetically.
 
@@ -346,7 +348,7 @@ def list_dir(folder: str = '.', filter: str = None, reverse: bool = False) -> Li
     ], reverse=reverse)
 
 
-def first_file(folder: str = '.', filter: str = None) -> str:
+def first_file(folder: Union[PathLike, str, bytes] = '.', filter: str = None) -> str:
     """ Obtain the first file name ordered alphabetically from a folder. By default, it uses the current folder.
     :param folder: The folder path with the files.
     :param filter: A regular expression pattern to filter the files. By default, all files are taking into account.
@@ -356,7 +358,7 @@ def first_file(folder: str = '.', filter: str = None) -> str:
     return files[0] if files else None
 
 
-def last_file(folder: str = '.', filter: str = None) -> str:
+def last_file(folder: Union[PathLike, str, bytes] = '.', filter: str = None) -> str:
     """ Obtain the last file name ordered alphabetically from a folder. By default, it uses the current folder.
     :param folder: The folder path with the files. By default, all files are taking into account.
     :param filter: A regular expression pattern to filter the files.
@@ -366,21 +368,39 @@ def last_file(folder: str = '.', filter: str = None) -> str:
     return files[0] if files else None
 
 
-class _Removable(object):
-    """ Hidden class to include enter and exit methods for removable files. """
-    def __init__(self, *files: Union[str, bytes], ignore_errors: bool = False, recursive: bool = False):
-        self.files = files
-        self.ignore_errors = ignore_errors
-        self.recursive = recursive
+class Removable(PathLike):
+    """ Class to include enter and exit methods for removable files. """
+    @property
+    def files(self) -> Tuple[Union[str, bytes]]:
+        return self.__files
+
+    @property
+    def ignore_errors(self) -> bool:
+        return self.__ignore_errors
+
+    @property
+    def recursive(self) -> bool:
+        return self.__recursive
+
+    def __init__(self, *files: Union[PathLike, str, bytes], ignore_errors: bool = False, recursive: bool = False):
+        self.__files = files
+        self.__ignore_errors = ignore_errors
+        self.__recursive = recursive
 
     def __enter__(self) -> None:
-        pass
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        remove_files(*self.files, ignore_errors=self.ignore_errors, recursive=self.recursive)
+        remove_files(*self.__files, ignore_errors=self.__ignore_errors, recursive=self.__recursive)
+
+    def __fspath__(self):
+        return self.__files[0]
+
+    def __repr__(self) -> str:
+        return str(self.__files)
 
 
-def removable_files(*files: Union[str, bytes], ignore_errors: bool = False, recursive: bool = False) -> object:
+def removable_files(*files: Union[PathLike, str, bytes], ignore_errors: bool = False, recursive: bool = False) -> object:
     """ This function is used with "with" python command. As following:
 
     .. code-block:: python
@@ -395,10 +415,27 @@ def removable_files(*files: Union[str, bytes], ignore_errors: bool = False, recu
     :param ignore_errors: If True, ignore the errors, for example the file not found error.
     :return: A object with enter and exit methods.
     """
-    return _Removable(*files, ignore_errors=ignore_errors, recursive=recursive)
+    return Removable(*files, ignore_errors=ignore_errors, recursive=recursive)
 
 
-def output_file_path(folder: str = '.', suffix: str = '', timestamp: bool = True, **kwargs) -> str:
+def removable_tmp(folder: bool = False) -> Removable:
+    """ This function is used with "with" python command. As following:
+
+    .. code-block:: python
+
+        from mysutils.file import removable_files, exist_files
+        # These files will be removed when the with ends
+        with removable_tmp() as tmp:
+            exist_files(tmp.files[0])  # Returns True
+        exist_files('test2.json', 'data/test1.json', 'data/')  # Returns False
+
+    :return: A object with enter and exit methods.
+    """
+    tmp = mkdtemp() if folder else mktemp()
+    return Removable(tmp, recursive=folder)
+
+
+def output_file_path(folder: Union[PathLike, str, bytes] = '.', suffix: str = '', timestamp: bool = True, **kwargs) -> str:
     """ Build a file path in the specified folder based on the current timestamp and several attributes.
     :param folder: The directory where the file will be located.
     :param timestamp: If you want to add the timestamp to the file name.

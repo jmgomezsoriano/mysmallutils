@@ -6,7 +6,7 @@ from mysutils.command import execute_command
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
-    first_file, last_file, removable_files, output_file_path, list_dir
+    first_file, last_file, removable_files, output_file_path, list_dir, removable_tmp
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -283,6 +283,12 @@ class FileTestCase(unittest.FileTestCase):
         self.assertListEqual(list_dir('data'), ['data/1.txt', 'data/2.txt', 'data/3.out'])
         self.assertListEqual(list_dir('data', r'.*\.out$'), ['data/3.out'])
         remove_files('data', recursive=True)
+
+    def test_removable_tmp(self) -> None:
+        with removable_tmp() as tmp:
+            touch(tmp)
+            self.assertExists(tmp)
+        self.assertNotExists(tmp)
 
 
 if __name__ == '__main__':
