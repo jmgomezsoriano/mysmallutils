@@ -6,7 +6,7 @@ from mysutils.command import execute_command
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
-    first_file, last_file, removable_files, output_file_path, list_dir, removable_tmp
+    first_file, last_file, output_file_path, list_dir
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -245,12 +245,6 @@ class FileTestCase(unittest.FileTestCase):
         self.assertEqual(last_file('.', r'.*\.out$'), './z.out')
         remove_files('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
 
-    def test_removable_files(self) -> None:
-        touch('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
-        with removable_files('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out'):
-            self.assertExists('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
-        self.assertNotExists('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
-
     def test_output_file_path(self) -> None:
         self.assertRegex(output_file_path(), r'^./[0-9]{8}-[0-9]{6}$')
         self.assertRegex(output_file_path('model'), r'^model/[0-9]{8}-[0-9]{6}$')
@@ -266,29 +260,12 @@ class FileTestCase(unittest.FileTestCase):
             'model/0.7-stopw.tar.gz'
         )
 
-    def test_remove_recusively(self) -> None:
-        with removable_files('data2', recursive=True):
-            mkdirs('data1', 'data2')
-            touch('data1/1.txt', 'data1/2.txt', 'data1/3.txt', 'data2/1.txt', 'data2/2.txt', 'data2/3.txt')
-            self.assertExists('data1/1.txt', 'data1/2.txt', 'data1/3.txt', 'data2/1.txt', 'data2/2.txt', 'data2/3.txt')
-            with self.assertRaises(OSError):
-                remove_files('data1')
-            remove_files('data1', recursive=True)
-            self.assertNotExists('data1')
-        self.assertNotExists('data2')
-
     def test_list_folder(self) -> None:
         mkdirs('data')
         touch('data/1.txt', 'data/2.txt', 'data/3.out')
         self.assertListEqual(list_dir('data'), ['data/1.txt', 'data/2.txt', 'data/3.out'])
         self.assertListEqual(list_dir('data', r'.*\.out$'), ['data/3.out'])
         remove_files('data', recursive=True)
-
-    def test_removable_tmp(self) -> None:
-        with removable_tmp() as tmp:
-            touch(tmp)
-            self.assertExists(tmp)
-        self.assertNotExists(tmp)
 
 
 if __name__ == '__main__':

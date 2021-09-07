@@ -30,6 +30,7 @@ This module is divided into the following categories:
   * [Move files](#move-files)
   * [List files, or get the first and last file](#list-files-or-get-the-first-and-last-file)
   * [Generate output file paths](#generate-output-file-paths)
+* [Temporal files](#temporal-files)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
   * [Tar](#tar)
@@ -492,6 +493,15 @@ filepath = output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passe
 # Generate the same as previous but without timestamp
 output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False)
 ```
+
+## Temporal files<a id="temporal-files"></a>
+Many times it is necessary to remove temporal files after their use, even if there are any problem with the process.
+These classes and functions allow you to self-removable files, temporally or not.
+
+```python
+
+```
+
 ## Compressing files<a id="compressing-files"></a>
 With this library there are two ways to compress files: single gzip files and tar files.
 

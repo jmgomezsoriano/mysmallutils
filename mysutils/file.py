@@ -10,7 +10,6 @@ from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile, rmtree
 from sys import stdout
 from shutil import move
-from tempfile import mkdtemp, mktemp
 from typing import Union, Optional, TextIO, Any, List, Tuple
 
 from typing.io import IO
@@ -272,13 +271,15 @@ def count_lines(filename: Union[PathLike, str, bytes]) -> int:
     return count
 
 
-def touch(*files: Union[PathLike, str, bytes]) -> None:
+def touch(*files: Union[PathLike, str, bytes]) -> Tuple[Union[PathLike, str, bytes]]:
     """ Create several empty files.
 
     :param files: The list of file paths to create.
+    :return: The list of created files.
     """
     for file in files:
         open(file, 'w').close()
+    return files
 
 
 def cat(filename: Union[PathLike, str, bytes], output: TextIO = stdout) -> None:
@@ -303,7 +304,8 @@ def read_file(filename: Union[PathLike, str, bytes], line_break: bool = True) ->
         return [line[:-1] if not line_break and line[-1] == '\n' else line for line in file]
 
 
-def mkdirs(*paths: Union[PathLike, str, bytes], mode: int = 0o777, dir_fd: int = None) -> None:
+def mkdirs(*paths: Union[PathLike, str, bytes], mode: int = 0o777,
+           dir_fd: int = None) -> Tuple[Union[PathLike, str, bytes]]:
     """ Create one or several directories ignoring the error if the file or folder already exists.
     :param paths: The list of path to the directories.
     :param mode: The mode argument is ignored on Windows. By default, 0o777.
@@ -311,10 +313,12 @@ def mkdirs(*paths: Union[PathLike, str, bytes], mode: int = 0o777, dir_fd: int =
         and path should be relative; path will then be relative to that directory.
         dir_fd may not be implemented on your platform.
         If it is unavailable, using it will raise a NotImplementedError.
+    :return: The list of created directories.
     """
     for path in paths:
         if not exists(path):
             os.mkdir(path, mode, dir_fd=dir_fd)
+    return paths
 
 
 def move_files(dest: Union[PathLike, str, bytes], *files: Union[PathLike, str, bytes],
@@ -366,73 +370,6 @@ def last_file(folder: Union[PathLike, str, bytes] = '.', filter: str = None) -> 
     """
     files = list_dir(folder, filter, True)
     return files[0] if files else None
-
-
-class Removable(PathLike):
-    """ Class to include enter and exit methods for removable files. """
-    @property
-    def files(self) -> Tuple[Union[str, bytes]]:
-        return self.__files
-
-    @property
-    def ignore_errors(self) -> bool:
-        return self.__ignore_errors
-
-    @property
-    def recursive(self) -> bool:
-        return self.__recursive
-
-    def __init__(self, *files: Union[PathLike, str, bytes], ignore_errors: bool = False, recursive: bool = False):
-        self.__files = files
-        self.__ignore_errors = ignore_errors
-        self.__recursive = recursive
-
-    def __enter__(self) -> None:
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        remove_files(*self.__files, ignore_errors=self.__ignore_errors, recursive=self.__recursive)
-
-    def __fspath__(self):
-        return self.__files[0]
-
-    def __repr__(self) -> str:
-        return str(self.__files)
-
-
-def removable_files(*files: Union[PathLike, str, bytes], ignore_errors: bool = False, recursive: bool = False) -> object:
-    """ This function is used with "with" python command. As following:
-
-    .. code-block:: python
-
-        from mysutils.file import removable_files, exist_files
-        # These files will be removed when the with ends
-        with removable_files('test2.json', 'data/test1.json', 'data/'):
-            exist_files('test2.json', 'data/test1.json', 'data/')  # Returns True
-        exist_files('test2.json', 'data/test1.json', 'data/')  # Returns False
-
-    :param files: The files to remove al the end.
-    :param ignore_errors: If True, ignore the errors, for example the file not found error.
-    :return: A object with enter and exit methods.
-    """
-    return Removable(*files, ignore_errors=ignore_errors, recursive=recursive)
-
-
-def removable_tmp(folder: bool = False) -> Removable:
-    """ This function is used with "with" python command. As following:
-
-    .. code-block:: python
-
-        from mysutils.file import removable_files, exist_files
-        # These files will be removed when the with ends
-        with removable_tmp() as tmp:
-            exist_files(tmp.files[0])  # Returns True
-        exist_files('test2.json', 'data/test1.json', 'data/')  # Returns False
-
-    :return: A object with enter and exit methods.
-    """
-    tmp = mkdtemp() if folder else mktemp()
-    return Removable(tmp, recursive=folder)
 
 
 def output_file_path(folder: Union[PathLike, str, bytes] = '.', suffix: str = '', timestamp: bool = True, **kwargs) -> str:
