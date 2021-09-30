@@ -30,7 +30,7 @@ This module is divided into the following categories:
   * [Move files](#move-files)
   * [List files, or get the first and last file](#list-files-or-get-the-first-and-last-file)
   * [Generate output file paths](#generate-output-file-paths)
-* [Temporal files](#temporal-files)
+* [Removable files](#remove-files)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
   * [Tar](#tar)
@@ -494,12 +494,73 @@ filepath = output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passe
 output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False)
 ```
 
-## Temporal files<a id="temporal-files"></a>
+## Removable files<a id="removable-files"></a>
 Many times it is necessary to remove temporal files after their use, even if there are any problem with the process.
 These classes and functions allow you to self-removable files, temporally or not.
 
+For example, with removable_tmp() function you can do:
 ```python
+from mysutils.tmp import removable_tmp
 
+# Create removable temporal file
+with removable_tmp() as tmp:
+    # Do something with the file tmp, for example:
+    with open(t, 'wt') as file:
+        print('Hello world', file=file)
+# The tmp file is removed
+
+# Create removable temporal folder
+with removable_tmp(folder=True) as tmp:
+    # Do something with the folder tmp
+    ...
+# The temporal folder is removed
+
+# Create a file with suffix:
+with removable_tmp(suffix='tar.gz') as tmp:
+    # Do something with the file tmp
+    ...
+# The temporal folder is removed
+
+# Create a file with suffix and prefix
+with removable_tmp(suffix='tar.gz', prefix='prefix_') as tmp:
+    # Do something with the file tmp
+    ...
+# The temporal folder is removed
+```
+
+Also, you can do the same with custom created files:
+```python
+from mysutils.tmp import removable_files
+from mysutils.file import mkdirs
+
+# Several files to remove
+with removable_files('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out'):
+    # Do something with the defined files, for example:
+    with open('1.txt', 'wt') as file:
+        print('Hello world', file=file)
+# All the files are removed
+
+# Create a removable file and assign it to a variable
+with removable_files('1.txt') as filename:
+  with open(filename, 'wt') as file:
+        print('Hello world', file=file)
+# The file is removed
+      
+# Several files to remove and assign them to variables
+with removable_files('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out') as (f1, f2, f3, f4, f6):
+    # Do something with the defined files, for example:
+    with open(f1, 'wt') as file:
+        print('Hello world', file=file)
+    with open(f2, 'wt') as file:
+        print('Goodbye world', file=file)
+# All the files are removed
+
+# A removable folders
+with removable_files('data1', 'data2', recursive=True) as (d1, d2):
+    mkdirs(d1, d2)
+    # Do something with the folders
+    ...
+# Remove automatically the folders and their files
 ```
 
 ## Compressing files<a id="compressing-files"></a>
