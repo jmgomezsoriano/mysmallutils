@@ -618,6 +618,9 @@ create_tar('test.tar.bz2', 'test.json', 'test.json.gz')
 
 # create a xz compressed tar file
 create_tar('test.tar.xz', 'test.json', 'test.json.gz')
+
+# The compress method is selected automatically, but you can force it by the parameter compress_method
+create_tar('test.tar', 'test.json', 'test.json.gz', compress_method='gz')
 ```
 
 #### List the content of a tar file<a id="list-the-content-of-a-tar-file"></a>
@@ -638,6 +641,9 @@ extract_tar_file('test.tar.gz', 'test2.json', 'test.json')
 
 # Extract the file 'test.json' and save it into 'data/' folder from 'test.tar.gz'.
 extract_tar_file('test.tar.gz', 'data/', 'test.json')
+
+# The decompress method is selected automatically, but you can force it by the parameter compress_method
+extract_tar_file('test.tar', 'data/', 'test.json', compress_method='gz')
 ```
 
 #### Extract several files into a folder<a id="extract-several-files-into-a-folder"></a>
@@ -663,7 +669,28 @@ extract_tar('test.tar', 'data/', True)
 extract_tar('test.tar', 'data/', verbose=True)
 ```
 
-## Open and load files inside a tar archive<a id="open-and-load-files-inside-a-tar-archive"></a>
+In all the previous functions you can use __compress_method__ parameter to select manually which compression or 
+decompression method you want to use.
+
+#### Add files to a TAR archive
+
+```python
+from mysutils.tar import create_tar, add_tar_files
+
+# Create a tar file with a compressed json file
+create_tar('test.tar', 'test.json.gz')
+# Add the files to the tar file
+add_tar_files('test.tar', 'test.json', 'test1.txt')
+
+# This function also works with compressed tar files
+create_tar('test.tar.gz', 'test.json.gz')
+add_tar_files('test.tar.gz', 'test.json', 'test1.txt')
+
+# The decompress method is selected automatically, but you can force it by the parameter compress_method
+add_tar_files('test.tar', 'test.json', 'test1.txt', compress_method='gz')
+```
+
+#### Open and load files inside a tar archive<a id="open-and-load-files-inside-a-tar-archive"></a>
 With these functions it is possible to open a stream to or load a yaml, json or pickle of a specific file inside a tar 
 archive.
 

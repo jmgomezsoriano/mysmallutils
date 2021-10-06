@@ -6,7 +6,8 @@ from os.path import exists
 
 from mysutils.file import save_json, remove_files, exist_files, load_json
 from mysutils.tar import create_tar, detect_compress_method, list_tar, extract_tar_file, open_tar_file, load_tar_json, \
-    extract_tar_files, extract_tar
+    extract_tar_files, extract_tar, add_tar_files, add_compressed_tar_files
+from mysutils.tmp import removable_files
 
 
 def create_files() -> dict:
@@ -129,6 +130,37 @@ class MyTestCase(unittest.FileTestCase):
         extract_tar('test.tar', 'data/', False, True)
         self.assertExists('data/test.json', 'data/test.json.gz')
         remove_files('data/test.json', 'data/test.json.gz', 'data')
+
+    def test_add_files(self) -> None:
+        d = create_files()
+        with removable_files('test.json', 'test.json.gz'):
+            with removable_files(create_tar('test.tar', 'test.json.gz')) as (file,):
+                add_tar_files(file, 'test.json', verbose=True)
+                self.assertDictEqual(d, load_tar_json(file, 'test.json.gz'))
+                self.assertDictEqual(d, load_tar_json(file, 'test.json'))
+            with removable_files(create_tar('test.tar.xz', 'test.json.gz')) as (file,):
+                add_tar_files(file, 'test.json')
+                self.assertDictEqual(d, load_tar_json(file, 'test.json.gz'))
+                self.assertDictEqual(d, load_tar_json(file, 'test.json'))
+            with removable_files(create_tar('test.tar.gz', 'test.json')) as (file,):
+                add_tar_files(file, 'test.json.gz')
+                self.assertDictEqual(d, load_tar_json(file, 'test.json.gz'))
+                self.assertDictEqual(d, load_tar_json(file, 'test.json'))
+            with removable_files(create_tar('test.tar.bz2', 'test.json', verbose=True)) as (file,):
+                add_tar_files(file, 'test.json.gz')
+                self.assertDictEqual(d, load_tar_json(file, 'test.json.gz'))
+                self.assertDictEqual(d, load_tar_json(file, 'test.json'))
+            with removable_files(create_tar('test.tar.bz2')) as (file,):
+                add_tar_files(file, 'test.json.gz', 'test.json')
+                self.assertDictEqual(d, load_tar_json(file, 'test.json.gz'))
+                self.assertDictEqual(d, load_tar_json(file, 'test.json'))
+            with removable_files(add_tar_files('test.tar.gz', 'test.json.gz', 'test.json')) as (file,):
+                self.assertDictEqual(d, load_tar_json(file, 'test.json.gz'))
+                self.assertDictEqual(d, load_tar_json(file, 'test.json'))
+            with removable_files(create_tar('test.tar')) as (file,):
+                add_compressed_tar_files('test.tar', 'test.json.gz', 'test.json', compress_method='gz')
+                self.assertDictEqual(d, load_tar_json(file, 'test.json.gz', compress_method='gz'))
+                self.assertDictEqual(d, load_tar_json(file, 'test.json', compress_method='gz'))
 
 
 if __name__ == '__main__':
