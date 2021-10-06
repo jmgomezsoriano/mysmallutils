@@ -316,8 +316,10 @@ from mysutils.file import remove_files
 
 # Remove three files at once.
 remove_files('test2.json', 'data/test1.json', 'data/')
+
 # Remove three files at once ignoring if any does not exist.
 remove_files('test2.json', 'data/test1.json', 'data/', ignore_errors=True)
+
 # Remove three files or folders at once, if the folder contains more files, also will be removed.
 remove_files('test2.json', 'data/test1.json', 'data/', recursive=True)
 ```
@@ -341,6 +343,14 @@ with removable_files('test2.json', 'data/test1.json', 'data/', ignore_errors=Tru
 # These files will be removed when the with ends, if any folder contains more files, also will be removed
 with removable_files('test2.json', 'data/test1.json', 'data/', recursive=True):
     pass
+
+# Get the variables for each removable file
+with removable_files('test2.json') as (f1,):
+    pass
+
+# Even for several files
+with removable_files('test2.json', 'data/test1.json', 'data/') as (f1, f2, f3):
+    pass
 ```
 
 ### Check if exists several files<a id="check-if-exists-several-files"></a>
@@ -352,10 +362,13 @@ from mysutils.file import exist_files, not_exist_files, are_dir, not_are_dir
 
 # Returns True if all of the files exist, otherwise False.
 exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+
 # Return True if any of the files exist, if it exists at least one, then return False
 not_exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+
 # Returns True if all of the files are directories, otherwise False.
 are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+
 # Return True if any of the files are directories, otherwise False.
 not_are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 ```
@@ -381,6 +394,7 @@ from mysutils.file import touch
 
 # Create the text.txt file without content
 touch('text.txt')
+
 # Create several empty files
 touch('1.txt', '2.txt', '3.txt')
 ```
@@ -425,8 +439,10 @@ from mysutils.file import mkdirs
 
 # Create the folder if not exists
 mkdirs('new_folder')
+
 # Do nothing because the folder was already created
 mkdirs('new_folder')
+
 # Create several folders at once
 mkdirs('folder1', 'folder2', 'folder3')
 ```
@@ -439,8 +455,10 @@ from mysutils.file import move_files
 
 # Move several files to test/
 move_files('test/', '1.txt', '2.txt', '3.txt')
+
 # Create the folder test/ if it does not exist
 move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
+
 # Replace the files if already exists in test/
 move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
 ```
@@ -453,23 +471,31 @@ from mysutils.file import first_file, last_file, list_dir
 
 # Return a sorted list of files of the current directory.
 list_dir()
+
 # Return a sorted list of files of the 'test' directory.
 list_dir('test')
+
 # # Return the list of files thant end with '.txt' of the 'test' directory.
 list_dir('test', '.*\.txt$')
+
 # Return the same list but with the inverted order
 list_dir('test', '.*\.txt$', reverse=True)
 
 # Return the path of the first file in the current folder
 first_file()
+
 # Return the path of the last file in the current folder
 last_file()
+
 # Return the path of the first file in the 'test' folder
 first_file('test/')
+
 # Return the path of the last file in the 'test' folder
 last_file('test/')
+
 # Return the path of the first file in the 'test' folder that ends with .txt
 first_file('test/', r'.*\.txt$')
+
 # Return the path of the last file in the 'test' folder that ends with .txt
 last_file('test/', r'.*\.txt$')
 ```
@@ -483,13 +509,17 @@ from mysutils.file import output_file_path
 
 # Generate a file name in the current folder with the timestamp
 file_path = output_file_path()
+
 # Generate a file name in the 'model' folder with the timestamp
 file_path = output_file_path('model')
+
 # Generate a file name in the 'model' folder with the timestamp and .tar.gz as suffix.
 file_path = output_file_path('model', '.tar.gz')
+
 # Generate a file name in the 'model' folder with the timestamp, followed by the string "-svm-0.7-300-lemma",
 # and .tar.gz as suffix.
 filepath = output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passes=300, lemma=True, stopw=False)
+
 # Generate the same as previous but without timestamp
 output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False)
 ```
@@ -505,7 +535,7 @@ from mysutils.tmp import removable_tmp
 # Create removable temporal file
 with removable_tmp() as tmp:
     # Do something with the file tmp, for example:
-    with open(t, 'wt') as file:
+    with open(tmp, 'wt') as file:
         print('Hello world', file=file)
 # The tmp file is removed
 
@@ -541,7 +571,7 @@ with removable_files('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out'):
 # All the files are removed
 
 # Create a removable file and assign it to a variable
-with removable_files('1.txt') as filename:
+with removable_files('1.txt') as (filename,):
   with open(filename, 'wt') as file:
         print('Hello world', file=file)
 # The file is removed
@@ -580,6 +610,7 @@ save_json(d, 'file.json')
 
 # Compress the file
 gzip_compress('file.json', 'file.json.gz')
+
 # Decompress the file
 gzip_decompress('file.json.gz', 'file2.json')
 ```
