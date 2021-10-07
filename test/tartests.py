@@ -2,11 +2,11 @@ import json
 import shutil
 from mysutils import unittest
 from os import mkdir
-from os.path import exists
+from os.path import exists, join
 
-from mysutils.file import save_json, remove_files, exist_files, load_json
+from mysutils.file import save_json, remove_files, exist_files, load_json, mkdirs, touch
 from mysutils.tar import create_tar, detect_compress_method, list_tar, extract_tar_file, open_tar_file, load_tar_json, \
-    extract_tar_files, extract_tar, add_tar_files, add_compressed_tar_files
+    extract_tar_files, extract_tar, add_tar_files, add_compressed_tar_files, exist_tar_files
 from mysutils.tmp import removable_files
 
 
@@ -161,6 +161,19 @@ class MyTestCase(unittest.FileTestCase):
                 add_compressed_tar_files('test.tar', 'test.json.gz', 'test.json', compress_method='gz')
                 self.assertDictEqual(d, load_tar_json(file, 'test.json.gz', compress_method='gz'))
                 self.assertDictEqual(d, load_tar_json(file, 'test.json', compress_method='gz'))
+
+    def test_exist_tar_files(self) -> None:
+        with removable_files(*mkdirs('data'), recursive=True) as (folder,):
+            with removable_files('test.json', 'test.json.gz'):
+                create_files()
+                touch(join(folder, '1.txt'), join(folder, '2.txt'), join(folder, '3.txt'))
+                with removable_files('test.tar', 'test.tar.gz') as files:
+                    for file in files:
+                        create_tar(file, 'test.json', 'test.json.gz', 'data/')
+                        self.assertTrue(exist_tar_files(file, 'test.json', 'test.json.gz',
+                                        join(folder, '1.txt'), join(folder, '2.txt'), join(folder, '3.txt')))
+                        self.assertFalse(exist_tar_files(file, 'test.json', 'test.json.gz',
+                                     join(folder, '1.txt'), join(folder, '2.txt'), join(folder, '4.txt')))
 
 
 if __name__ == '__main__':

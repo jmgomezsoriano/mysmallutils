@@ -4,7 +4,7 @@ import pickle
 import tarfile
 from os import makedirs
 from tarfile import TarInfo
-from os.path import basename, isdir, join, exists, splitext, dirname
+from os.path import basename, isdir, join, exists, splitext, dirname, normpath
 from typing import List, Any
 from shutil import move
 
@@ -38,7 +38,7 @@ def create_tar(filename: str, *files: str, verbose: bool = False, compress_metho
     compress_method = compress_method if compress_method else detect_compress_method(filename)
     with tarfile.open(filename, f'w:{compress_method}') as tar:
         for file in tqdm(files, desc='Creating tar file', disable=not verbose):
-            tar.add(file, basename(file))
+            tar.add(file, basename(normpath(file)))
     return filename
 
 
@@ -58,7 +58,7 @@ def add_tar_files(filename: str, *files: str, verbose: bool = False, compress_me
     else:
         with tarfile.open(filename, f'a' if exists(filename) else f'w:{compress_method}') as tar:
             for file in tqdm(files, desc='Adding files to tar', disable=not verbose):
-                tar.add(file, basename(file))
+                tar.add(file, basename(normpath(file)))
     return filename
 
 
@@ -232,3 +232,22 @@ def extract_tar(tar_file: str, dest: str, force: bool = False, verbose: bool = F
         else:
             extract_tar_file(tar_file, dest, file.path, compress_method)
     return tar_file
+
+
+def exist_tar_files(tar_file: str, *files: str, compress_method: str = None) -> bool:
+    """ Check if a sequence of files exist.
+
+
+    :param tar_file: The TAR file.
+    :param files: The list of file paths to check.
+    :param compress_method: Force the compression or decompression method to use.
+       By default, select from the file extension.
+    :return: True if all the files exist, otherwise False.
+    """
+    compress_method = compress_method if compress_method else detect_compress_method(tar_file)
+    with tarfile.open(tar_file, f'r:{compress_method}') as tar:
+        filenames = tar.getnames()
+    for file in files:
+        if file not in filenames:
+            return False
+    return True

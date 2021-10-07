@@ -745,6 +745,19 @@ o = load_tar_pickle('test.tar.gz', 'test.pkl')
 d = load_tar_yaml('test.tar.gz', 'test.yaml.gz')
 ```
 
+#### Check if some files are inside of a TAR file
+
+```python
+from mysutils.tar import create_tar, exist_tar_files
+
+# Create a TAR file
+create_tar('test.tar.gz', 'test.json', 'test.json.gz')
+# This will return True
+exist_tar_files('test.tar.gz', 'test.json', 'test.json.gz')
+# This will return False
+exist_tar_files('test.tar.gz', 'other.json', 'test.json.gz')
+```
+
 ## External commands<a id="external-commands"></a>
 This module only contains a function that execute an external command and return the standard and error outputs.
 Its execution is very simple:
