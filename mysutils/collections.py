@@ -47,3 +47,21 @@ def list_union(*lists: list) -> list:
             if e not in result:
                 result.append(e)
     return result
+
+
+def del_keys(d: dict, keys: Union[List[str], str] = None, ignore_errors: bool = True) -> dict:
+    """ Remove the dictionary items from their keys and return the modified dictionary.
+
+    :param d: The dictionary.
+    :param keys: A key or a list of keys.
+    :param ignore_errors: If True, ignore if the key does not exist.
+    :return: The modified dictionary.
+    """
+    keys = keys if keys else []
+    for key in keys if isinstance(keys, list) else [keys]:
+        if key not in d and ignore_errors:
+            pass
+        else:
+            del d[key]
+
+    return d

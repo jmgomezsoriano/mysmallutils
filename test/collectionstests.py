@@ -1,6 +1,6 @@
 import unittest
 
-from mysutils.collections import dh, sh, head
+from mysutils.collections import dh, sh, head, del_keys
 from mysutils.collections import list_union
 
 
@@ -36,6 +36,20 @@ class MyTestCase(unittest.TestCase):
         l3 = [2, 6, 24]
         self.assertListEqual(list_union(l1, l2, l3), [1, 2, 3, 4, 5, 6, 24])
         self.assertListEqual(list_union(l1, l3, l2), [1, 2, 3, 6, 24, 4, 5])
+
+    def test_del_dict_item(self) -> None:
+        d = {'a': 1, 'b': 2, 'c': 3}
+        self.assertDictEqual(d, del_keys(d.copy()))
+        self.assertDictEqual({'a': 1, 'b': 2}, del_keys(d.copy(), 'c'))
+        self.assertDictEqual({'b': 2}, del_keys(d.copy(), ['a', 'c']))
+        self.assertDictEqual({}, del_keys(d.copy(), ['a', 'b', 'c']))
+        self.assertDictEqual(d, del_keys(d.copy(), 'd'))
+        self.assertDictEqual({'a': 1, 'c': 3}, del_keys(d.copy(), ['b', 'd', 'e']))
+        with self.assertRaises(KeyError):
+            self.assertDictEqual(d, del_keys(d.copy(), 'd', False))
+        with self.assertRaises(KeyError):
+            self.assertDictEqual({'a': 1, 'c': 3}, del_keys(d.copy(), ['b', 'd', 'e'], False))
+        self.assertDictEqual({'a': 1, 'b': 2, 'c': 3}, d)
 
 
 if __name__ == '__main__':

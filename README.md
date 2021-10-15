@@ -10,6 +10,7 @@ This module is divided into the following categories:
 * [Collections](#collections)
   * [Head of a set or dict](#head-of-a-set-or-dict)
   * [List union](#list-union)
+  * [Remove dictionary items](#remove-dictionary-items)
 * [Text](#text)
   * [Remove urls](#remove-urls)
   * [Clean text](#clean-text)
@@ -107,6 +108,25 @@ l3 = [2, 6, 24]
 list_union(l1, l2, l3)
 # This will return [1, 2, 3, 6, 24, 4, 5]
 list_union(l1, l3, l2)
+```
+
+### Remove dictionary items<a id="remove-dictionary-items"></a>
+
+You can remove one or more dictionary items by their keys and return the result with only one line.
+
+```python
+from mysutils.collections import del_keys
+
+d = {'a': 1, 'b': 2, 'c': 3}
+
+# Remove the element c from the dictionary and print the results
+print(del_keys(d.copy(), 'c'))
+# Remove the elements a and c from the dictionary and print the results
+print(del_keys(d.copy(), ['a', 'c']))
+# If an element does not exist, ignore the key error
+print(del_keys(d.copy(), ['a', 'd']))
+# If an element does not exist, raise the KeyError exception
+print(del_keys(d.copy(), ['a', 'd'], False))
 ```
 
 ## Text<a id="text"></a>
