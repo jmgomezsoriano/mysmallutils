@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Any, Callable
 
 
 def head(obj: Union[dict, set], top: int = 10) -> Union[dict, set]:
@@ -65,3 +65,17 @@ def del_keys(d: dict, keys: Union[List[str], str] = None, ignore_errors: bool = 
             del d[key]
 
     return d
+
+
+def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Callable = None) -> list:
+    """ Filter a list.
+
+    :param lst: The list to filter.
+    :param n: The maximum number of results. If it is not given, then return all the results.
+    :param init: The initial result. Before this position the items are filtered.
+    :param filter_func: A filter function to filter.
+    :return: The filtered list.
+    """
+    n = n if n else len(lst)
+    lst = lst[init:init + n]
+    return [e for e in filter(filter_func, lst)] if filter_func else lst

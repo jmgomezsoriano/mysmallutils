@@ -1,6 +1,6 @@
 import unittest
 
-from mysutils.collections import dh, sh, head, del_keys
+from mysutils.collections import dh, sh, head, del_keys, filter_lst
 from mysutils.collections import list_union
 
 
@@ -50,6 +50,12 @@ class MyTestCase(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.assertDictEqual({'a': 1, 'c': 3}, del_keys(d.copy(), ['b', 'd', 'e'], False))
         self.assertDictEqual({'a': 1, 'b': 2, 'c': 3}, d)
+
+    def test_filters(self) -> None:
+        lst = [i for i in range(1, 20)]
+        self.assertListEqual([1, 2, 3, 4], filter_lst(lst, 4))
+        self.assertListEqual([2, 3, 4], filter_lst(lst, 3, 1))
+        self.assertListEqual([3, 5], filter_lst(lst, 5, 1, lambda x: x % 2 == 1))
 
 
 if __name__ == '__main__':

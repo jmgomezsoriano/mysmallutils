@@ -11,6 +11,7 @@ This module is divided into the following categories:
   * [Head of a set or dict](#head-of-a-set-or-dict)
   * [List union](#list-union)
   * [Remove dictionary items](#remove-dictionary-items)
+  * [Filter lists](#filter-lists)
 * [Text](#text)
   * [Remove urls](#remove-urls)
   * [Clean text](#clean-text)
@@ -127,6 +128,22 @@ print(del_keys(d.copy(), ['a', 'c']))
 print(del_keys(d.copy(), ['a', 'd']))
 # If an element does not exist, raise the KeyError exception
 print(del_keys(d.copy(), ['a', 'd'], False))
+```
+
+### Filter lists<a id="filter-lists"></a>
+Filter a list.
+
+```python
+from mysutils.collections import filter_lst
+
+lst = [i for i in range(1, 20)]
+
+# Returns [1, 2, 3, 4]
+filter_lst(lst, 4)
+# Returns [2, 3, 4]
+filter_lst(lst, 3, 1)
+# Returns [3, 5]
+filter_lst(lst, 5, 1, lambda x: x % 2 == 1)
 ```
 
 ## Text<a id="text"></a>
