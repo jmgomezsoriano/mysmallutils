@@ -1,6 +1,6 @@
 import unittest
 
-from mysutils.collections import dh, sh, head, del_keys, filter_lst
+from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys
 from mysutils.collections import list_union
 
 
@@ -41,15 +41,22 @@ class MyTestCase(unittest.TestCase):
         d = {'a': 1, 'b': 2, 'c': 3}
         self.assertDictEqual(d, del_keys(d.copy()))
         self.assertDictEqual({'a': 1, 'b': 2}, del_keys(d.copy(), 'c'))
-        self.assertDictEqual({'b': 2}, del_keys(d.copy(), ['a', 'c']))
-        self.assertDictEqual({}, del_keys(d.copy(), ['a', 'b', 'c']))
+        self.assertDictEqual({'b': 2}, del_keys(d.copy(), 'a', 'c'))
+        self.assertDictEqual({}, del_keys(d.copy(), 'a', 'b', 'c'))
         self.assertDictEqual(d, del_keys(d.copy(), 'd'))
-        self.assertDictEqual({'a': 1, 'c': 3}, del_keys(d.copy(), ['b', 'd', 'e']))
+        self.assertDictEqual({'a': 1, 'c': 3}, del_keys(d.copy(), 'b', 'd', 'e'))
         with self.assertRaises(KeyError):
-            self.assertDictEqual(d, del_keys(d.copy(), 'd', False))
+            self.assertDictEqual(d, del_keys(d.copy(), 'd', ignore_errors=False))
         with self.assertRaises(KeyError):
-            self.assertDictEqual({'a': 1, 'c': 3}, del_keys(d.copy(), ['b', 'd', 'e'], False))
+            self.assertDictEqual({'a': 1, 'c': 3}, del_keys(d.copy(), 'b', 'd', 'e', ignore_errors=False))
         self.assertDictEqual({'a': 1, 'b': 2, 'c': 3}, d)
+
+    def test_add_dict_item(self) -> None:
+        d = {'b': 2}
+        self.assertDictEqual({'a': 1, 'b': 2, 'c': 3}, add_keys(d, a=1, c=3))
+        self.assertDictEqual({'a': 1, 'b': 2, 'c': 3}, add_keys(d, a=1, b=2, c=3))
+        with self.assertRaises(KeyError):
+            self.assertDictEqual({'a': 1, 'b': 2, 'c': 3}, add_keys(d, a=1, b=2, c=3, modify=False))
 
     def test_filters(self) -> None:
         lst = [i for i in range(1, 20)]

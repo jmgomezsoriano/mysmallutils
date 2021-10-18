@@ -10,7 +10,7 @@ This module is divided into the following categories:
 * [Collections](#collections)
   * [Head of a set or dict](#head-of-a-set-or-dict)
   * [List union](#list-union)
-  * [Remove dictionary items](#remove-dictionary-items)
+  * [Add/remove dictionary items](#add-remove-dictionary-items)
   * [Filter lists](#filter-lists)
 * [Text](#text)
   * [Remove urls](#remove-urls)
@@ -111,7 +111,21 @@ list_union(l1, l2, l3)
 list_union(l1, l3, l2)
 ```
 
-### Remove dictionary items<a id="remove-dictionary-items"></a>
+### Add/remove dictionary items<a id="add-remove-dictionary-items"></a>
+
+You can add several dictionary items in just one sentence and return the results.
+
+```python
+from mysutils.collections import add_keys
+
+d = {'b': 2}
+# Print {'a': 1, 'b': 2, 'c': 3}
+print(add_keys(d, a=1, c=3))
+# You can modify an existing item
+print(add_keys(d, a=1, b=4, c=3))
+# Or you can raise an error if the key already exists.
+print(add_keys(d, modify=False, a=1, b=4, c=3))
+```
 
 You can remove one or more dictionary items by their keys and return the result with only one line.
 
@@ -123,11 +137,11 @@ d = {'a': 1, 'b': 2, 'c': 3}
 # Remove the element c from the dictionary and print the results
 print(del_keys(d.copy(), 'c'))
 # Remove the elements a and c from the dictionary and print the results
-print(del_keys(d.copy(), ['a', 'c']))
+print(del_keys(d.copy(), 'a', 'c'))
 # If an element does not exist, ignore the key error
-print(del_keys(d.copy(), ['a', 'd']))
+print(del_keys(d.copy(), 'a', 'd'))
 # If an element does not exist, raise the KeyError exception
-print(del_keys(d.copy(), ['a', 'd'], False))
+print(del_keys(d.copy(), 'a', 'd', ignore_errors=False))
 ```
 
 ### Filter lists<a id="filter-lists"></a>

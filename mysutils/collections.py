@@ -49,7 +49,7 @@ def list_union(*lists: list) -> list:
     return result
 
 
-def del_keys(d: dict, keys: Union[List[str], str] = None, ignore_errors: bool = True) -> dict:
+def del_keys(d: dict, *keys: Any, ignore_errors: bool = True) -> dict:
     """ Remove the dictionary items from their keys and return the modified dictionary.
 
     :param d: The dictionary.
@@ -57,12 +57,25 @@ def del_keys(d: dict, keys: Union[List[str], str] = None, ignore_errors: bool = 
     :param ignore_errors: If True, ignore if the key does not exist.
     :return: The modified dictionary.
     """
-    keys = keys if keys else []
-    for key in keys if isinstance(keys, list) else [keys]:
-        if key not in d and ignore_errors:
-            pass
-        else:
+    for key in keys:
+        if not (key not in d and ignore_errors):
             del d[key]
+
+    return d
+
+
+def add_keys(d: dict, modify: bool = True, **kwargs) -> dict:
+    """ Add or change several items into a dictionary and return the modified dictionary.
+
+    :param d: The dictionary.
+    :param modify: If True, if a key already exists, then update it, otherwise raise an error.
+    :param kwargs: The dictionary key/value pairs.
+    :return: The modified dictionary.
+    """
+    for key, value in kwargs.items():
+        if not modify and key in d:
+            raise KeyError("Duplicate key")
+        d[key] = value
 
     return d
 
