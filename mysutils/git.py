@@ -43,11 +43,7 @@ class GitMonitor(object):
         :param kwargs: Extra arguments to pass to the function.
         """
         force = self.force
-        if exists(self.folder):
-            repo = git.Repo(self.folder)
-        else:
-            force = True
-            repo = git.Repo.clone_from(self.repository, self.folder)
+        repo = git.Repo(self.folder) if exists(self.folder) else git.Repo.clone_from(self.repository, self.folder)
         if not self.branch:
             self.branch = repo.active_branch.name
         elif repo.active_branch.name != self.branch:
@@ -63,7 +59,9 @@ class GitMonitor(object):
             if not self.interval:
                 break
             if updated:
-                logger.info(f'Waiting {self.interval}s for changes in the configuration. ')
+                logger.info(f'Update function executed, waiting {self.interval}s for changes in the repository. ')
+            else:
+                logger.info(f'No changes detected, waiting {self.interval}s for changes in the repository. ')
             self.__event.wait(self.interval)
             force = False
             updated = False
