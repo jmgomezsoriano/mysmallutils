@@ -36,6 +36,7 @@ class GitMonitor(object):
         self.__stop = False
         self.__thread = None
         self.__event = Event()
+        self.repo = git.Repo(self.folder) if exists(self.folder) else git.Repo.clone_from(self.repository, self.folder)
 
     def monitor(self, update: bool = True, **kwargs) -> None:
         """ Start the monitor.
@@ -43,17 +44,16 @@ class GitMonitor(object):
         :param kwargs: Extra arguments to pass to the function.
         """
         force = self.force
-        repo = git.Repo(self.folder) if exists(self.folder) else git.Repo.clone_from(self.repository, self.folder)
         if not self.branch:
-            self.branch = repo.active_branch.name
-        elif repo.active_branch.name != self.branch:
-            repo.git.checkout(self.branch)
+            self.branch = self.repo.active_branch.name
+        elif self.repo.active_branch.name != self.branch:
+            self.repo.git.checkout(self.branch)
         updated = True
         while not self.__stop:
-            changes = self.__changes(repo)
+            changes = self.__changes(self.repo)
             if changes or force:
                 if update:
-                    repo.git.pull()
+                    self.repo.git.pull()
                     updated = True
                 self.func(*changes, **kwargs)
             if not self.interval:

@@ -15,6 +15,7 @@ This module is divided into the following categories:
 * [Text](#text)
   * [Remove urls](#remove-urls)
   * [Clean text](#clean-text)
+  * [Text markup](#text-markup)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Read the first line of a file](#read-the-first-line-of-a-file)
@@ -28,7 +29,7 @@ This module is divided into the following categories:
   * [Touch](#touch)
   * [Cat](#cat)
   * [Read file](#read-file)
-  * [Make directory](#make-directory)
+  * [Make directories](#make-directories)
   * [Move files](#move-files)
   * [List files, or get the first and last file](#list-files-or-get-the-first-and-last-file)
   * [Generate output file paths](#generate-output-file-paths)
@@ -48,10 +49,10 @@ This module is divided into the following categories:
 * [Git monitor](#git-monitor)
 * [File unit tests](#unit-tests)
   
-## Collections<a id="collections"></a>
+# Collections<a id="collections"></a>
 Some util functions for list, set or dict collections.
 
-### Head of a set or dict<a id="head-of-a-set-or-dict"></a>
+## Head of a set or dict<a id="head-of-a-set-or-dict"></a>
 Get the first n elements of a dictionary or a set.
 
 ```python
@@ -96,7 +97,7 @@ dh(dict1, 5)
 dh(dict1)
 ```
 
-### List union<a id="list-union"></a>
+## List union<a id="list-union"></a>
 Create the union of two or more lists maintaining the order of elements.
 
 ```python
@@ -144,7 +145,7 @@ print(del_keys(d.copy(), 'a', 'd'))
 print(del_keys(d.copy(), 'a', 'd', ignore_errors=False))
 ```
 
-### Filter lists<a id="filter-lists"></a>
+## Filter lists<a id="filter-lists"></a>
 Filter a list.
 
 ```python
@@ -163,7 +164,7 @@ filter_lst(lst, 5, 1, lambda x: x % 2 == 1)
 ## Text<a id="text"></a>
 Simple functions related to text.
 
-### Remove urls<a id="remove-urls"></a>
+## Remove urls<a id="remove-urls"></a>
 Remove urls from a text.
 
 ```python
@@ -177,7 +178,7 @@ remove_urls(text)
 # 'This is a test!\n     Clean punctuation symbols and urls like this:  '
 ```
 
-### Clean text<a id="clean-text"></a>
+## Clean text<a id="clean-text"></a>
 Remove punctuation symbols, urls and convert to lower.
 
 ```python
@@ -196,12 +197,44 @@ clean_text(text, lower=False)
 # Only remove punctuation
 clean_text(text, lower=False, url=False)
 ```
+## Text markup<a id='text-markup' name='text-markup'></a>
 
-## File access, load and save files<a id="file-access-load-and-save-files"></a>
+Create text effects in the console.
+
+```python
+from mysutils.text import AnsiCodes, markup
+
+# Print a yellow, italic and blinked text.
+print(markup('This is a text with effects', 
+             AnsiCodes.YELLOW, AnsiCodes.ITALIC, 
+             AnsiCodes.SLOW_BLINK))
+# This is the same but using string names
+print(markup('This is a text with effects', 
+             'yellow', 'italic', 
+             'SLOW_BLINK'))
+```
+
+You can see the list of effects in the mysutils.text.AnsiCode enumeration.
+
+Furthermore, you can set your own font, background and underline colors based on R, G, B scale.
+
+```python
+from mysutils.text import AnsiCodes, markup, color, bg_color, un_color
+
+# Print 'text' in yellow with gray background and blue underline color.
+print('This is a ' + \ 
+      markup('text', AnsiCodes.UNDERLINE, 
+             color(255, 255, 20), 
+             bg_color(60, 60, 60),
+             un_color(80, 80, 255)) + 'with effects.')
+```
+**Important note:** All these font variants, styles and color do not work in all the consoles/terminals.
+
+# File access, load and save files<a id="file-access-load-and-save-files" name="file-access-load-and-save-files"></a>
 With these functions you can open files, create json and pickle files, and execute external commands very easily.
 Moreover, only changing the file extension you can store the information in a compressed file with gzip.
 
-### Open files<a id="open-files"></a>
+## Open files<a id="open-files"></a>
 ```python
 from mysutils.file import open_file, force_open
 
@@ -223,7 +256,7 @@ with force_open('file.txt.gz', 'w') as file:
     pass
 ```
 
-### Read the first line of a file<a id="read-the-first-line-of-a-file"></a>
+## Read the first line of a file<a id="read-the-first-line-of-a-file"></a>
 This function only reads the first line of a text file (gzip compressed or not) and returns it without the \n if 
 it exists.
 
@@ -234,7 +267,7 @@ from mysutils.file import first_line
 token = first_line('token.txt')
 ```
 
-### Load and save json files<a id="load-and-save-json-files"></a>
+## Load and save json files<a id="load-and-save-json-files"></a>
 ```python
 from mysutils.file import load_json, save_json
 
@@ -269,7 +302,7 @@ from mysutils.tar import load_tar_json
 d = load_tar_json('data/file.tar.bz2', 'data.json')
 ```
 
-### Load and save pickle files<a id="load-and-save-pickle-files"></a>
+## Load and save pickle files<a id="load-and-save-pickle-files"></a>
 ```python
 from mysutils.file import load_pickle, save_pickle
 
@@ -304,7 +337,7 @@ from mysutils.tar import load_tar_pickle
 d = load_tar_pickle('data/file.tar.bz2', 'data.pkl.gz')
 ```
 
-### Load and save Yaml files<a id="load-and-save-yaml-files"></a>
+## Load and save Yaml files<a id="load-and-save-yaml-files"></a>
 These functions require to install the PyYaml module with the following command:
 ```bash
 pip install PyYAML~=5.4.1
@@ -344,7 +377,7 @@ from mysutils.yaml import load_tar_yaml
 d = load_tar_yaml('data/file.tar.xz', 'data.yaml')
 ```
 
-### Copy files<a id="copy-files"></a>
+## Copy files<a id="copy-files"></a>
 
 A very simple way to copy several files into a directory. For example:
 
@@ -359,7 +392,7 @@ copy_files('data/', 'file1.txt', 'file2.txt')
 copy_files('data/', 'file1.txt', 'file2.txt', force=False)
 ```
 
-### Remove files<a id="remove-files"></a>
+## Remove files<a id="remove-files"></a>
 You can also remove several files and empty folders with just one sentence, using the remove_files() function:
 
 ```python
@@ -381,7 +414,7 @@ files, use shutil.rmtree().
 Also,you can use removable_files() to remove files after their use:
 
 ```python
-from mysutils.file import removable_files
+from mysutils.tmp import removable_files
 
 # These files will be removed when the with ends
 with removable_files('test2.json', 'data/test1.json', 'data/'):
@@ -404,7 +437,7 @@ with removable_files('test2.json', 'data/test1.json', 'data/') as (f1, f2, f3):
     pass
 ```
 
-### Check if exists several files<a id="check-if-exists-several-files"></a>
+## Check if exists several files<a id="check-if-exists-several-files"></a>
 With the function exist_files() you can check if several files exist or not.
 Its usage is very simple, for example:
 
@@ -424,7 +457,7 @@ are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 not_are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 ```
 
-### Count lines<a id="count-lines"></a> 
+## Count lines<a id="count-lines"></a> 
 Count the number of lines of a file. If the file is gzip compressed, then decompress it first.
 
 ```python
@@ -437,7 +470,7 @@ with open_file('text.txt.gz', 'wt') as file:
 count_lines('text.txt.gz')
 ```
 
-### Touch<a id="touch"></a>
+## Touch<a id="touch"></a>
 Create several empty files.
 
 ```python
@@ -450,7 +483,7 @@ touch('text.txt')
 touch('1.txt', '2.txt', '3.txt')
 ```
 
-### Cat<a id="cat"></a>
+## Cat<a id="cat"></a>
 Print the content of a file.
 
 ```python
@@ -468,7 +501,7 @@ with open_file('text_cat.txt.gz', 'wt') as file:
     cat('text.txt.gz', file)
 ```
 
-### Read file<a id="read-file"></a>
+## Read file<a id="read-file"></a>
 Read all the file and return a list with its lines.
 
 ```python
@@ -482,7 +515,7 @@ lines = read_file('text.txt.gz')
 lines = read_file('text.txt.gz', False)
 ```
 
-### Make directory<a id="make-directory"></a>
+## Make directories<a id="make-directories"></a>
 Create one or more directories but if them already exist, then do nothing.
 
 ```python
@@ -498,7 +531,7 @@ mkdirs('new_folder')
 mkdirs('folder1', 'folder2', 'folder3')
 ```
 
-### Move files<a id="move-files"></a>
+## Move files<a id="move-files"></a>
 Move several files at once.
 
 ```python
@@ -514,7 +547,7 @@ move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
 move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
 ```
 
-### List files, or get the first and last file<a id="#list-files-or-get-the-first-and-last-file"></a>
+## List files, or get the first and last file<a id="#list-files-or-get-the-first-and-last-file"></a>
 Functions to list a folder and obtain the first or last file of a folder.
 
 ```python
@@ -551,7 +584,7 @@ first_file('test/', r'.*\.txt$')
 last_file('test/', r'.*\.txt$')
 ```
 
-### Generate output file paths<a id="generate-output-file-paths"></a>
+## Generate output file paths<a id="generate-output-file-paths"></a>
 Sometimes it is useful to generate a file name taken into account some parameters and the current timestamp.
 This function generates this file paths.
 
@@ -575,7 +608,7 @@ filepath = output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passe
 output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False)
 ```
 
-## Removable files<a id="removable-files"></a>
+# Removable files<a id="removable-files"></a>
 Many times it is necessary to remove temporal files after their use, even if there are any problem with the process.
 These classes and functions allow you to self-removable files, temporally or not.
 
@@ -644,10 +677,10 @@ with removable_files('data1', 'data2', recursive=True) as (d1, d2):
 # Remove automatically the folders and their files
 ```
 
-## Compressing files<a id="compressing-files"></a>
+# Compressing files<a id="compressing-files"></a>
 With this library there are two ways to compress files: single gzip files and tar files.
 
-### Gzip<a id="gzip"></a>
+## Gzip<a id="gzip"></a>
 
 ```python
 from mysutils.file import gzip_compress, gzip_decompress, save_json
@@ -666,7 +699,7 @@ gzip_compress('file.json', 'file.json.gz')
 gzip_decompress('file.json.gz', 'file2.json')
 ```
 
-### Tar<a id="tar"></a>
+## Tar<a id="tar"></a>
 Some utils to create, extract and use tar files.
 
 All the examples of this section assume you have the files 'test.json' and 'test.json.gz', for instance, with
@@ -683,7 +716,7 @@ save_json(d, 'test.json')
 save_json(d, 'test.json.gz')
 ```
 
-#### Create a tar file<a id="create-a-tar-file"></a>
+### Create a tar file<a id="create-a-tar-file"></a>
 With create_tar() you can create a tar file (compressed or not) and include a list of files.
 
 ```python
@@ -705,7 +738,7 @@ create_tar('test.tar.xz', 'test.json', 'test.json.gz')
 create_tar('test.tar', 'test.json', 'test.json.gz', compress_method='gz')
 ```
 
-#### List the content of a tar file<a id="list-the-content-of-a-tar-file"></a>
+### List the content of a tar file<a id="list-the-content-of-a-tar-file"></a>
 
 ```python
 from mysutils.tar import list_tar
@@ -714,7 +747,7 @@ lst = list_tar('test.tar.gz')
 print(lst[0].path)
 ```
 
-#### Extract a specific file<a id="extract-a-specific-file"></a>
+### Extract a specific file<a id="extract-a-specific-file"></a>
 ```python
 from mysutils.tar import extract_tar_file
 
@@ -728,7 +761,7 @@ extract_tar_file('test.tar.gz', 'data/', 'test.json')
 extract_tar_file('test.tar', 'data/', 'test.json', compress_method='gz')
 ```
 
-#### Extract several files into a folder<a id="extract-several-files-into-a-folder"></a>
+### Extract several files into a folder<a id="extract-several-files-into-a-folder"></a>
 ```python
 from mysutils.tar import extract_tar_files, extract_tar
 
@@ -754,7 +787,7 @@ extract_tar('test.tar', 'data/', verbose=True)
 In all the previous functions you can use __compress_method__ parameter to select manually which compression or 
 decompression method you want to use.
 
-#### Add files to a TAR archive
+### Add files to a TAR archive
 
 ```python
 from mysutils.tar import create_tar, add_tar_files
@@ -772,7 +805,7 @@ add_tar_files('test.tar.gz', 'test.json', 'test1.txt')
 add_tar_files('test.tar', 'test.json', 'test1.txt', compress_method='gz')
 ```
 
-#### Open and load files inside a tar archive<a id="open-and-load-files-inside-a-tar-archive"></a>
+### Open and load files inside a tar archive<a id="open-and-load-files-inside-a-tar-archive"></a>
 With these functions it is possible to open a stream to or load a yaml, json or pickle of a specific file inside a tar 
 archive.
 
@@ -796,7 +829,7 @@ o = load_tar_pickle('test.tar.gz', 'test.pkl')
 d = load_tar_yaml('test.tar.gz', 'test.yaml.gz')
 ```
 
-#### Check if some files are inside of a TAR file
+### Check if some files are inside a TAR file
 
 ```python
 from mysutils.tar import create_tar, exist_tar_files
@@ -809,7 +842,7 @@ exist_tar_files('test.tar.gz', 'test.json', 'test.json.gz')
 exist_tar_files('test.tar.gz', 'other.json', 'test.json.gz')
 ```
 
-## External commands<a id="external-commands"></a>
+# External commands<a id="external-commands"></a>
 This module only contains a function that execute an external command and return the standard and error outputs.
 Its execution is very simple:
 
@@ -827,7 +860,7 @@ print(err)
 std, err = execute_command('echo -n "This is a test"')
 ```
 
-## Configuration files<a id="configuration-files"></a>
+# Configuration files<a id="configuration-files"></a>
 
 Too many times, when you deal with config files or some kind of configuration cluster server, you become crazy
 because there are a small spelling mistake in the name of a configuration parameter, and you code does not work 
@@ -862,7 +895,7 @@ config = {
 parse_config(config, PARAM_DEFINITION, True)
 ```
 
-## Logging<a id="logging"></a>
+# Logging<a id="logging"></a>
 Some functions to configure and to get information about logging. 
 
 ```python
@@ -884,7 +917,7 @@ get_log_levels()
 get_log_level('DEBUG')
 ```
 
-## Method synchronization<a id="method-synchronization"></a>
+# Method synchronization<a id="method-synchronization"></a>
 Sometimes it is necessary to create a synchronized method.
 With @synchronized you can create a synchronized method easily:
 
@@ -915,11 +948,13 @@ sleep(1)
 obj1.calculate()
 ```
 
-## Obtaining metrics<a id="obtaining-metrics"></a>
+# Obtaining metrics<a id="obtaining-metrics"></a>
 
-## Services and Web<a id="services-and-web"></a>
+TODO
 
-### Download a file<a id="download-a-file"></a>
+# Services and Web<a id="services-and-web"></a>
+
+## Download a file<a id="download-a-file"></a>
 This function requires to install the Requests module with the following command:
 
 ```bash
@@ -935,7 +970,7 @@ from mysutils.web import download
 download('<url-to-download>', 'dest/file.txt')
 ```
 
-### Services<a id="services"></a>
+## Services<a id="services"></a>
 In the contexts of a web service, you can need the base real final url to a service, that means, 
 the protocol, IP or hostname and path to the service. 
 You can obtain this with endpoint() function.
@@ -944,7 +979,7 @@ An example of how to use:
 
 TO DO
 
-### JSON post<a id="json-post"></a>
+## JSON post<a id="json-post"></a>
 A very easy way to send a dictionary by means to http post, ot a json service.
 
 ```python
@@ -954,7 +989,7 @@ from mysutils.request import json_post
 json_post('https://postman-echo.com/post', {"msg": "Hello world!"})
 ```
 
-## Git monitor<a id="git-monitor"></a>
+# Git monitor<a id="git-monitor"></a>
 Monitor a Git repository to check if there is any change in the remote repository with respect the local one.
 
 ```python
@@ -978,7 +1013,7 @@ monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name', interval=30
 monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name', force=True, interval=30)
 ```
 
-## File unit tests<a id="unit-tests"></a>
+# File unit tests<a id="unit-tests"></a>
 A small class that inherits from TestCase and have methods to assert the typical file options like exists or isdir.
 
 ```python
