@@ -1,3 +1,6 @@
+from os import PathLike
+from typing import Union
+
 from tqdm.auto import tqdm
 
 try:
@@ -8,7 +11,7 @@ except ModuleNotFoundError as e:
                               'pip install requests~=2.25.1')
 
 
-def download(url: str, filename: str, verbose: bool = True) -> None:
+def download(url: str, filename: Union[str, PathLike, bytes], verbose: bool = True) -> None:
     """  Download a file.
 
     :param url: The URL where the file should be downloaded.

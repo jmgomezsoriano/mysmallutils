@@ -2,10 +2,10 @@ import gzip
 import json
 import pickle
 import tarfile
-from os import makedirs
+from os import makedirs, PathLike
 from tarfile import TarInfo
 from os.path import basename, isdir, join, exists, splitext, dirname, normpath
-from typing import List, Any
+from typing import List, Any, Union
 from shutil import move
 
 from typing.io import IO
@@ -24,7 +24,9 @@ except ModuleNotFoundError as e:
 COMPRESS_METHODS = {'gz', 'bz2', 'xz'}
 
 
-def create_tar(filename: str, *files: str, verbose: bool = False, compress_method: str = None) -> str:
+def create_tar(filename: Union[str, PathLike, bytes],
+               *files: Union[str, PathLike, bytes],
+               verbose: bool = False, compress_method: str = None) -> str:
     """
     Create a tar file with a given list of files. If the filename has any of these extensions 'gz', 'bz2' or 'xz',
       then the tar file will be compressed with the specify method.
@@ -42,7 +44,9 @@ def create_tar(filename: str, *files: str, verbose: bool = False, compress_metho
     return filename
 
 
-def add_tar_files(filename: str, *files: str, verbose: bool = False, compress_method: str = None) -> str:
+def add_tar_files(filename: Union[str, PathLike, bytes],
+                  *files: Union[str, PathLike, bytes],
+                  verbose: bool = False, compress_method: str = None) -> str:
     """ Add files to a previously created tar file.
 
     :param filename: The TAR file. It may be a compressed one or not.
@@ -62,7 +66,9 @@ def add_tar_files(filename: str, *files: str, verbose: bool = False, compress_me
     return filename
 
 
-def add_compressed_tar_files(filename: str, *files: str, verbose: bool = False, compress_method: str = None) -> str:
+def add_compressed_tar_files(filename: Union[str, PathLike, bytes],
+                             *files: Union[str, PathLike, bytes],
+                             verbose: bool = False, compress_method: str = None) -> str:
     """ Add files to a previously created tar file.
 
     :param filename: The TAR file. It has to be a compressed one.
@@ -87,17 +93,21 @@ def add_compressed_tar_files(filename: str, *files: str, verbose: bool = False, 
     return filename
 
 
-def detect_compress_method(filename: str) -> str:
+def detect_compress_method(filename: Union[str, PathLike, bytes]) -> str:
     """ Detecting the compression method based on the extension of the filename.
 
     :param filename: The file path to the tar file.
     :return: 'gz', 'bz2' or 'xz' if the file is compressed by one of these methods, otherwise an empty string.
     """
-    extension = splitext(filename)[1]
+    extension = splitext(str(filename))[1]
+    if extension.endswith('.tgz'):
+        return 'gz'
     return extension[1:].lower() if extension[1:].lower() in COMPRESS_METHODS else ''
 
 
-def open_tar_file(tar_file: str, filename: str, compress_method: str = None) -> IO:
+def open_tar_file(tar_file: Union[str, PathLike, bytes],
+                  filename: Union[str, PathLike, bytes],
+                  compress_method: str = None) -> IO:
     """ Open a tar file and return a IO stream to the file.
 
     :param tar_file: The path to the tar file-.
@@ -119,7 +129,9 @@ def open_tar_file(tar_file: str, filename: str, compress_method: str = None) -> 
     return file
 
 
-def load_tar_json(tar_file: str, filename: str, compress_method: str = None) -> Any:
+def load_tar_json(tar_file: Union[str, PathLike, bytes],
+                  filename: Union[str, PathLike, bytes],
+                  compress_method: str = None) -> Any:
     """ Load an object from a JSON file stored in a tar file.
 
     :param tar_file: The path to the tar file-.
@@ -129,12 +141,14 @@ def load_tar_json(tar_file: str, filename: str, compress_method: str = None) -> 
     :return: The loaded object.
     """
     with open_tar_file(tar_file, filename, compress_method) as file:
-        if filename.lower().endswith('.gz'):
+        if str(filename).lower().endswith('.gz') or str(filename).lower().endswith('.tgz'):
             return json.load(gzip.open(file))
         return json.load(file)
 
 
-def load_tar_pickle(tar_file: str, filename: str, compress_method: str = None) -> Any:
+def load_tar_pickle(tar_file: Union[str, PathLike, bytes],
+                    filename: Union[str, PathLike, bytes],
+                    compress_method: str = None) -> Any:
     """ Load an object from a pickle file stored in a tar file.
 
     :param tar_file: The path to the tar file-.
@@ -144,12 +158,12 @@ def load_tar_pickle(tar_file: str, filename: str, compress_method: str = None) -
     :return: The loaded object.
     """
     with open_tar_file(tar_file, filename, compress_method) as file:
-        if filename.lower().endswith('.gz'):
+        if str(filename).lower().endswith('.gz') or str(filename).lower().endswith('.tgz'):
             return pickle.load(gzip.open(file))
         return pickle.load(file)
 
 
-def list_tar(tar_file: str, compress_method: str = None) -> List[TarInfo]:
+def list_tar(tar_file: Union[str, PathLike, bytes], compress_method: str = None) -> List[TarInfo]:
     """ Obtain a list with the information of each file or directory of a tar file.
 
     :param tar_file: The path to the tar file.
@@ -162,7 +176,10 @@ def list_tar(tar_file: str, compress_method: str = None) -> List[TarInfo]:
         return tar.getmembers()
 
 
-def extract_tar_file(tar_file: str, dest: str, filename: str, compress_method: str = None) -> str:
+def extract_tar_file(tar_file: Union[str, PathLike, bytes],
+                     dest: Union[str, PathLike, bytes],
+                     filename: Union[str, PathLike, bytes],
+                     compress_method: str = None) -> str:
     """ Extract a file inside of a tar archive.
 
     :param tar_file: The path to the tar file.
@@ -184,8 +201,10 @@ def extract_tar_file(tar_file: str, dest: str, filename: str, compress_method: s
     return tar_file
 
 
-def extract_tar_files(tar_file: str, dest: str, *files: str, force: bool = False,
-                      verbose: bool = False, compress_method: str = None) -> str:
+def extract_tar_files(tar_file: Union[str, PathLike, bytes],
+                      dest: Union[str, PathLike, bytes],
+                      *files: Union[str, PathLike, bytes],
+                      force: bool = False, verbose: bool = False, compress_method: str = None) -> str:
     """ Extract a file inside of a tar archive.
 
     :param tar_file: The path to the tar file.
@@ -208,8 +227,8 @@ def extract_tar_files(tar_file: str, dest: str, *files: str, force: bool = False
     return tar_file
 
 
-def extract_tar(tar_file: str, dest: str, force: bool = False, verbose: bool = False,
-                compress_method: str = None) -> str:
+def extract_tar(tar_file: Union[str, PathLike, bytes], dest: Union[str, PathLike, bytes],
+                force: bool = False, verbose: bool = False, compress_method: str = None) -> str:
     """ Extract all the files inside of a tar file in the specified directory.
 
     :param tar_file: The tar file to extract.
@@ -234,7 +253,9 @@ def extract_tar(tar_file: str, dest: str, force: bool = False, verbose: bool = F
     return tar_file
 
 
-def exist_tar_files(tar_file: str, *files: str, compress_method: str = None) -> bool:
+def exist_tar_files(tar_file: Union[str, PathLike, bytes],
+                    *files: Union[str, PathLike, bytes],
+                    compress_method: str = None) -> bool:
     """ Check if a sequence of files exist.
 
 

@@ -1,4 +1,5 @@
 import logging
+from os import PathLike
 from typing import List, Tuple, Union
 
 LOG_FORMAT = '%(asctime)s %(levelname)-8s %(message)s'
@@ -29,7 +30,7 @@ def get_log_level(name: str) -> int:
     return logging._nameToLevel[name.upper()]
 
 
-def config_log(level: Union[str, int], filename: str = None) -> None:
+def config_log(level: Union[str, int], filename: Union[str, PathLike, bytes] = None) -> None:
     """  Configure easily the logging using a default log and date format.
 
     :param level: The level name or number.

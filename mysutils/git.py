@@ -1,7 +1,8 @@
 from logging import getLogger
+from os import PathLike
 from os.path import exists
 from threading import Thread, Event
-from typing import Callable, List
+from typing import Callable, List, Union
 
 try:
     import git
@@ -14,8 +15,8 @@ logger = getLogger(__name__)
 
 class GitMonitor(object):
     """ A Git monitor to detect changes in a branch. """
-    def __init__(self, func: Callable, folder: str, repository: str, branch: str = None, force: bool = False,
-                 interval: int = 0) -> None:
+    def __init__(self, func: Callable, folder: Union[str, PathLike, bytes], repository: str, branch: str = None,
+                 force: bool = False, interval: int = 0) -> None:
         """ Monitor a chatbot data repository.
         :param func: The function to call when the repository changes or
           the first time if the force argument is activated.

@@ -111,6 +111,12 @@ class RemovableTemp(Removable, PathLike):
         """
         return self.__tmp
 
+    def __enter__(self) -> object:
+        """
+        :return: return self.
+        """
+        return self[0]
+
 
 def removable_tmp(folder: bool = False, suffix: str = '', prefix: str = '') -> PathLike:
     """ This function is used with "with" python command. As following:

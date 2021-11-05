@@ -56,7 +56,7 @@ def open_file(filename: Union[PathLike, str, bytes],
       See open() function for more information.
     :return: The opened stream.
     """
-    if filename.lower().endswith('.gz'):
+    if str(filename).lower().endswith('.gz') or str(filename).lower().endswith('.tgz'):
         return gzip.open(filename, mode, encoding=encoding, errors=errors, newline=newline)
     return open(filename, mode, buffering, encoding, errors, newline, close_fd, opener)
 
