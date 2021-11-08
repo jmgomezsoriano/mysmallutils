@@ -30,7 +30,6 @@ class GitMonitor(object):
         self.func = func
         self.folder = folder
         self.repository = repository
-        self.branch = branch if branch else 'master'
         self.force = force
         self.interval = interval
         self.updated = True
@@ -38,6 +37,8 @@ class GitMonitor(object):
         self.__thread = None
         self.__event = Event()
         self.repo = git.Repo(self.folder) if exists(self.folder) else git.Repo.clone_from(self.repository, self.folder)
+        self.branch = branch if branch else self.repo.active_branch.name
+
 
     def monitor(self, update: bool = True, **kwargs) -> None:
         """ Start the monitor.
