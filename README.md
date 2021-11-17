@@ -48,6 +48,7 @@ This module is divided into the following categories:
   * [JSON post](#json-post)
 * [Git monitor](#git-monitor)
 * [File unit tests](#unit-tests)
+* [Miscellany](#miscellany)
 
 # Install
 
@@ -1134,4 +1135,24 @@ class MyTestCase(unittest.FileTestCase):
     move_files('test/', '1.txt', '2.txt', '3.txt')
     self.assertExists('test/1.txt', 'test/2.txt', 'test/3.txt')
     self.assertNotExists('1.txt', '2.txt', '3.txt')
+```
+
+# Miscellany<a id="miscellany" name="miscellany"></a>
+
+Other no classifiable functions, like conditional() function that executes a function if a condition is True.
+For example, if you need to do the following:
+
+```python
+from mysutils.misc import conditional
+
+# The function to execute
+def my_func(a: int, b: str, **kwargs) -> str:
+    return f'Intent {a} of {b} for {kwargs["c"]}'
+
+# Instead of doing this:
+if a > b:
+  my_func(1, 'apple', c='Lucas')
+
+# You can do
+conditional(my_func, a > b, 1, 'apple', c='Lucas')
 ```
