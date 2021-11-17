@@ -7,6 +7,7 @@ configure logging, obtain metrics, download files, etc.
 
 This module is divided into the following categories:
 
+* [Install](#install)
 * [Collections](#collections)
   * [Head of a set or dict](#head-of-a-set-or-dict)
   * [List union](#list-union)
@@ -47,6 +48,18 @@ This module is divided into the following categories:
   * [JSON post](#json-post)
 * [Git monitor](#git-monitor)
 * [File unit tests](#unit-tests)
+
+# Install
+
+It is very easy to install:
+
+```bash
+# With pip
+pip install mysmallutils
+
+# With conda
+conda install mysmallutils
+```
   
 # Collections<a id="collections"></a>
 Some util functions for list, set or dict collections.
