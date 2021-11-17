@@ -1,4 +1,4 @@
-from typing import Union, List, Any, Callable
+from typing import Union, List, Any, Callable, Dict
 
 
 def head(obj: Union[dict, set], top: int = 10) -> Union[dict, set]:
@@ -142,3 +142,17 @@ def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Callable = Non
     n = n if n else len(lst)
     lst = lst[init:init + n]
     return [e for e in filter(filter_func, lst)] if filter_func else lst
+
+
+def merge_dict(d: List[Dict[Any, Any]]) -> Dict[Any, List[Any]]:
+    """ Convert a list of dictionaries with the same keys in a dictionary which each key contain the list of values.
+
+    :param d: The list of dictionaries to merge.
+    :return: The dictionary with merged values.
+    """
+    values = {}
+    for measure in d:
+        for key, value in measure.items():
+            values[key] = values[key] if key in values else []
+            values[key].append(value)
+    return values

@@ -1,6 +1,7 @@
 import unittest
 
-from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values
+from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, \
+    merge_dict
 from mysutils.collections import list_union
 
 
@@ -87,6 +88,10 @@ class MyTestCase(unittest.TestCase):
             mod_value(mod_key(del_keys(add_keys(d, country='Colombia'),
                                        'email'), 'name', 'firstname'), 'lastname', 'Smith'),
             {'firstname': 'Pablo', 'lastname': 'Smith', 'country': 'Colombia'})
+
+    def test_merge_dict(self) -> None:
+        lst = [{'a': 1, 'b': 10}, {'a': 2, 'b': 11}, {'a': 3, 'b': 12}]
+        self.assertDictEqual(merge_dict(lst), {'a': [1, 2, 3], 'b': [10, 11, 12]})
 
 
 if __name__ == '__main__':

@@ -204,7 +204,18 @@ d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'
 mod_values(d, name='Jhon', lastname='Smith')
 ```
 
+### Merge a list of directories<a id="merge-a-list-of-directories" name="merge-a-list-of-directories"></a>
 
+Convert a list of dictionaries with the same keys in a dictionary which each key contain the list of values of each 
+dictionary. For example:
+
+```python
+from mysutils.collections import merge_dict
+
+lst = [{'a': 1, 'b': 10}, {'a': 2, 'b': 11}, {'a': 3, 'b': 12}]
+d = merge_dict(lst)
+# The value of d is {'a': [1, 2, 3], 'b': [10, 11, 12]}
+```
 
 ## Filter lists<a id="filter-lists" name="filter-lists"></a>
 Filter a list.
