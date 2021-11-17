@@ -1,6 +1,6 @@
 import unittest
 
-from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys
+from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values
 from mysutils.collections import list_union
 
 
@@ -63,6 +63,30 @@ class MyTestCase(unittest.TestCase):
         self.assertListEqual([1, 2, 3, 4], filter_lst(lst, 4))
         self.assertListEqual([2, 3, 4], filter_lst(lst, 3, 1))
         self.assertListEqual([3, 5], filter_lst(lst, 5, 1, lambda x: x % 2 == 1))
+
+    def test_mod_dicts(self) -> None:
+        # Modify just one key: name by firstname
+        d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+        self.assertDictEqual(mod_key(d, 'name', 'firstname'),
+                             {'firstname': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'})
+        # Modify several keys: name by firstname and lastname by familyname
+        d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+        self.assertDictEqual(mod_keys(d, name='firstname', lastname='familyname'),
+                             {'firstname': 'Pablo', 'familyname': 'Escobar', 'email': 'pabloescobar@example.com'})
+        # Modify two values concatenating commands
+        d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+        self.assertDictEqual(mod_value(mod_value(d, 'name', 'Jhon'), 'lastname', 'Smith'),
+                             {'name': 'Jhon', 'lastname': 'Smith', 'email': 'pabloescobar@example.com'})
+        # Modify two values with just one sentence
+        d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+        self.assertDictEqual(mod_values(d, name='Jhon', lastname='Smith'),
+                             {'name': 'Jhon', 'lastname': 'Smith', 'email': 'pabloescobar@example.com'})
+        # Add the key 'country', remove 'email', change 'name' by 'firstname' and change the 'lastname' value:
+        d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+        self.assertDictEqual(
+            mod_value(mod_key(del_keys(add_keys(d, country='Colombia'),
+                                       'email'), 'name', 'firstname'), 'lastname', 'Smith'),
+            {'firstname': 'Pablo', 'lastname': 'Smith', 'country': 'Colombia'})
 
 
 if __name__ == '__main__':

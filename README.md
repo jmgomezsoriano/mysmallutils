@@ -10,7 +10,7 @@ This module is divided into the following categories:
 * [Collections](#collections)
   * [Head of a set or dict](#head-of-a-set-or-dict)
   * [List union](#list-union)
-  * [Add/remove dictionary items](#add-remove-dictionary-items)
+  * [Dictionary operations](#dictionary-operations)
   * [Filter lists](#filter-lists)
 * [Text](#text)
   * [Remove urls](#remove-urls)
@@ -41,7 +41,6 @@ This module is divided into the following categories:
 * [Configuration files](#configuration-files)
 * [Logging](#logging)
 * [Method synchronization](#method-synchronization)
-* Obtaining metrics
 * [Services and Web](#services-and-web)
   * [Download a file](#download-a-file)
   * [Services](#services)
@@ -97,7 +96,7 @@ dh(dict1, 5)
 dh(dict1)
 ```
 
-## List union<a id="list-union"></a>
+## List union<a id="list-union" name="list-union"></a>
 Create the union of two or more lists maintaining the order of elements.
 
 ```python
@@ -112,8 +111,23 @@ list_union(l1, l2, l3)
 list_union(l1, l3, l2)
 ```
 
-### Add/remove dictionary items<a id="add-remove-dictionary-items"></a>
+## Dictionary operations<a id="dictionary-operations" name="dictionary-operations"></a>
 
+With these functions you can do several operation over dictionaries in just one code line. 
+For example, if you want to add a dictionary item, remove other, and modify the keys and values of the dictionary,
+you can do the following:
+
+```python
+from mysutils.collections import add_keys, del_keys, mod_key, mod_value
+
+d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+# Add the key 'country', remove 'email', change 'name' by 'firstname' and change the 'lastname' value:
+mod_value(mod_key(del_keys(add_keys(d, country='Colombia'), 'email'), 'name', 'firstname'), 'lastname', 'Smith')
+```
+
+More information about these and other functions in the following subsections.
+
+### Add keys
 You can add several dictionary items in just one sentence and return the results.
 
 ```python
@@ -127,6 +141,8 @@ print(add_keys(d, a=1, b=4, c=3))
 # Or you can raise an error if the key already exists.
 print(add_keys(d, modify=False, a=1, b=4, c=3))
 ```
+
+### Delete keys
 
 You can remove one or more dictionary items by their keys and return the result with only one line.
 
@@ -145,7 +161,39 @@ print(del_keys(d.copy(), 'a', 'd'))
 print(del_keys(d.copy(), 'a', 'd', ignore_errors=False))
 ```
 
-## Filter lists<a id="filter-lists"></a>
+### Modify keys
+
+With just one sentence you can modify one or more keys without changing their values.
+
+```python
+from mysutils.collections import mod_key, mod_keys 
+
+# Modify just one key: name by firstname
+d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+mod_key(d, 'name', 'firstname')
+# Modify several keys: name by firstname and lastname by familyname
+d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+mod_keys(d, name='firstname', lastname='familyname')
+```
+
+### Modify values
+
+With just one sentence you can modify one or more values.
+
+```python
+from mysutils.collections import mod_value, mod_values 
+
+# Modify two values concatenating commands
+d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+mod_value(mod_value(d, 'name', 'Jhon'), 'lastname', 'Smith')
+# Modify two values with just one sentence
+d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+mod_values(d, name='Jhon', lastname='Smith')
+```
+
+
+
+## Filter lists<a id="filter-lists" name="filter-lists"></a>
 Filter a list.
 
 ```python
@@ -161,10 +209,10 @@ filter_lst(lst, 3, 1)
 filter_lst(lst, 5, 1, lambda x: x % 2 == 1)
 ```
 
-## Text<a id="text"></a>
+# Text<a id="text" name="text"></a>
 Simple functions related to text.
 
-## Remove urls<a id="remove-urls"></a>
+## Remove urls<a id="remove-urls" name="remove-urls"></a>
 Remove urls from a text.
 
 ```python
@@ -178,7 +226,7 @@ remove_urls(text)
 # 'This is a test!\n     Clean punctuation symbols and urls like this:  '
 ```
 
-## Clean text<a id="clean-text"></a>
+## Clean text<a id="clean-text" name="clean-text"></a>
 Remove punctuation symbols, urls and convert to lower.
 
 ```python
@@ -234,7 +282,7 @@ print('This is a ' + \
 With these functions you can open files, create json and pickle files, and execute external commands very easily.
 Moreover, only changing the file extension you can store the information in a compressed file with gzip.
 
-## Open files<a id="open-files"></a>
+## Open files<a id="open-files" name="open-files"></a>
 ```python
 from mysutils.file import open_file, force_open
 
@@ -256,7 +304,7 @@ with force_open('file.txt.gz', 'w') as file:
     pass
 ```
 
-## Read the first line of a file<a id="read-the-first-line-of-a-file"></a>
+## Read the first line of a file<a id="read-the-first-line-of-a-file" name="read-the-first-line-of-a-file"></a>
 This function only reads the first line of a text file (gzip compressed or not) and returns it without the \n if 
 it exists.
 
@@ -267,7 +315,7 @@ from mysutils.file import first_line
 token = first_line('token.txt')
 ```
 
-## Load and save json files<a id="load-and-save-json-files"></a>
+## Load and save json files<a id="load-and-save-json-files" name="load-and-save-json-files"></a>
 ```python
 from mysutils.file import load_json, save_json
 
@@ -302,7 +350,9 @@ from mysutils.tar import load_tar_json
 d = load_tar_json('data/file.tar.bz2', 'data.json')
 ```
 
-## Load and save pickle files<a id="load-and-save-pickle-files"></a>
+You can also load a JSON file from a [compressed tar file](#open-and-load-files-inside-a-tar-archive).
+
+## Load and save pickle files<a id="load-and-save-pickle-files" name="load-and-save-pickle-files"></a>
 ```python
 from mysutils.file import load_pickle, save_pickle
 
@@ -336,8 +386,9 @@ from mysutils.tar import load_tar_pickle
 # Load a compressed pickle (data.pkl.gz) from a compressed tar file (file.tar.bz2)
 d = load_tar_pickle('data/file.tar.bz2', 'data.pkl.gz')
 ```
+You can also load a pickle file from a [compressed tar file](#open-and-load-files-inside-a-tar-archive).
 
-## Load and save Yaml files<a id="load-and-save-yaml-files"></a>
+## Load and save Yaml files<a id="load-and-save-yaml-files" name="load-and-save-yaml-files"></a>
 These functions require to install the PyYaml module with the following command:
 ```bash
 pip install PyYAML~=5.4.1
@@ -376,8 +427,9 @@ from mysutils.yaml import load_tar_yaml
 # Load a yaml (data.yaml) from a compressed tar file (file.tar.xz)
 d = load_tar_yaml('data/file.tar.xz', 'data.yaml')
 ```
+You can also load a YAML file from a [compressed tar file](#open-and-load-files-inside-a-tar-archive).
 
-## Copy files<a id="copy-files"></a>
+## Copy files<a id="copy-files" name="copy-files"></a>
 
 A very simple way to copy several files into a directory. For example:
 
@@ -392,7 +444,7 @@ copy_files('data/', 'file1.txt', 'file2.txt')
 copy_files('data/', 'file1.txt', 'file2.txt', force=False)
 ```
 
-## Remove files<a id="remove-files"></a>
+## Remove files<a id="remove-files" name="remove-files"></a>
 You can also remove several files and empty folders with just one sentence, using the remove_files() function:
 
 ```python
@@ -437,7 +489,7 @@ with removable_files('test2.json', 'data/test1.json', 'data/') as (f1, f2, f3):
     pass
 ```
 
-## Check if exists several files<a id="check-if-exists-several-files"></a>
+## Check if exists several files<a id="check-if-exists-several-files" name="check-if-exists-several-files"></a>
 With the function exist_files() you can check if several files exist or not.
 Its usage is very simple, for example:
 
@@ -457,7 +509,7 @@ are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 not_are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 ```
 
-## Count lines<a id="count-lines"></a> 
+## Count lines<a id="count-lines" name="count-lines"></a> 
 Count the number of lines of a file. If the file is gzip compressed, then decompress it first.
 
 ```python
@@ -470,7 +522,7 @@ with open_file('text.txt.gz', 'wt') as file:
 count_lines('text.txt.gz')
 ```
 
-## Touch<a id="touch"></a>
+## Touch<a id="touch" name="touch"></a>
 Create several empty files.
 
 ```python
@@ -483,7 +535,7 @@ touch('text.txt')
 touch('1.txt', '2.txt', '3.txt')
 ```
 
-## Cat<a id="cat"></a>
+## Cat<a id="cat" name="cat"></a>
 Print the content of a file.
 
 ```python
@@ -501,7 +553,7 @@ with open_file('text_cat.txt.gz', 'wt') as file:
     cat('text.txt.gz', file)
 ```
 
-## Read file<a id="read-file"></a>
+## Read file<a id="read-file" name="read-file"></a>
 Read all the file and return a list with its lines.
 
 ```python
@@ -515,7 +567,7 @@ lines = read_file('text.txt.gz')
 lines = read_file('text.txt.gz', False)
 ```
 
-## Make directories<a id="make-directories"></a>
+## Make directories<a id="make-directories" name="make-directories"></a>
 Create one or more directories but if them already exist, then do nothing.
 
 ```python
@@ -531,7 +583,7 @@ mkdirs('new_folder')
 mkdirs('folder1', 'folder2', 'folder3')
 ```
 
-## Move files<a id="move-files"></a>
+## Move files<a id="move-files" name="move-files"></a>
 Move several files at once.
 
 ```python
@@ -547,7 +599,7 @@ move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
 move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
 ```
 
-## List files, or get the first and last file<a id="#list-files-or-get-the-first-and-last-file"></a>
+## List files, or get the first and last file<a id="#list-files-or-get-the-first-and-last-file" name="#list-files-or-get-the-first-and-last-file"></a>
 Functions to list a folder and obtain the first or last file of a folder.
 
 ```python
@@ -584,7 +636,7 @@ first_file('test/', r'.*\.txt$')
 last_file('test/', r'.*\.txt$')
 ```
 
-## Generate output file paths<a id="generate-output-file-paths"></a>
+## Generate output file paths<a id="generate-output-file-paths" name="generate-output-file-paths"></a>
 Sometimes it is useful to generate a file name taken into account some parameters and the current timestamp.
 This function generates this file paths.
 
@@ -677,10 +729,10 @@ with removable_files('data1', 'data2', recursive=True) as (d1, d2):
 # Remove automatically the folders and their files
 ```
 
-# Compressing files<a id="compressing-files"></a>
+# Compressing files<a id="compressing-files" name="compressing-files"></a>
 With this library there are two ways to compress files: single gzip files and tar files.
 
-## Gzip<a id="gzip"></a>
+## Gzip<a id="gzip" name="gzip"></a>
 
 ```python
 from mysutils.file import gzip_compress, gzip_decompress, save_json
@@ -699,7 +751,7 @@ gzip_compress('file.json', 'file.json.gz')
 gzip_decompress('file.json.gz', 'file2.json')
 ```
 
-## Tar<a id="tar"></a>
+## Tar<a id="tar" name="tar"></a>
 Some utils to create, extract and use tar files.
 
 All the examples of this section assume you have the files 'test.json' and 'test.json.gz', for instance, with
@@ -805,7 +857,7 @@ add_tar_files('test.tar.gz', 'test.json', 'test1.txt')
 add_tar_files('test.tar', 'test.json', 'test1.txt', compress_method='gz')
 ```
 
-### Open and load files inside a tar archive<a id="open-and-load-files-inside-a-tar-archive"></a>
+### Open and load files inside a tar archive<a id="open-and-load-files-inside-a-tar-archive" name="open-and-load-files-inside-a-tar-archive"></a>
 With these functions it is possible to open a stream to or load a yaml, json or pickle of a specific file inside a tar 
 archive.
 
@@ -842,7 +894,7 @@ exist_tar_files('test.tar.gz', 'test.json', 'test.json.gz')
 exist_tar_files('test.tar.gz', 'other.json', 'test.json.gz')
 ```
 
-# External commands<a id="external-commands"></a>
+# External commands<a id="external-commands" name="external-commands"></a>
 This module only contains a function that execute an external command and return the standard and error outputs.
 Its execution is very simple:
 
@@ -860,7 +912,7 @@ print(err)
 std, err = execute_command('echo -n "This is a test"')
 ```
 
-# Configuration files<a id="configuration-files"></a>
+# Configuration files<a id="configuration-files" name="configuration-files"></a>
 
 Too many times, when you deal with config files or some kind of configuration cluster server, you become crazy
 because there are a small spelling mistake in the name of a configuration parameter, and you code does not work 
@@ -895,7 +947,7 @@ config = {
 parse_config(config, PARAM_DEFINITION, True)
 ```
 
-# Logging<a id="logging"></a>
+# Logging<a id="logging" name="logging"></a>
 Some functions to configure and to get information about logging. 
 
 ```python
@@ -917,7 +969,7 @@ get_log_levels()
 get_log_level('DEBUG')
 ```
 
-# Method synchronization<a id="method-synchronization"></a>
+# Method synchronization<a id="method-synchronization" name="method-synchronization"></a>
 Sometimes it is necessary to create a synchronized method.
 With @synchronized you can create a synchronized method easily:
 
@@ -948,13 +1000,9 @@ sleep(1)
 obj1.calculate()
 ```
 
-# Obtaining metrics<a id="obtaining-metrics"></a>
+# Services and Web<a id="services-and-web" name="services-and-web"></a>
 
-TODO
-
-# Services and Web<a id="services-and-web"></a>
-
-## Download a file<a id="download-a-file"></a>
+## Download a file<a id="download-a-file" name="download-a-file"></a>
 This function requires to install the Requests module with the following command:
 
 ```bash
@@ -970,16 +1018,51 @@ from mysutils.web import download
 download('<url-to-download>', 'dest/file.txt')
 ```
 
-## Services<a id="services"></a>
+## Services<a id="services" name="services"></a>
 In the contexts of a web service, you can need the base real final url to a service, that means, 
 the protocol, IP or hostname and path to the service. 
-You can obtain this with endpoint() function.
+You can obtain this with endpoint() function. This function is based on javascript, 
+then it is necessary to use inside an HTML document.
 
-An example of how to use:
+An example, in all my services I create a start point (usually home page) to describe briefly how to use.
+Depending on if I deploy this service locally or in the job server, the path to the service changes.
+However, I would not like to remember to modify each time the service or any parameter. 
+To avoid this, I use the endpoint() function in the HTML instructions like this:
 
-TO DO
+```python
+from fastapi import FastAPI, HTTPException
+from mysutils.service import endpoint
 
-## JSON post<a id="json-post"></a>
+app = FastAPI()
+
+@app.get('/', response_class=HTMLResponse)
+def home() -> str:
+    """ Show the help.
+    :return: The HTML code to show the help.
+    """
+    return f'<h1>My service</h1>\n' \
+           '<p>With these services, you can do wonderful things. ' \
+           'For example, with this one you can dominate the world:</p>\n' \
+           '<code>' + \
+           f'curl -X GET -L -i \'{endpoint("dominate")}?num_countries=&lt;NUM&gt;\'' \
+           '</code>\n' \
+
+```
+
+If your service is in the URL https://www.example.com/services/dominate, this will generate a page like this:
+
+> # My service
+> With this service, you can do wonderful things. For example, with this one you can dominate the world:
+> ```bash
+> curl -X GET -L -i 'https://www.example.com/services/dominate?num_countries=&lt;NUM&gt;'
+> ```
+
+However, if you execute this command locally in port 8080,
+the last URL will be: http://localhost:8080/dominate?num_countries=<NUM>.
+
+This method works in both, FastAPI or Flask, and it maybe can work also in other server environments.
+
+## JSON post<a id="json-post" name="json-post"></a>
 A very easy way to send a dictionary by means to http post, ot a json service.
 
 ```python
@@ -989,7 +1072,7 @@ from mysutils.request import json_post
 json_post('https://postman-echo.com/post', {"msg": "Hello world!"})
 ```
 
-# Git monitor<a id="git-monitor"></a>
+# Git monitor<a id="git-monitor" name="git-monitor"></a>
 Monitor a Git repository to check if there is any change in the remote repository with respect the local one.
 
 ```python
@@ -1013,7 +1096,7 @@ monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name', interval=30
 monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name', force=True, interval=30)
 ```
 
-# File unit tests<a id="unit-tests"></a>
+# File unit tests<a id="unit-tests" name="unit-tests"></a>
 A small class that inherits from TestCase and have methods to assert the typical file options like exists or isdir.
 
 ```python
