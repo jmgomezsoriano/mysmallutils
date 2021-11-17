@@ -80,6 +80,56 @@ def add_keys(d: dict, modify: bool = True, **kwargs) -> dict:
     return d
 
 
+def mod_key(d: dict, old_key: Any, new_key: Any) -> dict:
+    """ Modify the name of a dictionary key without change anything else.
+
+    :param d: The dictionary to modify.
+    :param old_key: The old key to replace for.
+    :param new_key: The new key to replace with.
+    :return: The modified dictionary.
+    """
+    value = d[old_key]
+    del_keys(d, old_key)[new_key] = value
+    return d
+
+
+def mod_keys(d: dict, **kwargs) -> dict:
+    """ Modify the names of a dictionary keys without change anything else with just an instruction.
+
+    :param d: The dictionary to modify.
+    :param kwargs: The old keys assigned to the name of the new ones.
+    :return: The modified dictionary.
+    """
+    for old_key, new_key in kwargs.items():
+        value = d[old_key]
+        del_keys(d, old_key)[new_key] = value
+    return d
+
+
+def mod_value(d: dict, key: Any, value: Any) -> dict:
+    """ Modify the value of a dictionary item without change anything else and return the modified dictionary.
+
+    :param d: The dictionary to modify.
+    :param key: The item key to modify.
+    :param value: The value to replace with.
+    :return: The modified dictionary.
+    """
+    d[key] = value
+    return d
+
+
+def mod_values(d: dict, **kwargs) -> dict:
+    """ Modify several value of a dictionary items with just an instruction.
+
+    :param d: The dictionary to modify.
+    :param kwargs: The keys and their values to modify.
+    :return: The modified dictionary.
+    """
+    for key, value in kwargs.items():
+        d[key] = value
+    return d
+
+
 def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Callable = None) -> list:
     """ Filter a list.
 

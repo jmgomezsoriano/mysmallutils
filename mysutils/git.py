@@ -39,7 +39,6 @@ class GitMonitor(object):
         self.repo = git.Repo(self.folder) if exists(self.folder) else git.Repo.clone_from(self.repository, self.folder)
         self.branch = branch if branch else self.repo.active_branch.name
 
-
     def monitor(self, update: bool = True, **kwargs) -> None:
         """ Start the monitor.
         :param update: If the local repository is updated after to check changes.
