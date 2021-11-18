@@ -1,4 +1,4 @@
-from typing import Union, List, Any, Callable, Dict
+from typing import Union, List, Any, Callable, Dict, Iterable
 
 
 def head(obj: Union[dict, set], top: int = 10) -> Union[dict, set]:
@@ -144,15 +144,29 @@ def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Callable = Non
     return [e for e in filter(filter_func, lst)] if filter_func else lst
 
 
-def merge_dict(d: List[Dict[Any, Any]]) -> Dict[Any, List[Any]]:
+def merge_dicts(dicts: List[Dict[Any, Any]]) -> Dict[Any, List[Any]]:
     """ Convert a list of dictionaries with the same keys in a dictionary which each key contain the list of values.
 
-    :param d: The list of dictionaries to merge.
+    :param dicts: The list of dictionaries to merge.
     :return: The dictionary with merged values.
     """
     values = {}
-    for measure in d:
-        for key, value in measure.items():
+    for d in dicts:
+        for key, value in d.items():
             values[key] = values[key] if key in values else []
             values[key].append(value)
     return values
+
+
+def merge_tuples(tuples: Iterable[tuple]) -> tuple:
+    """ Convert a list of dictionaries with the same keys in a dictionary which each key contain the list of values.
+       All the tuples has to have the same length.
+
+    :param tuples: The list of tuples to merge.
+    :return: The tuple with merged values, in which each element contain a list with the values.
+    """
+    result = tuple([] for _ in list(tuples)[0]) if tuples else ()
+    for t in tuples:
+        for i, e in enumerate(t):
+            result[i].append(e)
+    return result

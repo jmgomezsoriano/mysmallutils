@@ -13,6 +13,7 @@ This module is divided into the following categories:
   * [List union](#list-union)
   * [Dictionary operations](#dictionary-operations)
   * [Filter lists](#filter-lists)
+  * [Tuples](#tuples)
 * [Text](#text)
   * [Remove urls](#remove-urls)
   * [Clean text](#clean-text)
@@ -211,11 +212,10 @@ Convert a list of dictionaries with the same keys in a dictionary which each key
 dictionary. For example:
 
 ```python
-from mysutils.collections import merge_dict
+from mysutils.collections import merge_dicts
 
 lst = [{'a': 1, 'b': 10}, {'a': 2, 'b': 11}, {'a': 3, 'b': 12}]
-d = merge_dict(lst)
-# The value of d is {'a': [1, 2, 3], 'b': [10, 11, 12]}
+d = merge_dicts(lst)  # The value of d is {'a': [1, 2, 3], 'b': [10, 11, 12]}
 ```
 
 ## Filter lists<a id="filter-lists" name="filter-lists"></a>
@@ -232,6 +232,17 @@ filter_lst(lst, 4)
 filter_lst(lst, 3, 1)
 # Returns [3, 5]
 filter_lst(lst, 5, 1, lambda x: x % 2 == 1)
+```
+
+## Tuples<a id="tuples" name="tuples"></a>
+
+Convert a list of tuples into a tuple of lists. For example:
+
+```python
+from mysutils.collections import merge_tuples
+
+lst = [(1, 10), (2, 11), (3, 12)]
+t = merge_tuples(lst)  # The value of t is ([1, 2, 3], [10, 11, 12])
 ```
 
 # Text<a id="text" name="text"></a>
