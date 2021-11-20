@@ -20,7 +20,7 @@ This module is divided into the following categories:
   * [Text markup](#text-markup)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
-  * [Read the first line of a file](#read-the-first-line-of-a-file)
+  * [Read files](#read-files)
   * [Load and save json files](#load-and-save-json-files)
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)
@@ -30,10 +30,9 @@ This module is divided into the following categories:
   * [Count lines](#count-lines)
   * [Touch](#touch)
   * [Cat](#cat)
-  * [Read file](#read-file)
   * [Make directories](#make-directories)
   * [Move files](#move-files)
-  * [List files, or get the first and last file](#list-files-or-get-the-first-and-last-file)
+  * [List files](#list-files)
   * [Generate output file paths](#generate-output-file-paths)
 * [Removable files](#remove-files)
 * [Compressing files](#compressing-files)
@@ -340,17 +339,6 @@ with force_open('file.txt.gz', 'w') as file:
     pass
 ```
 
-## Read the first line of a file<a id="read-the-first-line-of-a-file" name="read-the-first-line-of-a-file"></a>
-This function only reads the first line of a text file (gzip compressed or not) and returns it without the \n if 
-it exists.
-
-```python
-from mysutils.file import first_line
-
-# Read the first line of the file token.txt ignoring the character \n at the end of the line.
-token = first_line('token.txt')
-```
-
 ## Load and save json files<a id="load-and-save-json-files" name="load-and-save-json-files"></a>
 ```python
 from mysutils.file import load_json, save_json
@@ -546,7 +534,7 @@ not_are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
 ```
 
 ## Count lines<a id="count-lines" name="count-lines"></a> 
-Count the number of lines of a file. If the file is gzip compressed, then decompress it first.
+Count the number of lines of one or several files. If the file is gzip compressed, then decompress it first.
 
 ```python
 from mysutils.file import open_file, count_lines
@@ -556,6 +544,9 @@ with open_file('text.txt.gz', 'wt') as file:
     print('Second line', file=file)
 # Return 2
 count_lines('text.txt.gz')
+
+# Count lines of several files
+count_lines('file.txt.gz', 'file.txt')
 ```
 
 ## Touch<a id="touch" name="touch"></a>
@@ -590,10 +581,10 @@ with open_file('text_cat.txt.gz', 'wt') as file:
 ```
 
 ## Read file<a id="read-file" name="read-file"></a>
-Read all the file and return a list with its lines.
+Here is included functions to read a file of several forms.
 
 ```python
-from mysutils.file import read_file
+from mysutils.file import read_file, first_line, last_line, head, tail, body, read_files
 
 # Read the file 'text.txt'
 lines = read_file('text.txt')
@@ -601,6 +592,20 @@ lines = read_file('text.txt')
 lines = read_file('text.txt.gz')
 # Read the compressed file 'text.txt.gz' removing the newline character if it exists
 lines = read_file('text.txt.gz', False)
+
+# Read the first line of the file token.txt ignoring the character \n at the end of the line.
+token = first_line('token.txt')
+# Read the last line of the file
+line = last_line('credits.txt')
+# Read the top 20 lines of the file
+top_lines = head('README.md', 20)
+# Read the last 20 lines of the file
+last_lines = tail('README.md', 20)
+# Read the lines between the 5 to 20
+body_lines = body('README.md', 5, 20)
+
+# Read several files at once and return a unique list with the content of all the files
+lines = read_files('README.md', 'requirements.txt')
 ```
 
 ## Make directories<a id="make-directories" name="make-directories"></a>
@@ -635,7 +640,7 @@ move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
 move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
 ```
 
-## List files, or get the first and last file<a id="#list-files-or-get-the-first-and-last-file" name="#list-files-or-get-the-first-and-last-file"></a>
+## List files<a id="list-files" name="list-files"></a>
 Functions to list a folder and obtain the first or last file of a folder.
 
 ```python
@@ -1167,3 +1172,7 @@ if a > b:
 # You can do
 conditional(my_func, a > b, 1, 'apple', c='Lucas')
 ```
+
+# How to collaborate
+
+I you want to collaborate with this project, please, <a href="mailto:jmgomez.soriano@gmail.com>contact with me</a>.

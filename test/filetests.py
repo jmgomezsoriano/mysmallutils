@@ -6,7 +6,7 @@ from mysutils.command import execute_command
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
-    first_file, last_file, output_file_path, list_dir
+    first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -266,6 +266,34 @@ class FileTestCase(unittest.FileTestCase):
         self.assertListEqual(list_dir('data'), ['data/1.txt', 'data/2.txt', 'data/3.out'])
         self.assertListEqual(list_dir('data', r'.*\.out$'), ['data/3.out'])
         remove_files('data', recursive=True)
+
+    def test_head(self) -> None:
+        self.assertListEqual(head('README.md', 2), ['# MySmallUtils', 'Small Python utils to do life easier.'])
+        self.assertLess(len(head('README.md', 100000)), 100000)
+
+    def test_body(self) -> None:
+        self.assertListEqual(body('README.md', 0, 2), ['# MySmallUtils', 'Small Python utils to do life easier.'])
+        self.assertListEqual(body('README.md', 2, 2),
+                             ['', 'This includes tools to execute external commands, compress files,'])
+
+    def test_tail(self) -> None:
+        self.assertListEqual(tail('README.md', 100000)[:2],
+                             ['# MySmallUtils', 'Small Python utils to do life easier.'])
+        self.assertListEqual(tail('README.md', 3),
+                             ['# How to collaborate',
+                              '',
+                              'I you want to collaborate with this project, please, '
+                              '<a href="mailto:jmgomez.soriano@gmail.com>contact with me</a>.'])
+
+    def test_tail(self) -> None:
+        self.assertEqual(last_line('README.md'),
+                              'I you want to collaborate with this project, please, '
+                              '<a href="mailto:jmgomez.soriano@gmail.com>contact with me</a>.')
+
+    def test_read_files(self) -> None:
+        n1, n2 = count_lines('README.md'), count_lines('requirements.txt')
+        self.assertEqual(count_lines('requirements.txt', 'README.md'), n1 + n2)
+        self.assertEqual(len(read_files('requirements.txt', 'README.md')), n1 + n2)
 
 
 if __name__ == '__main__':

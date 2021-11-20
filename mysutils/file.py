@@ -210,6 +210,56 @@ def first_line(filename: Union[PathLike, str, bytes]) -> str:
         return line[:-1] if line.endswith('\n') else line
 
 
+def last_line(filename: Union[PathLike, str, bytes]) -> str:
+    """ Read the last line of a file removing the final \n if it exists.
+
+    :param filename: The filename to read.
+    :return: A string with the last line.
+    """
+    return read_file(filename, False)[-1]
+
+
+def head(filename: Union[PathLike, str, bytes], n: int = 10) -> List[str]:
+    """ Return a list of with the first n lines of the file.
+    :param filename: The file.
+    :param n: The number of lines.
+    :return: A list of string with the top n lines of the file without the \n.
+    """
+    with open_file(filename) as file:
+        lines = []
+        for i, line in enumerate(file.readlines()):
+            lines.append(line[:-1] if line.endswith('\n') else line)
+            if i >= n - 1:
+                return lines
+        return lines
+
+
+def body(filename: Union[PathLike, str, bytes], init: int, n: int = 10) -> List[str]:
+    """ Return a part of a text file from a line to another.
+    :param filename: The file.
+    :param init: The initial line to start reading.
+    :param n: The number of lines to read.
+    :return: A list of string with the lines between init and init + n without the \n.
+    """
+    with open_file(filename) as file:
+        lines = []
+        for i, line in enumerate(file.readlines()):
+            if i >= init:
+                lines.append(line[:-1] if line.endswith('\n') else line)
+            if i >= (init + n) - 1:
+                return lines
+        return lines
+
+
+def tail(filename: Union[PathLike, str, bytes], n: int = 10) -> List[str]:
+    """ Return a list of with the last n lines of the file.
+    :param filename: The file.
+    :param n: The number of lines.
+    :return: A list of string with the last n lines of the file without the \n.
+    """
+    return read_file(filename, False)[-n:]
+
+
 def exist_files(*files: Union[PathLike, str, bytes]) -> bool:
     """ Check if a sequence of files exist.
 
@@ -258,16 +308,17 @@ def not_are_dir(*files: Union[PathLike, str, bytes]) -> bool:
     return True
 
 
-def count_lines(filename: Union[PathLike, str, bytes]) -> int:
+def count_lines(*filenames: Union[PathLike, str, bytes]) -> int:
     """ Calculate the number of lines in a file.
 
-    :param filename: The filename to calculate its size.
-    :return: The number of lines of the file.
+    :param filenames: The list of filenames to calculate its size.
+    :return: The number of lines of all the files.
     """
     count = 0
-    with open_file(filename) as file:
-        for _ in file:
-            count += 1
+    for filename in filenames:
+        with open_file(filename) as file:
+            for _ in file:
+                count += 1
     return count
 
 
@@ -302,6 +353,19 @@ def read_file(filename: Union[PathLike, str, bytes], line_break: bool = True) ->
     """
     with open_file(filename, 'rt') as file:
         return [line[:-1] if not line_break and line[-1] == '\n' else line for line in file]
+
+
+def read_files(*filenames: Union[PathLike, str, bytes], line_break: bool = True) -> List[str]:
+    """ Read a file (compressed with gzip or not) and return in a list its content, each line in a list element.
+
+    :param filename: The path to the file. If the file name ends with ".gz", this function decompressed it first.
+    :param line_break: If True, the newline character is conserved, otherwise is removed.
+    :return: An array with the contents of the file.
+    """
+    result = []
+    for filename in filenames:
+        result.extend(read_file(filename, line_break))
+    return result
 
 
 def mkdirs(*paths: Union[PathLike, str, bytes], mode: int = 0o777,

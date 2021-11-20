@@ -144,7 +144,7 @@ def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Callable = Non
     return [e for e in filter(filter_func, lst)] if filter_func else lst
 
 
-def merge_dicts(dicts: List[Dict[Any, Any]]) -> Dict[Any, List[Any]]:
+def merge_dicts(dicts: Iterable[Dict[Any, Any]]) -> Dict[Any, List[Any]]:
     """ Convert a list of dictionaries with the same keys in a dictionary which each key contain the list of values.
 
     :param dicts: The list of dictionaries to merge.
