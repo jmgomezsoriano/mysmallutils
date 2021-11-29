@@ -44,7 +44,8 @@ This module is divided into the following categories:
 * [Method synchronization](#method-synchronization)
 * [Services and Web](#services-and-web)
   * [Download a file](#download-a-file)
-  * [Services](#services)
+  * [Endpoint](#endpoint)
+  * [Generate service help](#generate-service-help)
   * [JSON post](#json-post)
 * [Git monitor](#git-monitor)
 * [File unit tests](#unit-tests)
@@ -1064,7 +1065,7 @@ from mysutils.web import download
 download('<url-to-download>', 'dest/file.txt')
 ```
 
-## Services<a id="services" name="services"></a>
+## Endpoint<a id="endpoint" name="endpoint"></a>
 In the contexts of a web service, you can need the base real final url to a service, that means, 
 the protocol, IP or hostname and path to the service. 
 You can obtain this with endpoint() function. This function is based on javascript, 
@@ -1107,6 +1108,35 @@ However, if you execute this command locally in port 8080,
 the last URL will be: http://localhost:8080/dominate?num_countries=<NUM>.
 
 This method works in both, FastAPI or Flask, and it maybe can work also in other server environments.
+
+## Generate service help<a id="generate-service-help" name="generate-service-help"></a>
+
+You can create a page with documentation about your service from a README.md or another Markdown file with the function
+generate_service_help(). For example:
+
+```python
+from mysutils.fastapi import gen_service_help
+from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException
+
+app = FastAPI()
+
+
+@app.get('/help', response_class=HTMLResponse)
+def home() -> str:
+  """ Show the help.
+  :return: The HTML code to show the help.
+  """
+  return gen_service_help('Page title', 'README.md', '# Web API',
+                          '/service1', '/service2', '/service3')
+```
+
+This way, it will generate a Web page with the title 'Page title', using the information in the README.md file
+from the section '# Web API' for the service endpoints 'service1', 'service2' and 'service3'.
+
+If the endpoints are used, then, if in the readme threre are any url like 'https?://.*/serviceX', 
+then it will return the real URL of the service.
+
 
 ## JSON post<a id="json-post" name="json-post"></a>
 A very easy way to send a dictionary by means to http post, ot a json service.
