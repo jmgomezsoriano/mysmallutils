@@ -368,6 +368,48 @@ def read_files(*filenames: Union[PathLike, str, bytes], line_break: bool = True)
     return result
 
 
+def read_from(filename: Union[PathLike, str, bytes],
+              regex: str = '',
+              ignore_case: bool = False,
+              line_break: bool = True) -> List[str]:
+    """ Read from the line that matches with a regular regular.
+
+    :param filename: The path to the file.
+    :param regex: The regular expression.
+    :param ignore_case: If ignore case or not.
+    :param line_break: If True, the newline character is conserved, otherwise is removed.
+    :return: A list of strings with each file line.
+    """
+    pattern = re.compile(regex, flags=re.IGNORECASE if ignore_case else 0)
+    from_detected, lines = not regex, []
+    with open_file(filename, 'rt') as file:
+        for line in file:
+            from_detected = from_detected or pattern.match(line)
+            if from_detected:
+                lines.append(line[:-1] if not line_break and line[-1] == '\n' else line)
+    return lines
+
+
+def read_until(filename: Union[PathLike, str, bytes], regexp: str = '',
+               ignore_case: bool = False, line_break: bool = True) -> List[str]:
+    """ Read until the line that matches with a regular regular.
+
+    :param filename: The path to the file.
+    :param regexp: The regular expression.
+    :param ignore_case: If ignore case or not.
+    :param line_break: If True, the newline character is conserved, otherwise is removed.
+    :return: A list of strings with each file line.
+    """
+    pattern = re.compile(regexp, flags=re.IGNORECASE if ignore_case else 0)
+    until_detected, lines = False, []
+    with open_file(filename, 'rt') as file:
+        for line in file:
+            until_detected = until_detected or regexp and pattern.match(line)
+            if not until_detected:
+                lines.append(line[:-1] if not line_break and line[-1] == '\n' else line)
+    return lines
+
+
 def mkdirs(*paths: Union[PathLike, str, bytes], mode: int = 0o777,
            dir_fd: int = None) -> Tuple[Union[PathLike, str, bytes]]:
     """ Create one or several directories ignoring the error if the file or folder already exists.

@@ -6,8 +6,23 @@ from mysutils.command import execute_command
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
-    first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files
+    first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files, read_from, read_until
+from mysutils.tmp import removable_files
 from mysutils.yaml import load_yaml, save_yaml
+
+
+def generate_example_files():
+    with open_file('test1.txt', 'wt') as f:
+        for i in range(10):
+            print(i, file=f)
+    with open_file('test2.txt.gz', 'wt') as f:
+        for i in range(65, 75):
+            print(chr(i), file=f)
+    return ['test1.txt', 'test2.txt.gz']
+
+
+def remove_example_files():
+    remove_files('test1.txt', 'test2.txt.gz')
 
 
 class FileTestCase(unittest.FileTestCase):
@@ -294,6 +309,33 @@ class FileTestCase(unittest.FileTestCase):
         n1, n2 = count_lines('README.md'), count_lines('requirements.txt')
         self.assertEqual(count_lines('requirements.txt', 'README.md'), n1 + n2)
         self.assertEqual(len(read_files('requirements.txt', 'README.md')), n1 + n2)
+
+    def test_read_from(self) -> None:
+        with removable_files(*generate_example_files()):
+            lines = read_from('test1.txt')
+            self.assertEqual(len(lines), 10)
+            lines = read_until('test1.txt')
+            self.assertEqual(len(lines), 10)
+            lines = read_from('test1.txt', '5')
+            self.assertEqual(len(lines), 5)
+            lines = read_until('test1.txt', '5')
+            self.assertEqual(len(lines), 5)
+            lines = read_from('test2.txt.gz')
+            self.assertEqual(len(lines), 10)
+            lines = read_until('test2.txt.gz')
+            self.assertEqual(len(lines), 10)
+            lines = read_from('test2.txt.gz', 'F')
+            self.assertEqual(len(lines), 5)
+            lines = read_until('test2.txt.gz', 'F')
+            self.assertEqual(len(lines), 5)
+            lines = read_from('test1.txt', '10')
+            self.assertEqual(len(lines), 0)
+            lines = read_until('test2.txt.gz', 'f')
+            self.assertEqual(len(lines), 10)
+            lines = read_from('test2.txt.gz', '^f', True)
+            self.assertEqual(len(lines), 5)
+            lines = read_until('test2.txt.gz', '^f', True)
+            self.assertEqual(len(lines), 5)
 
 
 if __name__ == '__main__':

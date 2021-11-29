@@ -584,7 +584,8 @@ with open_file('text_cat.txt.gz', 'wt') as file:
 Here is included functions to read a file of several forms.
 
 ```python
-from mysutils.file import read_file, first_line, last_line, head, tail, body, read_files
+from mysutils.file import read_file, first_line, last_line, head, tail, body, \
+  read_files, read_from, read_until
 
 # Read the file 'text.txt'
 lines = read_file('text.txt')
@@ -603,6 +604,10 @@ top_lines = head('README.md', 20)
 last_lines = tail('README.md', 20)
 # Read the lines between the 5 to 20
 body_lines = body('README.md', 5, 20)
+# Read lines from the line that starts with "# Text" appears to the end of file
+read_from('README.md', r'^# Text')
+# Read lines until the line that starts with "# Text" is found
+read_until('README.md', r'^# Text')
 
 # Read several files at once and return a unique list with the content of all the files
 lines = read_files('README.md', 'requirements.txt')
