@@ -1,6 +1,9 @@
 import logging
+from json import dumps
 from os import PathLike
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Any, Callable
+
+from mysutils.text import markup, AnsiCodes
 
 LOG_FORMAT = '%(asctime)s %(levelname)-8s %(message)s'
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -41,3 +44,23 @@ def config_log(level: Union[str, int], filename: Union[str, PathLike, bytes] = N
         logging.basicConfig(level=level, filename=filename, format=LOG_FORMAT, datefmt=DATE_FORMAT)
     else:
         logging.basicConfig(level=level, format=LOG_FORMAT, datefmt=DATE_FORMAT)
+
+
+def log_curl_request(log: Callable,
+                     url: str,
+                     method: str,
+                     headers: dict,
+                     data: Any = None,
+                     ansi_code: AnsiCodes = AnsiCodes.GREEN) -> None:
+    """ Create a log message for a REST request with the curl equivalent command.
+
+    :param logger: The logger to use.
+    :param url: The url to the service.
+    :param method: The REST method (GET, POST, DELETE, PUT, ...)
+    :param headers: The headers.
+    :param data: The data to send in the body. It will be encoded to JSON.
+    :param ansi_code: The console text format. See AnsiCodes enumeration for more information.
+    """
+    headers = '-H ' + ' -H '.join([f'"{k}: {v}"' for k, v in headers.items()]) if headers else ''
+    command = f'curl -X {method} {headers} "{url}"' + (f' --data \'{dumps(data)}\'' if data else '')
+    log(markup(f'Request curl command:\n{command}', ansi_code))

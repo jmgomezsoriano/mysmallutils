@@ -1016,6 +1016,29 @@ get_log_levels()
 get_log_level('DEBUG')
 ```
 
+You have also the log_curl_request() function to 
+
+```python
+from logging import getLogger
+from mysutils.logging import log_curl_request
+from mysutils.text import AnsiCodes
+
+logger = getLogger(__name__)
+
+log_curl_request(logger.error,
+                 'http://localhost:5000/world_domination',
+                 'POST',
+                 {'Content-Type': 'application/json'},
+                 {'quantity_of_people': 'everybody'},
+                 AnsiCodes.RED)
+```
+
+The previous code will print the following output but with the command in red color:
+
+```bash
+curl -X POST -H "Content-Type: application/json" "http://localhost:5000/world_domination" --data '{"quantity_of_people": "everybody"}'
+```
+
 # Method synchronization<a id="method-synchronization" name="method-synchronization"></a>
 Sometimes it is necessary to create a synchronized method.
 With @synchronized you can create a synchronized method easily:
