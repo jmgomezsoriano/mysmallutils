@@ -1160,6 +1160,11 @@ from the section '# Web API' for the service endpoints 'service1', 'service2' an
 If the endpoints are used, then, if in the readme threre are any url like 'https?://.*/serviceX', 
 then it will return the real URL of the service.
 
+*Note:* To use this function, you need to install markdown package, and, optionally, if you want colorful embedded code, you also need to install pygments:
+
+```bash
+pip install markdown~=3.3.6 Pygments>=2.10.0,~=2.11.2
+```
 
 ## JSON post<a id="json-post" name="json-post"></a>
 A very easy way to send a dictionary by means to http post, ot a json service.
