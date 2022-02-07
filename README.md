@@ -1238,4 +1238,4 @@ conditional(my_func, a > b, 1, 'apple', c='Lucas')
 
 # How to collaborate
 
-I you want to collaborate with this project, please, <a href="mailto:jmgomez.soriano@gmail.com>contact with me</a>.
+I you want to collaborate with this project, please, <a href="mailto:jmgomez.soriano@gmail.com">contact with me</a>.
