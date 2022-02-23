@@ -25,15 +25,16 @@ def split_arg_string(command: str) -> List[str]:
     return rv
 
 
-def execute_command(command: Union[List[str], str], input_text: str = '') -> Tuple[str, str]:
+def execute_command(command: Union[List[str], str], input_text: str = '', cwd: str = None) -> Tuple[str, str]:
     """ Execute an external command easily.
 
     :param command: The command.
     :param input_text: The text of the standard input.
+    :param cwd: The working dir.
     :return: A tuple with the standard and error outputs.
     """
     command = split_arg_string(command) if isinstance(command, str) else command
-    process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, universal_newlines=True, cwd=cwd)
 
     process.stdin.write(f'{input_text}\n')
 
