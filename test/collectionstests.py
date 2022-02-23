@@ -1,7 +1,7 @@
 import unittest
 
 from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, \
-    merge_tuples, merge_dicts
+    merge_tuples, merge_dicts, first_key
 from mysutils.collections import list_union
 
 
@@ -97,6 +97,14 @@ class MyTestCase(unittest.TestCase):
         lst = [(1, 10), (2, 11), (3, 12)]
         self.assertListEqual(merge_tuples(lst)[0], [1, 2, 3])
         self.assertListEqual(merge_tuples(lst)[1], [10, 11, 12])
+
+    def test_first_key(self) -> None:
+        lst = [{'a': 1, 'b': 2}, {'a': 10, 'c': 3}, {'a': 100, 'c': 30}]
+        self.assertEqual(first_key(lst, 'a'), 1)
+        self.assertEqual(first_key(lst, 'b'), 2)
+        self.assertEqual(first_key(lst, 'c'), 3)
+        with self.assertRaises(KeyError):
+            first_key(lst, 'd')
 
 
 if __name__ == '__main__':

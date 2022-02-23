@@ -218,8 +218,22 @@ lst = [{'a': 1, 'b': 10}, {'a': 2, 'b': 11}, {'a': 3, 'b': 12}]
 d = merge_dicts(lst)  # The value of d is {'a': [1, 2, 3], 'b': [10, 11, 12]}
 ```
 
+### Search the first key
+
+In a iterable of dicts (like a list) this function return the value of the first dictionary that contains the key.
+
+```python
+from mysutils.collections import first_key
+
+lst = [{'a': 1, 'b': 2}, {'a': 10, 'c': 3}, {'a': 100, 'c': 30}]
+first_key(lst, 'a')  # Returns 1
+first_key(lst, 'b')  # Returns 2
+first_key(lst, 'c')  # Returns 3
+first_key(lst, 'd')  # Raises a KeyError exception
+```
+
 ## Filter lists<a id="filter-lists" name="filter-lists"></a>
-Filter a list.
+Filter a list by a condition.
 
 ```python
 from mysutils.collections import filter_lst

@@ -144,6 +144,20 @@ def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Callable = Non
     return [e for e in filter(filter_func, lst)] if filter_func else lst
 
 
+def first_key(dicts: Iterable[Dict[Any, Any]], key: Any) -> Any:
+    """ From a iterable of dictionaries, return the key value of the first dictionary that contains that key.
+
+    :param dicts: The iterable of dictionaries.
+    :param key: The key to search.
+    :return: The value of the first dictionary that contains that key.
+    :raises KeyError: If any of the dictionaries contains that key.
+    """
+    for d in dicts:
+        if key in d:
+            return d[key]
+    raise KeyError(f'The key "{key}" does not exist in any of the dictionaries.')
+
+
 def merge_dicts(dicts: Iterable[Dict[Any, Any]]) -> Dict[Any, List[Any]]:
     """ Convert a list of dictionaries with the same keys in a dictionary which each key contain the list of values.
 
