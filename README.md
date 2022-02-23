@@ -218,18 +218,47 @@ lst = [{'a': 1, 'b': 10}, {'a': 2, 'b': 11}, {'a': 3, 'b': 12}]
 d = merge_dicts(lst)  # The value of d is {'a': [1, 2, 3], 'b': [10, 11, 12]}
 ```
 
-### Search the first key
+### Get dictionary items
 
-In a iterable of dicts (like a list) this function return the value of the first dictionary that contains the key.
+Several function to get different items of a dictionary apart from its key.
 
 ```python
-from mysutils.collections import first_key
+from mysutils.collections import first_item, last_item, first_key, last_key, first_value, last_value, item, key, value
+
+d = {'a': 1, 'b': 2, 'c': 3}
+
+# Get the first dictionary item
+first_item(d)  # Returns ('a', 1)
+# Get the last dictionary item
+last_item(d)  # Returns ('c', 3)
+# Get the first key of the dictionary
+first_key(d)  # Returns 'a'
+# Get the last key of the dictionary
+last_key(d)  # Returns 'c'
+# Get the first value of the dictionary
+first_value(d)  # Returns 1
+# Get the last value of the dictionary
+last_value(d)  # Returns 3
+# Get the item in the position 1 of the dictionary
+item(d, 1)  # Returns ('b', 2)
+# Get the key in the position 1 of the dictionary
+key(d, 1)  # Returns 'b'
+# Get the value in the position 1 of the dictionary
+value(d, 1)  # Returns 2
+```
+
+### Search the first key in a list of dictionaries.
+
+In an iterable of dicts (like a list) this function return the value of the first dictionary that contains the key.
+
+```python
+from mysutils.collections import first_key_value
 
 lst = [{'a': 1, 'b': 2}, {'a': 10, 'c': 3}, {'a': 100, 'c': 30}]
-first_key(lst, 'a')  # Returns 1
-first_key(lst, 'b')  # Returns 2
-first_key(lst, 'c')  # Returns 3
-first_key(lst, 'd')  # Raises a KeyError exception
+first_key_value(lst, 'a')  # Returns 1
+first_key_value(lst, 'b')  # Returns 2
+first_key_value(lst, 'c')  # Returns 3
+first_key_value(lst, 'd')  # Raises a KeyError exception
 ```
 
 ## Filter lists<a id="filter-lists" name="filter-lists"></a>

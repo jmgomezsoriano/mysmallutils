@@ -1,4 +1,4 @@
-from typing import Union, List, Any, Callable, Dict, Iterable
+from typing import Union, List, Any, Callable, Dict, Iterable, Tuple, Optional
 
 
 def head(obj: Union[dict, set], top: int = 10) -> Union[dict, set]:
@@ -144,7 +144,7 @@ def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Callable = Non
     return [e for e in filter(filter_func, lst)] if filter_func else lst
 
 
-def first_key(dicts: Iterable[Dict[Any, Any]], key: Any) -> Any:
+def first_key_value(dicts: Iterable[Dict[Any, Any]], key: Any = None) -> Any:
     """ From a iterable of dictionaries, return the key value of the first dictionary that contains that key.
 
     :param dicts: The iterable of dictionaries.
@@ -156,6 +156,106 @@ def first_key(dicts: Iterable[Dict[Any, Any]], key: Any) -> Any:
         if key in d:
             return d[key]
     raise KeyError(f'The key "{key}" does not exist in any of the dictionaries.')
+
+
+def first_item(d: dict) -> Optional[Tuple[Any, Any]]:
+    """ From a dictionary, return the first item.
+
+    :param d: The dictionary.
+    :return: The first item of the dictionary if the dictionary has an item, otherwise None.
+    """
+    for item in d.items():
+        return item
+    return None
+
+
+def last_item(d: dict) -> Optional[Tuple[Any, Any]]:
+    """ From a dictionary, return the first item.
+
+    :param d: The dictionary.
+    :return: The last item of the dictionary if the dictionary has an item, otherwise None.
+    """
+    item = None
+    for item in d.items():
+        pass
+    return item
+
+
+def first_key(d: dict) -> Any:
+    """ From a dictionary, return the first key.
+
+    :param d: The dictionary.
+    :return: The first key of the dictionary if the dictionary as a item, otherwise None.
+    """
+    item = first_item(d)
+    return None if item is None else item[0]
+
+
+def last_key(d: dict) -> Any:
+    """ From a dictionary, return the last key.
+
+    :param d: The dictionary.
+    :return: The last key of the dictionary if the dictionary as an item, otherwise None.
+    """
+    item = last_item(d)
+    return None if item is None else item[0]
+
+
+def first_value(d: dict) -> Any:
+    """ From a dictionary, return the first value.
+
+    :param d: The dictionary.
+    :return: The first value of the dictionary if the dictionary as an item, otherwise None.
+    """
+    item = first_item(d)
+    return None if item is None else item[1]
+
+
+def last_value(d: dict) -> Any:
+    """ From a dictionary, return the last value.
+
+    :param d: The dictionary.
+    :return: The last value of the dictionary if the dictionary as an item, otherwise None.
+    """
+    item = last_item(d)
+    return None if item is None else item[1]
+
+
+def item(d: dict, i: int) -> Optional[Tuple[Any, Any]]:
+    """ Return the item of the position i in the dictionary.
+
+    :param d: The dictionary.
+    :param i: The index position.
+    :return: The dictionary item which the position is i.
+    :raises KeyError: If i is out of index.
+    """
+    if i < 0 or i >= len(d):
+        raise KeyError(f'The given dictionary only have index from 0 to {len(d) - 1}, your index is out of index: {i}')
+    for idx, item in enumerate(d.items()):
+        if i == idx:
+            return item
+
+
+def key(d: dict, i: int) -> Optional[Tuple[Any, Any]]:
+    """ Return the key of the position i in the dictionary.
+
+    :param d: The dictionary.
+    :param i: The index position.
+    :return: The dictionary key which the position is i.
+    :raises KeyError: If i is out of index.
+    """
+    return item(d, i)[0]
+
+
+def value(d: dict, i: int) -> Optional[Tuple[Any, Any]]:
+    """ Return the value of the position i in the dictionary.
+
+    :param d: The dictionary.
+    :param i: The index position.
+    :return: The dictionary value which the position is i.
+    :raises KeyError: If i is out of index.
+    """
+    return item(d, i)[1]
 
 
 def merge_dicts(dicts: Iterable[Dict[Any, Any]]) -> Dict[Any, List[Any]]:

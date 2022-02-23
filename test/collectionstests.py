@@ -1,7 +1,8 @@
 import unittest
 
 from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, \
-    merge_tuples, merge_dicts, first_key
+    merge_tuples, merge_dicts, first_key_value, first_item, last_item, item, first_key, last_key, key, first_value, \
+    last_value, value
 from mysutils.collections import list_union
 
 
@@ -98,13 +99,43 @@ class MyTestCase(unittest.TestCase):
         self.assertListEqual(merge_tuples(lst)[0], [1, 2, 3])
         self.assertListEqual(merge_tuples(lst)[1], [10, 11, 12])
 
-    def test_first_key(self) -> None:
-        lst = [{'a': 1, 'b': 2}, {'a': 10, 'c': 3}, {'a': 100, 'c': 30}]
-        self.assertEqual(first_key(lst, 'a'), 1)
-        self.assertEqual(first_key(lst, 'b'), 2)
-        self.assertEqual(first_key(lst, 'c'), 3)
+    def test_dict_item(self) -> None:
+        d = {'a': 1, 'b': 2, 'c': 3}
+        self.assertEqual(first_item(d), ('a', 1))
+        self.assertEqual(last_item(d), ('c', 3))
+        self.assertEqual(first_key(d), 'a')
+        self.assertEqual(last_key(d), 'c')
+        self.assertEqual(first_value(d), 1)
+        self.assertEqual(last_value(d), 3)
+        self.assertEqual(item(d, 0), ('a', 1))
+        self.assertEqual(item(d, 1), ('b', 2))
+        self.assertEqual(item(d, 2), ('c', 3))
         with self.assertRaises(KeyError):
-            first_key(lst, 'd')
+            item(d, -1)
+        with self.assertRaises(KeyError):
+            item(d, 3)
+        self.assertEqual(key(d, 0), 'a')
+        self.assertEqual(key(d, 1), 'b')
+        self.assertEqual(key(d, 2), 'c')
+        with self.assertRaises(KeyError):
+            key(d, -1)
+        with self.assertRaises(KeyError):
+            key(d, 3)
+        self.assertEqual(value(d, 0), 1)
+        self.assertEqual(value(d, 1), 2)
+        self.assertEqual(value(d, 2), 3)
+        with self.assertRaises(KeyError):
+            value(d, -1)
+        with self.assertRaises(KeyError):
+            value(d, 3)
+
+    def test_search_key(self) -> None:
+        lst = [{'a': 1, 'b': 2}, {'a': 10, 'c': 3}, {'a': 100, 'c': 30}]
+        self.assertEqual(first_key_value(lst, 'a'), 1)
+        self.assertEqual(first_key_value(lst, 'b'), 2)
+        self.assertEqual(first_key_value(lst, 'c'), 3)
+        with self.assertRaises(KeyError):
+            first_key_value(lst, 'd')
 
 
 if __name__ == '__main__':
