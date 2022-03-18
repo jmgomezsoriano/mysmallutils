@@ -1,8 +1,8 @@
-from os import PathLike
+from os import PathLike, makedirs
 from tempfile import mkdtemp, mktemp
 from typing import Tuple, Union, Iterator
 
-from mysutils.file import remove_files
+from mysutils.file import remove_files, mkdirs
 
 
 class Removable(object):
@@ -118,7 +118,7 @@ class RemovableTemp(Removable, PathLike):
         return self[0]
 
 
-def removable_tmp(folder: bool = False, suffix: str = '', prefix: str = '') -> PathLike:
+def removable_tmp(is_folder: bool = False, suffix: str = '', prefix: str = '') -> PathLike:
     """ This function is used with "with" python command. As following:
 
     .. code-block:: python
@@ -129,6 +129,10 @@ def removable_tmp(folder: bool = False, suffix: str = '', prefix: str = '') -> P
             exist_files(tmp.files[0])  # Returns True
         exist_files('test2.json', 'data/test1.json', 'data/')  # Returns False
 
+    :param is_folder: True if the temporal file is a folder.
+    :param suffix: The temporal file suffix.
+    :param prefix: The temporal file prefix.
+
     :return: A object with enter and exit methods.
     """
-    return RemovableTemp(folder, suffix, prefix)
+    return RemovableTemp(is_folder, suffix, prefix)

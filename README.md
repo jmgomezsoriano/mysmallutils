@@ -206,7 +206,7 @@ d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'
 mod_values(d, name='Jhon', lastname='Smith')
 ```
 
-### Merge a list of directories<a id="merge-a-list-of-directories" name="merge-a-list-of-directories"></a>
+### Merge a list of dictionaries<a id="merge-a-list-of-directories" name="merge-a-list-of-dictionaries"></a>
 
 Convert a list of dictionaries with the same keys in a dictionary which each key contain the list of values of each 
 dictionary. For example:
@@ -702,7 +702,8 @@ list_dir()
 list_dir('test')
 
 # # Return the list of files thant end with '.txt' of the 'test' directory.
-list_dir('test', '.*\.txt$')
+
+
 
 # Return the same list but with the inverted order
 list_dir('test', '.*\.txt$', reverse=True)

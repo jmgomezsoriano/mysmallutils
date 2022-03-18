@@ -118,7 +118,10 @@ def open_tar_file(tar_file: Union[str, PathLike, bytes],
     """
     compress_method = compress_method if compress_method else detect_compress_method(tar_file)
     tar = tarfile.open(tar_file, f'r:{compress_method}')
-    file = tar.extractfile(filename)
+    try:
+        file = tar.extractfile(filename)
+    except KeyError:
+        raise FileNotFoundError(f'The file "{filename}" is not in "{tar_file}".')
     old_close = file.close
 
     def close():

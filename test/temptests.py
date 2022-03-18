@@ -23,9 +23,16 @@ class MyTestCase(unittest.FileTestCase):
 
     def test_removable_tmp(self) -> None:
         with removable_tmp() as tmp:
+            self.assertNotAreDir(tmp)
+            self.assertNotExists(tmp)
             touch(tmp)
             self.assertExists(tmp)
+            self.assertNotAreDir(tmp)
         self.assertNotExists(tmp)
+        with removable_tmp(True) as tmp:
+            self.assertExists(tmp)
+            self.assertAreDir(tmp)
+
 
     def test_assign_removable_files(self) -> None:
         with removable_files(*touch('1.txt', '2.txt', '3.txt')) as (f1, f2, f3):
