@@ -126,6 +126,22 @@ list_union(l1, l2, l3)
 list_union(l1, l3, l2)
 ```
 
+## Concat lists<a id="concat-lists" name="concat-lists"></a>
+Concatenate a list of lists and return other list with the results.
+This is different from the list_union() function because the final list can contain repeated elements.
+
+```python
+from mysutils.collections import concat_lists
+
+l1 = [1, 2, 3]
+l2 = [4, 5, 6, 1]
+l3 = [2, 6, 24]
+# This will return  [1, 2, 3, 4, 5, 6, 1, 2, 6, 24]
+concat_lists(l1, l2, l3)
+# This will return  [4, 5, 6, 1, 2, 6, 24, 1, 2, 3]
+concat_lists(l2, l3, l1)
+```
+
 ## Dictionary operations<a id="dictionary-operations" name="dictionary-operations"></a>
 
 With these functions you can do several operation over dictionaries in just one code line. 

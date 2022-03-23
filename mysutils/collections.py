@@ -49,6 +49,17 @@ def list_union(*lists: list) -> list:
     return result
 
 
+def concat_lists(*lists: list) -> list:
+    """ Concatenate a list of lists at once.
+
+    :param lists: The list of lists.
+    :return: One new list with the element of all the lists.
+    """
+    result = []
+    for l in lists:
+        result.extend(l)
+    return result
+
 def del_keys(d: dict, *keys: Any, ignore_errors: bool = True) -> dict:
     """ Remove the dictionary items from their keys and return the modified dictionary.
 

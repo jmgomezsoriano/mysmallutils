@@ -2,7 +2,7 @@ import unittest
 
 from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, \
     merge_tuples, merge_dicts, first_key_value, first_item, last_item, item, first_key, last_key, key, first_value, \
-    last_value, value
+    last_value, value, concat_lists
 from mysutils.collections import list_union
 
 
@@ -38,6 +38,13 @@ class MyTestCase(unittest.TestCase):
         l3 = [2, 6, 24]
         self.assertListEqual(list_union(l1, l2, l3), [1, 2, 3, 4, 5, 6, 24])
         self.assertListEqual(list_union(l1, l3, l2), [1, 2, 3, 6, 24, 4, 5])
+
+    def test_concat_lists(self) -> None:
+        l1 = [1, 2, 3]
+        l2 = [4, 5, 6, 1]
+        l3 = [2, 6, 24]
+        self.assertListEqual(concat_lists(l1, l2, l3), [1, 2, 3, 4, 5, 6, 1, 2, 6, 24])
+        self.assertListEqual(concat_lists(l2, l3, l1), [4, 5, 6, 1, 2, 6, 24, 1, 2, 3])
 
     def test_del_dict_item(self) -> None:
         d = {'a': 1, 'b': 2, 'c': 3}
