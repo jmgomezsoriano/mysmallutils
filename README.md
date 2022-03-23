@@ -11,6 +11,7 @@ This module is divided into the following categories:
 * [Collections](#collections)
   * [Head of a set or dict](#head-of-a-set-or-dict)
   * [List union](#list-union)
+  * [Concat lists](#concat-lists)
   * [Dictionary operations](#dictionary-operations)
   * [Filter lists](#filter-lists)
   * [Tuples](#tuples)
