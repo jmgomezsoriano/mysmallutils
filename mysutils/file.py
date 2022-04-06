@@ -1,3 +1,4 @@
+import codecs
 import gzip
 import pickle
 import os
@@ -118,23 +119,35 @@ def copy_files(dest: Union[PathLike, str, bytes], *files: Union[PathLike, str, b
         copyfile(file, join(dest, basename(file)))
 
 
-def save_json(obj: Any, filename: Union[PathLike, str, bytes], force: bool = False) -> None:
+def save_json(obj: Any,
+              filename: Union[PathLike, str, bytes],
+              force: bool = False,
+              encoding: Optional[str] = None) -> None:
     """ Save an object into a json file.
     :param obj: The object to save.
     :param filename: The path to the output file.
     :param force: Force the creation of the path folders if they do not exist.
+    :param encoding: The file encoding. By default, the system default encoding is used.
     """
-    with force_open(filename, 'wt') if force else open_file(filename, 'wt') as file:
-        dump(obj, file, indent=2)
+    open_func = force_open if force else open_file
+    with open_func(filename, 'wt', encoding=encoding) as file:
+        dump(obj, file, indent=2, ensure_ascii=encoding is None)
 
 
-def load_json(filename: Union[PathLike, str, bytes]) -> Any:
+def load_json(filename: Union[PathLike, str, bytes], encoding: Optional[str] = None, default: Any = None) -> Any:
     """ Load a json file and return a object with its data.
     :param filename: The json file.
+    :param encoding: The file encoding. By default, the system default encoding is used.
+    :param default: The default value if the file does not exist.
     :return: An object with the json data.
     """
-    with open_file(filename, 'rt') as file:
-        return load(file)
+    try:
+        with open_file(filename, 'rt', encoding=encoding) as file:
+            return load(file)
+    except FileNotFoundError as e:
+        if default is None:
+            raise e
+        return default
 
 
 def save_pickle(obj: object, filename: Union[PathLike, str, bytes], force: bool = False) -> None:
@@ -147,13 +160,18 @@ def save_pickle(obj: object, filename: Union[PathLike, str, bytes], force: bool 
         pickle.dump(obj, file)
 
 
-def load_pickle(filename: Union[PathLike, str, bytes]) -> Any:
+def load_pickle(filename: Union[PathLike, str, bytes], default: Any = None) -> Any:
     """ Load an object from pickle file.
     :param filename: The pickle file path.
     :return: An object with the pickle file data.
     """
-    with open_file(filename, 'rb') as file:
-        return pickle.load(file)
+    try:
+        with open_file(filename, 'rb') as file:
+            return pickle.load(file)
+    except FileNotFoundError as e:
+        if default is None:
+            raise e
+        return default
 
 
 def gzip_decompress(input_file: Union[PathLike, str, bytes], output_file: Union[PathLike, str, bytes]) -> None:
@@ -497,3 +515,13 @@ def output_file_path(folder: Union[PathLike, str, bytes] = '.', suffix: str = ''
             name.append(str(value))
 
     return join(folder, f'{"-".join(name)}{suffix}')
+
+
+def has_encoding(file: Union[PathLike, str, bytes], encoding: str) -> bool:
+    try:
+        with codecs.open(file, 'r', encoding=encoding) as fh:
+            fh.readlines()
+        # fh.seek(0)
+    except UnicodeDecodeError:
+        return False
+    return True

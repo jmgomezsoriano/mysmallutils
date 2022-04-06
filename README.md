@@ -35,6 +35,7 @@ This module is divided into the following categories:
   * [Move files](#move-files)
   * [List files](#list-files)
   * [Generate output file paths](#generate-output-file-paths)
+  * [Check file encoding](#check-file-encoding)
 * [Removable files](#remove-files)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
@@ -401,6 +402,7 @@ with force_open('file.txt.gz', 'w') as file:
 ```
 
 ## Load and save json files<a id="load-and-save-json-files" name="load-and-save-json-files"></a>
+This save and load json files, even if they are compressed, with just one line.
 ```python
 from mysutils.file import load_json, save_json
 
@@ -427,6 +429,10 @@ save_json(d, 'data/file.json', force=True)
 
 # The same but wit a compressed file
 save_json(d, 'data/file.json.gz', force=True)
+
+# Load a json file and if it doesn't exists, 
+# then it returns a default value
+d = load_json('file.json', default={})
 
 # Load from a tar file
 from mysutils.tar import load_tar_json
@@ -457,6 +463,10 @@ save_pickle(d, 'test1.pkl.gz')
 
 # Load the object from a compressed pickle file
 d = load_pickle('test1.pkl.gz')
+
+# Load the object but if the file does not exist, 
+# then return the default vaule.
+d = load_pickle('test1.pkl', default={})
 
 # Save the object into a pickle file in a given directory, 
 # if the directory does not exist, then create it
@@ -498,6 +508,10 @@ save_yaml(d, 'file.yml.gz')
 
 # Load the object from a compressed yaml file
 d = load_yaml('file.yml.gz')
+
+# Load the object from the yaml file if it exists,
+# otherwise it returns the default object
+d = load_yaml('file.yml.gz', {})
 
 # Save the object into a yaml file in a given directory, 
 # if the directory does not exist, then create it
@@ -766,6 +780,16 @@ filepath = output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passe
 
 # Generate the same as previous but without timestamp
 output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False)
+```
+
+## Check file encoding<a id="check-file-encoding" name="check-file-encoding"></a>
+Check if a file content is compatible with a text encoding.
+
+```python
+from mysutils.file import has_encoding
+
+# Return True if the file 1.txt is compatible with utf-8
+has_encoding('1.txt', 'utf-8')
 ```
 
 # Removable files<a id="removable-files"></a>
@@ -1275,6 +1299,14 @@ class MyTestCase(unittest.FileTestCase):
     move_files('test/', '1.txt', '2.txt', '3.txt')
     self.assertExists('test/1.txt', 'test/2.txt', 'test/3.txt')
     self.assertNotExists('1.txt', '2.txt', '3.txt')
+
+  def test_encoding(self) -> None:
+    # Check if the content of 1.txt, 2.txt and 3.txt are compatible
+    # with iso8859-1 encoding.
+    self.assertEncoding('1.txt', '2.txt', '3.txt', encoding='iso8859-1')
+    # Check if the content of 1.txt, 2.txt and 3.txt are not compatible
+    # with iso8859-1 encoding.
+    self.assertEncoding('1.txt', '2.txt', '3.txt', encoding='iso8859-1')
 ```
 
 # Miscellany<a id="miscellany" name="miscellany"></a>

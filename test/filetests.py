@@ -6,8 +6,9 @@ from mysutils.command import execute_command
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
-    first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files, read_from, read_until
-from mysutils.tmp import removable_files
+    first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files, read_from, read_until, \
+    has_encoding
+from mysutils.tmp import removable_files, removable_tmp, removable_tmps
 from mysutils.yaml import load_yaml, save_yaml
 
 
@@ -298,12 +299,10 @@ class FileTestCase(unittest.FileTestCase):
                              ['# How to collaborate',
                               '',
                               'I you want to collaborate with this project, please, '
-                              '<a href="mailto:jmgomez.soriano@gmail.com>contact with me</a>.'])
-
-    def test_tail(self) -> None:
+                              '<a href="mailto:jmgomez.soriano@gmail.com">contact with me</a>.'])
         self.assertEqual(last_line('README.md'),
-                              'I you want to collaborate with this project, please, '
-                              '<a href="mailto:jmgomez.soriano@gmail.com>contact with me</a>.')
+                         'I you want to collaborate with this project, please, '
+                         '<a href="mailto:jmgomez.soriano@gmail.com">contact with me</a>.')
 
     def test_read_files(self) -> None:
         n1, n2 = count_lines('README.md'), count_lines('requirements.txt')
@@ -336,6 +335,51 @@ class FileTestCase(unittest.FileTestCase):
             self.assertEqual(len(lines), 5)
             lines = read_until('test2.txt.gz', '^f', True)
             self.assertEqual(len(lines), 5)
+
+    def test_encoding(self) -> None:
+        with removable_tmp() as tmp:
+            with open_file(tmp, 'wt', encoding='iso8859-1') as file:
+                file.write('¡Es una caña atómica!')
+            self.assertTrue(has_encoding(tmp, 'iso8859-1'))
+            self.assertFalse(has_encoding(tmp, 'utf-8'))
+            self.assertEncoding(tmp, encoding='iso8859-1')
+            self.assertNotEncoding(tmp, encoding='utf-8')
+        with removable_tmp(suffix='.gz') as tmp:
+            with open_file(tmp, 'wt', encoding='iso8859-1') as file:
+                file.write('¡Es una caña atómica!')
+            self.assertTrue(has_encoding(tmp, 'iso8859-1'))
+            self.assertFalse(has_encoding(tmp, 'utf-8'))
+            self.assertEncoding(tmp, encoding='iso8859-1')
+            self.assertNotEncoding(tmp, encoding='utf-8')
+        d = {'name': 'María Gómez', 'message': '¡Es una caña atómica!'}
+        with removable_tmps(2) as (json_tmp, yaml_tmp):
+            save_json(d, json_tmp, encoding='iso8859-1')
+            save_yaml(d, yaml_tmp, encoding='iso8859-1')
+            self.assertEncoding(json_tmp, yaml_tmp, encoding='iso8859-1')
+            self.assertNotEncoding(json_tmp, yaml_tmp, encoding='utf-8')
+            self.assertDictEqual(d, load_json(json_tmp, 'iso8859-1'))
+            self.assertDictEqual(d, load_yaml(yaml_tmp, 'iso8859-1'))
+            with self.assertRaises(FileNotFoundError):
+                self.assertDictEqual(d, load_json(json_tmp + '.json'))
+            with self.assertRaises(FileNotFoundError):
+                self.assertDictEqual(d, load_yaml(yaml_tmp + '.yaml'))
+
+    def test_defaults(self) -> None:
+        d = {'name': 'John Smith', 'message': 'Hello world!'}
+        with removable_tmps(3) as (json_tmp, yaml_tmp, pickle_tmp):
+            save_json(d, json_tmp)
+            save_yaml(d, yaml_tmp)
+            save_pickle(d, pickle_tmp)
+            self.assertDictEqual(d, load_json(json_tmp, default={}))
+            self.assertDictEqual(d, load_yaml(yaml_tmp, default={}))
+            self.assertDictEqual(d, load_pickle(pickle_tmp, default={}))
+            self.assertDictEqual({}, load_json(json_tmp + '.json', default={}))
+            self.assertDictEqual({}, load_yaml(yaml_tmp + '.yaml', default={}))
+            self.assertDictEqual({}, load_pickle(pickle_tmp + '.pkl', default={}))
+            default={'name': 'Anybody', 'message': 'None'}
+            self.assertDictEqual(default, load_json(json_tmp + '.json', default=default))
+            self.assertDictEqual(default, load_yaml(yaml_tmp + '.yaml', default=default))
+            self.assertDictEqual(default, load_pickle(pickle_tmp + '.pkl', default=default))
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 from mysutils import unittest
 from mysutils.file import touch, remove_files, mkdirs
-from mysutils.tmp import removable_tmp, removable_files
+from mysutils.tmp import removable_tmp, removable_files, removable_tmps
 
 
 class MyTestCase(unittest.FileTestCase):
@@ -33,11 +33,19 @@ class MyTestCase(unittest.FileTestCase):
             self.assertExists(tmp)
             self.assertAreDir(tmp)
 
-
     def test_assign_removable_files(self) -> None:
         with removable_files(*touch('1.txt', '2.txt', '3.txt')) as (f1, f2, f3):
             self.assertExists(f1, f2, f3)
         self.assertNotExists(f1, f2, f3)
+
+    def test_removable_tmps(self) -> None:
+        with removable_tmps(2) as (tmp1, tmp2):
+            touch(tmp1, tmp2)
+            self.assertExists(tmp1, tmp2)
+            self.assertNotAreDir(tmp1, tmp2)
+        with removable_tmps(2, True) as (tmp1, tmp2):
+            self.assertExists(tmp1, tmp2)
+            self.assertAreDir(tmp1, tmp2)
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
-from os import PathLike, makedirs
+from os import PathLike
 from tempfile import mkdtemp, mktemp
 from typing import Tuple, Union, Iterator
 
-from mysutils.file import remove_files, mkdirs
+from mysutils.file import remove_files
 
 
 class Removable(object):
@@ -79,7 +79,8 @@ def removable_files(*files: Union[PathLike, str, bytes], recursive: bool = False
 
     .. code-block:: python
 
-        from mysutils.file import removable_files, exist_files
+        from mysutils.file import exist_files
+        from mysutils.tmp import removable_files
         # These files will be removed when the with ends
         with removable_files('test2.json', 'data/test1.json', 'data/'):
             exist_files('test2.json', 'data/test1.json', 'data/')  # Returns True
@@ -95,15 +96,15 @@ def removable_files(*files: Union[PathLike, str, bytes], recursive: bool = False
 
 class RemovableTemp(Removable, PathLike):
     """ Create a removable temporal file. """
-    def __init__(self, folder: bool = False, suffix: str = '', prefix: str = ''):
-        """
+    def __init__(self, is_folder: bool = False, suffix: str = '', prefix: str = ''):
+        """ Constructor.
 
-        :param folder:
-        :param suffix:
-        :param prefix:
+        :param is_folder:
+        :param suffix: The temporal file suffix.
+        :param prefix: The temporal file prefix.
         """
-        self.__tmp = mkdtemp(suffix=suffix, prefix=prefix) if folder else mktemp(suffix=suffix, prefix=prefix)
-        Removable.__init__(self, self.__tmp, recursive=folder, ignore_errors=True)
+        self.__tmp = mkdtemp(suffix=suffix, prefix=prefix) if is_folder else mktemp(suffix=suffix, prefix=prefix)
+        Removable.__init__(self, self.__tmp, recursive=is_folder, ignore_errors=True)
 
     def __fspath__(self) -> str:
         """
@@ -123,16 +124,53 @@ def removable_tmp(is_folder: bool = False, suffix: str = '', prefix: str = '') -
 
     .. code-block:: python
 
-        from mysutils.file import removable_files, exist_files
+        from mysutils.file import exist_files
+        from mysutils.tmp import removable_files
         # These files will be removed when the with ends
         with removable_tmp() as tmp:
-            exist_files(tmp.files[0])  # Returns True
-        exist_files('test2.json', 'data/test1.json', 'data/')  # Returns False
+            exist_files(tmp)  # Returns True
+        exist_files(tmp)  # Returns False
 
-    :param is_folder: True if the temporal file is a folder.
+    :param is_folder: True if the temporal file should be a folder.
     :param suffix: The temporal file suffix.
     :param prefix: The temporal file prefix.
 
     :return: A object with enter and exit methods.
     """
     return RemovableTemp(is_folder, suffix, prefix)
+
+
+class RemovableTemps(Removable):
+    """ Create removable temporal files. """
+    def __init__(self, num: int = 1, are_folders: bool = False, suffix: str = '', prefix: str = ''):
+        """ Constructor.
+
+        :param num: The number of temporal files.
+        :param are_folders: If the temporal files should be folders.
+        :param suffix: The temporal file suffixes.
+        :param prefix: The temporal file prefixes.
+        """
+        mktmp = mkdtemp if are_folders else mktemp
+        self.__tmps = [mktmp(suffix=suffix, prefix=prefix) for _ in range(num)]
+        Removable.__init__(self, *self.__tmps, recursive=are_folders, ignore_errors=True)
+
+
+def removable_tmps(num: int = 1, is_folder: bool = False, suffix: str = '', prefix: str = '') -> object:
+    """ This function is used with "with" python command. As following:
+
+    .. code-block:: python
+
+        from mysutils.file import removable_files, exist_files
+        # These files will be removed when the with ends
+        with removable_tmps(2) as (tmp1, tmp2):
+            exist_files(tmp1, tmp2)  # Returns True
+        exist_files(tmp1, tmp2)  # Returns False
+
+    :param num: The number of temporal files.
+    :param is_folder: True if the temporal files should be folders.
+    :param suffix: The temporal file suffixes.
+    :param prefix: The temporal file prefixes.
+
+    :return: A object with enter and exit methods.
+    """
+    return RemovableTemps(num, is_folder, suffix, prefix)
