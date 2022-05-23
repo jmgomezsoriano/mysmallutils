@@ -39,7 +39,9 @@ def gen_service_help(title: str, file: str = README, regex: str = '', *endpoints
         readme_text = ''.join(read_from(file, regex)[1:])
         help_text += markdown(readme_text, extensions=['fenced_code', 'codehilite'])
         for e in endpoints:
-            help_text = re.sub(f'https?://.*{e}', f'{endpoint(e)}', help_text)
+            # TODO: check when an url is inside  a HTML attribute
+            # embedded = bool(re.match(f'.*"https?://.*{e}".*', help_text, re.DOTALL))
+            help_text = re.sub(f'https?://.*{e}', f'{endpoint(e, False)}', help_text)
     else:
         logger.warning(f'If you want to show an online help, please, add the file {file} to the project root.')
 

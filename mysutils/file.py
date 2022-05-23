@@ -163,6 +163,8 @@ def save_pickle(obj: object, filename: Union[PathLike, str, bytes], force: bool 
 def load_pickle(filename: Union[PathLike, str, bytes], default: Any = None) -> Any:
     """ Load an object from pickle file.
     :param filename: The pickle file path.
+    :param default: The default value to return if the file does not exist.
+       If it is not given and the file does not exist, then this function raises a file not found error.
     :return: An object with the pickle file data.
     """
     try:
@@ -206,6 +208,7 @@ def remove_files(*files: Union[PathLike, str, bytes], ignore_errors: bool = Fals
     :param files: The list of files or empty directories to remove. To remove directories with files or subdirectories,
       please, use shutil.rmtree().
     :param ignore_errors: If True, ignore the error if the file or directory does not exist.
+    :param recursive: If True, delete the folder recursively with all its content.
     """
     for file in files:
         if isdir(file):
@@ -376,7 +379,7 @@ def read_file(filename: Union[PathLike, str, bytes], line_break: bool = True) ->
 def read_files(*filenames: Union[PathLike, str, bytes], line_break: bool = True) -> List[str]:
     """ Read a file (compressed with gzip or not) and return in a list its content, each line in a list element.
 
-    :param filename: The path to the file. If the file name ends with ".gz", this function decompressed it first.
+    :param filenames: The path to the files. If a file name ends with ".gz", this function decompressed it first.
     :param line_break: If True, the newline character is conserved, otherwise is removed.
     :return: An array with the contents of the file.
     """
@@ -390,7 +393,7 @@ def read_from(filename: Union[PathLike, str, bytes],
               regex: str = '',
               ignore_case: bool = False,
               line_break: bool = True) -> List[str]:
-    """ Read from the line that matches with a regular regular.
+    """ Read from the line that matches with a regular expression.
 
     :param filename: The path to the file.
     :param regex: The regular expression.
@@ -410,7 +413,7 @@ def read_from(filename: Union[PathLike, str, bytes],
 
 def read_until(filename: Union[PathLike, str, bytes], regexp: str = '',
                ignore_case: bool = False, line_break: bool = True) -> List[str]:
-    """ Read until the line that matches with a regular regular.
+    """ Read until the line that matches with a regular expression.
 
     :param filename: The path to the file.
     :param regexp: The regular expression.
@@ -496,13 +499,16 @@ def last_file(folder: Union[PathLike, str, bytes] = '.', filter: str = None) -> 
     return files[0] if files else None
 
 
-def output_file_path(folder: Union[PathLike, str, bytes] = '.', suffix: str = '', timestamp: bool = True, **kwargs) -> str:
+def output_file_path(folder: Union[PathLike, str, bytes] = '.',
+                     suffix: str = '',
+                     timestamp: bool = True,
+                     **kwargs) -> str:
     """ Build a file path in the specified folder based on the current timestamp and several attributes.
     :param folder: The directory where the file will be located.
     :param timestamp: If you want to add the timestamp to the file name.
     :param suffix: If suffix file name.
-    :param kwargs: Extra arguments to form the name. If it is a str, float or int value, then the value will be add to
-      the name. If it is a bool value and it is True, then the name of the argument is add to the file name.
+    :param kwargs: Extra arguments to form the name. If it is a str, float or int value, then the value will be added to
+      the name. If it is a bool value, and it is True, then the name of the argument is added to the file name.
     :return: The full path to the file to create.
     """
     name = []
@@ -518,10 +524,15 @@ def output_file_path(folder: Union[PathLike, str, bytes] = '.', suffix: str = ''
 
 
 def has_encoding(file: Union[PathLike, str, bytes], encoding: str) -> bool:
+    """ Check if a file has the given encoding.
+
+    :param file: the file path.
+    :param encoding: The encoding to compare.
+    :return: True if the file content is compatible with that encoding.
+    """
     try:
         with codecs.open(file, 'r', encoding=encoding) as fh:
             fh.readlines()
-        # fh.seek(0)
     except UnicodeDecodeError:
         return False
     return True

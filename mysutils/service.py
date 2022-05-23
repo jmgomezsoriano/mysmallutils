@@ -1,9 +1,10 @@
-def endpoint(service: str = '') -> str:
+def endpoint(service: str = '', embedded: bool = False) -> str:
     """ Obtain the final URL to the service dynamically from a request.
 
-    :param request: The request to obtain the URL.
     :param service: The path to the services to join with the request base.
+    :param embedded: True if the URL is embedded in a html attribute, otherwise False.
     :return: A string with the URL.
     """
-    base_url = '<script>document.write(window.location.href.replace(/\\/$/, ""));</script>'
-    return base_url + service if service.startswith('/') else base_url + '/' + service
+    if embedded:
+        return f'javascript:window.location.href.replace(/\\/(#.*)?$/, \'{service}\'));'
+    return f'<script>document.write(window.location.href.replace(/\\/(#.*)?$/, \'{service}\'));</script>'
