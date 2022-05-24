@@ -27,8 +27,8 @@ def replace_urls(text: str, replace: str, end_with: str = '') -> str:
     """
     matches = list(re.finditer(URL_PATTERN + end_with, text))
     matches.reverse()
-    for e in matches:
-        start, end = e.span()[0], e.span()[1]
+    for match in matches:
+        start, end = match.span()[0], match.span()[1]
         text = text[:start] + replace + text[end:]
     return text
 

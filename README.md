@@ -22,7 +22,7 @@ This module is divided into the following categories:
   * [Text markup](#text-markup)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
-  * [Read files](#read-files)
+  * [Read file](#read-file)
   * [Load and save json files](#load-and-save-json-files)
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)

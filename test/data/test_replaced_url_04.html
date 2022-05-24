@@ -1,63 +1,7 @@
-from logging import getLogger
-from os.path import exists
-
-from mysutils.file import read_from
-from mysutils.service import replace_endpoint
-
-try:
-    from markdown import markdown
-except ImportError:
-    raise ImportError('To use these functions you need to import the markdown module:\n\n'
-                      'pip install markdown==3.3.6\n\n'
-                      'Optionally, if you want colourful code, you also need to install Pygments:\n\n'
-                      'pip install Pygments>=2.10.0,~=2.11.2')
-
-logger = getLogger(__name__)
-try:
-    import pygments
-except ImportError:
-    logger.warning('If you wants to colourful code, please install Pygments:\n\npip install Pygments>=2.10.0,~=2.11.2')
-
-README = 'README.md'
-
-
-def gen_service_help(title: str, file: str = README, regex: str = '', *endpoints: str) -> str:
-    """ Generate a HTML page from a README file or other Markdown file.
-
-    :param title: The page title.
-    :param file: The Markdown file.
-    :param regex: A regular expression that determines from which line the markdown has to be processed.
-    :param endpoints: The different endpoints of the service.
-    :return: The Web page.
-    """
-    help_text = html_header(title)
-    help_text += f'<h1>{title}</h1>' \
-                 f'<p><b>Note: </b>Apart of this online help, you may use the <a href="docs">API documentation</a> or ' \
-                 f'<a href="redoc">API specification</a>.</p>\n'
-    if exists(file):
-        readme_text = ''.join(read_from(file, regex)[1:])
-        help_text += markdown(readme_text, extensions=['fenced_code', 'codehilite'])
-        for e in endpoints:
-            help_text = replace_endpoint(help_text, e)
-    else:
-        logger.warning(f'If you want to show an online help, please, add the file {file} to the project root.')
-
-    help_text += '<p>For more information, see the <a href="docs">API documentation</a> or ' \
-                 '<a href="redoc">API specification</a>.</p>\n'
-    return help_text + html_footer()
-
-
-def html_header(title: str) -> str:
-    """ Generate a Web page header.
-    :param title: The title of the page.
-    :return: The HTML of the header.
-    """
-    return '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">''' + \
-    f'<title>{title}</title>' + \
-    '''<style>
+    <meta charset="UTF-8"><title>Generate service help</title><style>
         body {
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
             color: rgb(33, 37, 41);
@@ -164,11 +108,17 @@ def html_header(title: str) -> str:
     </style>
 </head>
 <body>
-  <div class="container">'''
+  <div class="container"><h1>Generate service help</h1><p><b>Note: </b>Apart of this online help, you may use the <a href="docs">API documentation</a> or <a href="redoc">API specification</a>.</p>
+<p>A service to create the phonetic transcriber of a text in different languages.</p>
+<p>To use this service you can simplify do the following: </p>
+<div class="codehilite"><pre><span></span><code>curl -X POST -H <span class="s2">&quot;Content-Type: application/json&quot;</span> --data <span class="s2">&quot;{\&quot;text\&quot;: &lt;text&gt;}&quot;</span> <span class="se">\</span>
+     <span class="s2">&quot;<script>document.write(window.location.href.replace(/\/[^\/]*$/, '/api/replace'));</script>/&lt;lang&gt;&quot;</span> 
+</code></pre></div>
 
+<div class="codehilite"><pre><span></span><code>curl -X POST -H <span class="s2">&quot;Content-Type: application/json&quot;</span> --data <span class="s2">&quot;{\&quot;text\&quot;: &lt;text&gt;}&quot;</span> <span class="se">\</span>
+     <span class="s2">&quot;<script>document.write(window.location.href.replace(/\/[^\/]*$/, '/api/delete'));</script>/&lt;lang&gt;&quot;</span> 
+</code></pre></div>
 
-def html_footer():
-    """ Generate a Web page footer.
-    :return: The HTML of the Web footer.
-    """
-    return '</div>\n</body>'
+<p>For more information <a href="javascript:window.location.href = window.location.href.replace(/\/[^\/]*$/, '/help');">visit our help page</a>: <script>document.write(window.location.href.replace(/\/[^\/]*$/, '/help'));</script></p><p>For more information, see the <a href="docs">API documentation</a> or <a href="redoc">API specification</a>.</p>
+</div>
+</body>
