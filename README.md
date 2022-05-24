@@ -16,8 +16,8 @@ This module is divided into the following categories:
   * [Filter lists](#filter-lists)
   * [Tuples](#tuples)
 * [Text](#text)
-  * [Remove urls](#remove-urls)
-  * [Replace urls](#replace-urls)
+  * [Remove URLs](#remove-urls)
+  * [Replace URLs](#replace-urls)
   * [Clean text](#clean-text)
   * [Text markup](#text-markup)
 * [File access, load and save files](#file-access-load-and-save-files)
@@ -322,16 +322,16 @@ https://example.com/my_space/user?a=b&c=3#first
 https://example.com/your_space/user#first"""
 remove_urls(text)
 # Result: 
-# 'This is a test!\nClean urls like this:'
+# 'This is a test!\nClean URLs like this:'
 
 # You can filter by path:
 remove_urls(text, r'my_space/user\?a=b&c=3#first')
 # Result:
 # 'This is a test!\n
-#     Clean punctuation symbols and urls like this:  https://example.com/your_space/user#first')
+#     Clean punctuation symbols and URLs like this:  https://example.com/your_space/user#first')
 ```
 
-# Replace URLs<a id='remove-urls" name="remove-urls"></a>
+# Replace URLs<a id="remove-urls" name="remove-urls"></a>
 
 Replace all the URLs which have a given path.
 
