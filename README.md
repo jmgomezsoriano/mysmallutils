@@ -17,6 +17,7 @@ This module is divided into the following categories:
   * [Tuples](#tuples)
 * [Text](#text)
   * [Remove urls](#remove-urls)
+  * [Replace urls](#replace-urls)
   * [Clean text](#clean-text)
   * [Text markup](#text-markup)
 * [File access, load and save files](#file-access-load-and-save-files)
@@ -309,18 +310,50 @@ t = merge_tuples(lst)  # The value of t is ([1, 2, 3], [10, 11, 12])
 # Text<a id="text" name="text"></a>
 Simple functions related to text.
 
-## Remove urls<a id="remove-urls" name="remove-urls"></a>
-Remove urls from a text.
+## Remove URLs<a id="remove-urls" name="remove-urls"></a>
+Remove URLs from a text.
 
 ```python
 from mysutils.text import remove_urls
 
-text = 'This is a test!\n     Clean punctuation symbols and urls like this: '
-       'https://example.com/my_space/user?a=b&c=3#first '
-       'https://example.com/my_space/user#first'
+text = """This is a test!
+Clean urls like this:
+https://example.com/my_space/user?a=b&c=3#first
+https://example.com/your_space/user#first"""
 remove_urls(text)
 # Result: 
-# 'This is a test!\n     Clean punctuation symbols and urls like this:  '
+# 'This is a test!\nClean urls like this:'
+
+# You can filter by path:
+remove_urls(text, r'my_space/user\?a=b&c=3#first')
+# Result:
+# 'This is a test!\n
+#     Clean punctuation symbols and urls like this:  https://example.com/your_space/user#first')
+```
+
+# Replace URLs<a id='remove-urls" name="remove-urls"></a>
+
+Replace all the URLs which have a given path.
+
+```python
+from mysutils.text import replace_urls
+
+text = """This is a test!
+Clean some urls like this:
+https://example.com/my_space/user?a=b&c=3#first
+https://example.com/your_space/user#first"""
+
+# Replace only the url with the path /my_space/user
+replace_urls(text, 'https://hello.com')
+# Result:
+# 'This is a test!\n
+#      Clean punctuation symbols and urls like this: https://hello.com https://hello.com'
+
+# Replace only the url with the path /my_space/user
+replace_urls(text, 'https://hello.com', r'my_space/user')
+# Result:
+# 'This is a test!\n
+#      Clean punctuation symbols and urls like this: https://hello.com https://example.com/your_space')
 ```
 
 ## Clean text<a id="clean-text" name="clean-text"></a>

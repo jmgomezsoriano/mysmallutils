@@ -1,17 +1,36 @@
 import re
-from enum import Enum, unique, auto
+from enum import Enum, unique
 from typing import Union
 
 URL_PATTERN = r'[A-Za-z0-9]+://[A-Za-z0-9%-_]+(/[A-Za-z0-9%-_])*(#|\\?)[A-Za-z0-9%-_&=]*'
 
 
-def remove_urls(text: str) -> str:
+def remove_urls(text: str, end_with: str = '') -> str:
     """ Remove any url in the text.
 
     :param text: The text to remove urls.
+    :param end_with: If set, only remove the URLs that finish with that regular expression.
+        By default, all the URLs are remvoed.
     :return: The same text but without urls.
     """
-    return re.sub(URL_PATTERN, '', text)
+    return replace_urls(text, '', end_with)
+
+
+def replace_urls(text: str, replace: str, end_with: str = '') -> str:
+    """ Replace all the URLs with path by a text.
+
+    :param text: The text to replace.
+    :param replace: The text to replace with.
+    :param end_with: A regular expression which the URL has to finish with.
+         By default, replace all the URLs.
+    :return: The replaced text.
+    """
+    matches = list(re.finditer(URL_PATTERN + end_with, text))
+    matches.reverse()
+    for e in matches:
+        start, end = e.span()[0], e.span()[1]
+        text = text[:start] + replace + text[end:]
+    return text
 
 
 def clean_text(text: str, lower: bool = True, url: bool = True) -> str:

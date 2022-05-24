@@ -1,14 +1,28 @@
 import unittest
 
-from mysutils.text import clean_text, remove_urls, AnsiCodes, markup, color, bg_color, un_color
+from mysutils.text import clean_text, remove_urls, AnsiCodes, markup, color, bg_color, un_color, replace_urls
 
 
 class MyTestCase(unittest.TestCase):
     def test_clean_url(self) -> None:
         text = 'This is a test!\n     Clean punctuation symbols and urls like this: ' \
                'https://example.com/my_space/user?a=b&c=3#first ' \
-               'https://example.com/my_space/user#first'
+               'https://example.com/your_space/user#first'
         self.assertEqual(remove_urls(text), 'This is a test!\n     Clean punctuation symbols and urls like this:  ')
+        self.assertEqual(remove_urls(text, r'my_space/user\?a=b&c=3#first'),
+                         'This is a test!\n     Clean punctuation symbols and urls like this:  '
+                         'https://example.com/your_space/user#first')
+
+    def test_replace_url(self) -> None:
+        text = 'This is a test!\n     Clean punctuation symbols and urls like this: ' \
+               'https://example.com/my_space/user ' \
+               'https://example.com/your_space'
+        self.assertEqual(replace_urls(text, 'https://hello.com'),
+                         'This is a test!\n     Clean punctuation symbols and urls like this: '
+                         'https://hello.com https://hello.com')
+        self.assertEqual(replace_urls(text, 'https://hello.com', r'my_space/user'),
+                         'This is a test!\n     Clean punctuation symbols and urls like this: '
+                         'https://hello.com https://example.com/your_space')
 
     def test_clean_text(self):
         text = 'This is a test!\n     Clean punctuation symbols and urls like this: ' \
