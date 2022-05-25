@@ -331,7 +331,7 @@ remove_urls(text, r'my_space/user\?a=b&c=3#first')
 #     Clean punctuation symbols and URLs like this:  https://example.com/your_space/user#first')
 ```
 
-# Replace URLs<a id="remove-urls" name="remove-urls"></a>
+## Replace URLs<a id="replace-urls" name="replace-urls"></a>
 
 Replace all the URLs which have a given path.
 
