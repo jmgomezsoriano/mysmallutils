@@ -52,7 +52,7 @@ class Removable(object):
         :param exc_val:
         :param exc_tb:
         """
-        remove_files(*self.__files, ignore_errors=self.__ignore_errors, recursive=self.__recursive)
+        self.close()
 
     def __repr__(self) -> str:
         """
@@ -72,6 +72,10 @@ class Removable(object):
         :return: The iterator of the removable files.
         """
         return iter(self.__files)
+
+    def close(self):
+        """ Close the removable object removing all the related files. """
+        remove_files(*self.__files, ignore_errors=self.__ignore_errors, recursive=self.__recursive)
 
 
 def removable_files(*files: Union[PathLike, str, bytes], recursive: bool = False, ignore_errors: bool = True) -> object:
