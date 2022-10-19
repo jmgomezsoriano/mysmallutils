@@ -203,17 +203,17 @@ class FileTestCase(unittest.FileTestCase):
         remove_files('text.txt.gz', 'text.txt')
 
     def test_write_file(self) -> None:
-        write_file('This is an example of writing text in a file.', 'text.txt')
+        write_file('text.txt', 'This is an example of writing text in a file.')
         self.assertEqual(first_line('text.txt'), 'This is an example of writing text in a file.')
         # Write a text in a compressed file
-        write_file('This is an example of writing text in a file.', 'text.txt.gz')
+        write_file('text.txt.gz', 'This is an example of writing text in a file.')
         self.assertEqual(first_line('text.txt.gz'), 'This is an example of writing text in a file.')
         text = ['This is another exmaple of writing text in a file.', 'This file has several lines.']
-        write_file(text, 'text.txt')
+        write_file('text.txt', text)
         self.assertEqual(read_file('text.txt', False), text)
-        write_file(text, 'text.txt.gz')
+        write_file('text.txt.gz', text)
         self.assertEqual(read_file('text.txt.gz', False), text)
-        remove_files('text.txt', 'text.txt.gz')
+        remove_files('text.txt.gz', 'text.txt')
 
     def test_cat(self) -> None:
         with open_file('text.txt.gz', 'wt') as file:

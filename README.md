@@ -729,16 +729,16 @@ Write a text in a file in just one instruction, even if the file is compressed.
 from mysutils.file import write_file
 
 # Write a text in a file
-write_file('This an example of writing text in a file.', 'text.txt')
+write_file('text.txt', 'This an example of writing text in a file.')
 # Write a text in a compressed file
-write_file('This an example of writing text in a file.', 'text.txt.gz')
+write_file('text.txt.gz', 'This an example of writing text in a file.')
 
 # Write a list of strings in a file
 text = ['This is another exmaple of writing text in a file.', 'This file has several lines.']
 # Write a text in a file
-write_file(text, 'text.txt')
+write_file('text.txt', text)
 # Write a text in a compressed file
-write_file(text, 'text.txt.gz')
+write_file('text.txt.gz', text)
 ```
 
 ## Make directories<a id="make-directories" name="make-directories"></a>
