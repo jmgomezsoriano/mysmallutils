@@ -4,6 +4,8 @@ from os.path import exists
 from threading import Thread, Event
 from typing import Callable, List, Union
 
+from deprecation import deprecated
+
 try:
     import git
 except ImportError:
@@ -15,6 +17,12 @@ logger = getLogger(__name__)
 
 class GitMonitor(object):
     """ A Git monitor to detect changes in a branch. """
+    @deprecated(deprecated_in='1.1.3', removed_in="1.2",
+                details='This class is going to be removed in 1.2 version because it is moved to another module called '
+                        'tempgit. You can install it with:\n\n'
+                        'pip install tempgit\n\n'
+                        'And use it with:\n\n'
+                        'from tempgit import GitMonitor')
     def __init__(self, func: Callable, folder: Union[str, PathLike, bytes], repository: str, branch: str = None,
                  force: bool = False, interval: int = 0) -> None:
         """ Monitor a chatbot data repository.

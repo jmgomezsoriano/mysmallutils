@@ -7,7 +7,7 @@ from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
     first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files, read_from, read_until, \
-    has_encoding
+    has_encoding, write_file
 from mysutils.tmp import removable_files, removable_tmp, removable_tmps
 from mysutils.yaml import load_yaml, save_yaml
 
@@ -201,6 +201,19 @@ class FileTestCase(unittest.FileTestCase):
         self.assertEqual(lines[1], 'Second line')
         self.assertEqual(len(lines), 2)
         remove_files('text.txt.gz', 'text.txt')
+
+    def test_write_file(self) -> None:
+        write_file('This is an example of writing text in a file.', 'text.txt')
+        self.assertEqual(first_line('text.txt'), 'This is an example of writing text in a file.')
+        # Write a text in a compressed file
+        write_file('This is an example of writing text in a file.', 'text.txt.gz')
+        self.assertEqual(first_line('text.txt.gz'), 'This is an example of writing text in a file.')
+        text = ['This is another exmaple of writing text in a file.', 'This file has several lines.']
+        write_file(text, 'text.txt')
+        self.assertEqual(read_file('text.txt', False), text)
+        write_file(text, 'text.txt.gz')
+        self.assertEqual(read_file('text.txt.gz', False), text)
+        remove_files('text.txt', 'text.txt.gz')
 
     def test_cat(self) -> None:
         with open_file('text.txt.gz', 'wt') as file:

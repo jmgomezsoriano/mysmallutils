@@ -23,6 +23,7 @@ This module is divided into the following categories:
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Read file](#read-file)
+  * [Write in a file](#write-in-a-file)
   * [Load and save json files](#load-and-save-json-files)
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)
@@ -721,6 +722,25 @@ read_until('README.md', r'^# Text')
 lines = read_files('README.md', 'requirements.txt')
 ```
 
+## Write in a file<a id="write-in-a-file" name="write-in-a-file"></a>
+Write a text in a file in just one instruction, even if the file is compressed.
+
+```python
+from mysutils.file import write_file
+
+# Write a text in a file
+write_file('This an example of writing text in a file.', 'text.txt')
+# Write a text in a compressed file
+write_file('This an example of writing text in a file.', 'text.txt.gz')
+
+# Write a list of strings in a file
+text = ['This is another exmaple of writing text in a file.', 'This file has several lines.']
+# Write a text in a file
+write_file(text, 'text.txt')
+# Write a text in a compressed file
+write_file(text, 'text.txt.gz')
+```
+
 ## Make directories<a id="make-directories" name="make-directories"></a>
 Create one or more directories but if them already exist, then do nothing.
 
@@ -1295,6 +1315,22 @@ json_post('https://postman-echo.com/post', {"msg": "Hello world!"})
 ```
 
 # Git monitor<a id="git-monitor" name="git-monitor"></a>
+
+## Deprecated from 1.1.3 and it will be remvoed in version 1.2!
+This class is going to be removed in 1.2 version because it is moved to another independent module called tempgit.
+You can install it with:
+
+```bash
+pip install tempgit
+```
+
+And use it with:
+
+```python
+from tempgit import GitMonitor
+```
+---
+
 Monitor a Git repository to check if there is any change in the remote repository with respect the local one.
 
 ```python

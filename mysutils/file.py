@@ -431,6 +431,17 @@ def read_until(filename: Union[PathLike, str, bytes], regexp: str = '',
     return lines
 
 
+def write_file(content: Union[str, List[str]], filename: Union[PathLike, str, bytes]) -> None:
+    """ Write a file.
+
+    :param content: The content to write. I t can be a string or a list of strings.
+    :param filename: The path to the file. If the file name ends with ".gz", this function compressed it first.
+    """
+    content = content if isinstance(content, str) else '\n'.join(content)
+    with open_file(filename, 'wt') as file:
+        file.write(content)
+
+
 def mkdirs(*paths: Union[PathLike, str, bytes], mode: int = 0o777,
            dir_fd: int = None) -> Tuple[Union[PathLike, str, bytes]]:
     """ Create one or several directories ignoring the error if the file or folder already exists.
