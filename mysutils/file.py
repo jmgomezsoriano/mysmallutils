@@ -431,7 +431,7 @@ def read_until(filename: Union[PathLike, str, bytes], regexp: str = '',
     return lines
 
 
-def write_file(filename: Union[PathLike, str, bytes], content: Union[str, List[str]]) -> None:
+def write_file(filename: Union[PathLike, str, bytes, int], content: Union[str, List[str]]) -> None:
     """ Write a file.
 
     :param content: The content to write. I t can be a string or a list of strings.
