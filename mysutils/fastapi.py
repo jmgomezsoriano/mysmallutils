@@ -1,5 +1,7 @@
+import re
 from logging import getLogger
 from os.path import exists
+from typing import Any
 
 from mysutils.file import read_from
 from mysutils.service import replace_endpoint
@@ -21,7 +23,7 @@ except ImportError:
 README = 'README.md'
 
 
-def gen_service_help(title: str, file: str = README, regex: str = '', *endpoints: str) -> str:
+def gen_service_help(title: str, file: str = README, regex: str = '', *endpoints: Any) -> str:
     """ Generate a HTML page from a README file or other Markdown file.
 
     :param title: The page title.
@@ -38,7 +40,10 @@ def gen_service_help(title: str, file: str = README, regex: str = '', *endpoints
         readme_text = ''.join(read_from(file, regex)[1:])
         help_text += markdown(readme_text, extensions=['fenced_code', 'codehilite'])
         for e in endpoints:
-            help_text = replace_endpoint(help_text, e)
+            if isinstance(e, str):
+                help_text = replace_endpoint(help_text, e)
+            elif str(e.__class__) == "<class 'fastapi.routing.APIRoute'>" and e.path != '/':
+                help_text = replace_endpoint(help_text, re.sub(r'(/[A-z0-9]+/?).*', r'\1', e.path))
     else:
         logger.warning(f'If you want to show an online help, please, add the file {file} to the project root.')
 
