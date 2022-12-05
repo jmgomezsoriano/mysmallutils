@@ -1,6 +1,6 @@
 import collections
 from collections import OrderedDict
-from typing import Union, List, Any, Callable, Dict, Iterable, Tuple, Optional, Set, Hashable, Sequence
+from typing import Union, List, Any, Callable, Dict, Iterable, Tuple, Optional, Hashable
 from datetime import datetime
 
 
@@ -45,8 +45,8 @@ def list_union(*lists: list) -> list:
     :return: The union of all lists respecting the element order.
     """
     result = []
-    for l in lists:
-        for e in l:
+    for lst in lists:
+        for e in lst:
             if e not in result:
                 result.append(e)
     return result
@@ -352,13 +352,13 @@ class OrderedSet(collections.Set, Iterable):
         """
         self.items[item] = date
 
-    def __setitem__(self, key: Hashable, value: datetime) -> None:
+    def __setitem__(self, item: Hashable, date: datetime) -> None:
         """ Set the time of an element in the set.
 
         :param item: The item to modify its introduction date.
         :param date: The date to modify.
         """
-        self.set_time(key, value)
+        self.set_time(item, date)
 
     def before(self, date: datetime) -> 'OrderedSet':
         """ Get a copy of the OrderedSet with items were introduced before the given date.
@@ -372,7 +372,7 @@ class OrderedSet(collections.Set, Iterable):
         return items
 
     def until(self, date: datetime) -> 'OrderedSet':
-        """ Get a copy of the OrderedSet with items were introduced util the given date, including the same date.
+        """ Get a copy of the OrderedSet with items were introduced until the given date, including the same date.
 
         :param date: The date to search the set.
         :return: A copy of the OrderedSet with items added until the given date.
@@ -383,7 +383,7 @@ class OrderedSet(collections.Set, Iterable):
         return items
 
     def after(self, date: datetime) -> 'OrderedSet':
-        """ Get a copy of the OrderedSet with items were introduced before the given date.
+        """ Get a copy of the OrderedSet with items were introduced after the given date.
 
         :param date: The date to search the set.
         :return: A copy of the OrderedSet with items added before the given date.
@@ -394,7 +394,7 @@ class OrderedSet(collections.Set, Iterable):
         return items
 
     def since(self, date: datetime) -> 'OrderedSet':
-        """ Get a copy of the OrderedSet with items were introduced since the given date, including the same date).
+        """ Get a copy of the OrderedSet with items were introduced since the given date, including the same date.
 
         :param date: The date to search the set.
         :return: A copy of the OrderedSet with items added since the given date.
@@ -421,6 +421,60 @@ class OrderedSet(collections.Set, Iterable):
         """
         return self.items.popitem(last)[0]
 
+    def remove_items(self, items: Iterable[Hashable], discard: bool = False) -> None:
+        """ Remove the given items from the set.
+
+        :param items: The items to remove.
+        :param discard: If True, do not raise a KeyError if the item is not found.
+        """
+        for item in items:
+            if discard:
+                self.discard(item)
+            else:
+                self.remove(item)
+
+    def remove_before(self, date: datetime, discard: bool = False) -> None:
+        """ Remove all the introduced items before the given date.
+
+        :param date: The date to search the set.
+        :param discard: If True, do not raise a KeyError if the item is not found.
+        """
+        self.remove_items([i for i in self.items if self[i] < date], discard)
+
+    def remove_until(self, date: datetime, discard: bool = False) -> None:
+        """ Remove all the introduced items  until the given date, including the same date.
+
+        :param date: The date to search the set.
+        :param discard: If True, do not raise a KeyError if the item is not found.
+        """
+        self.remove_items([i for i in self.items if self[i] <= date], discard)
+
+    def remove_after(self, date: datetime, discard: bool = False) -> None:
+        """ Remove all the introduced items after the given date.
+
+        :param date: The date to search the set.
+        :param discard: If True, do not raise a KeyError if the item is not found.
+        """
+        self.remove_items([i for i in self.items if self[i] > date], discard)
+
+    def remove_since(self, date: datetime, discard: bool = False) -> None:
+        """ Remove all the introduced items since the given date, including the same date.
+
+        :param date: The date to search the set.
+        :param discard: If True, do not raise a KeyError if the item is not found.
+        """
+        self.remove_items([i for i in self.items if self[i] >= date])
+
+    def first(self) -> 'Hashable':
+        """ Get the first element of the OrderedDict without removing it.
+
+        :return: The first element of the set.
+        """
+        if self.items:
+            return next(iter(self.items))
+        else:
+            raise KeyError('set is empty.')
+
     def discard(self, item: Hashable) -> None:
         """ Remove an element from the set.
 
@@ -434,7 +488,10 @@ class OrderedSet(collections.Set, Iterable):
 
     def copy(self) -> 'OrderedSet':
         """ Return a copy of the OrderedSet."""
-        return OrderedSet([k for k in self.items.keys()])
+        items = OrderedSet([k for k in self.items.keys()])
+        for item in items:
+            items[item] = self.items[item]
+        return items
 
     def difference(self, other: collections.Set) -> 'OrderedSet':
         """ Get the elements in the set which are not present in the other set.

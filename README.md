@@ -406,6 +406,66 @@ These operations include:
   print(s)  # Prints {1, 3}
   s.remove(2)  # Throws a KeyError exception.
   ```
+* **remove_items()**: Remove the given items from the set.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s = OrderedSet([1, 2, 3, 4, 5])
+  s.remove_items([2, 3, 4])
+  print(s)  # Prints {1, 5}
+  ```
+* **remove_before()**: Remove all the introduced items before the given date.
+  ```python
+  from mysutils.collections import OrderedSet
+  from time import sleep
+  
+  s = OrderedSet([1, 3])
+  sleep(0.1)
+  s.add(4)
+  time.sleep(0.1)
+  s.add(5)
+  s.remove_before(s[4])
+  print(s)  # Prints {4, 5}      
+  ```
+* **remove_until()**: Remove all the introduced items  until the given date, including the same date.
+  ```python 
+  from mysutils.collections import OrderedSet
+  from time import sleep
+  
+  s = OrderedSet([1, 3])
+  sleep(0.1)
+  s.add(4)
+  time.sleep(0.1)
+  s.add(5)
+  s.remove_until(s[4])
+  print(s)  # Prints {5}
+  ```
+* **remove_after()**: Remove all the introduced items after the given date.
+  ```python
+  from mysutils.collections import OrderedSet
+  from time import sleep
+  
+  s = OrderedSet([1, 3])
+  sleep(0.1)
+  s.add(4)
+  time.sleep(0.1)
+  s.add(5)
+  s.remove_after(s[4])
+  print(s)  # Prints {1, 3, 4}
+  ```
+* **remove_since()**: Remove all the introduced items since the given date, including the same date.
+  ```python
+  from mysutils.collections import OrderedSet
+  from time import sleep
+  
+  s = OrderedSet([1, 3])
+  sleep(0.1)
+  s.add(4)
+  time.sleep(0.1)
+  s.add(5)
+  s.remove_since(s[4])
+  print(s)  # Prints {1, 3}
+  ```
 * **discard()**: This method allows you to remove an element from the set.
   It is similar to the remove() method, but it does not raise an error if the element is not present in the set.
   ```python
@@ -427,6 +487,15 @@ These operations include:
   print(s)  # Prints {32, 18, 1, 6}
   print(s.pop(last=True))  # Prints 6
   print(s)  # Prints {32, 18, 1}
+  ```
+* **first()**: Get the first element of the OrderedDict without removing it.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s = OrderedSet({1, 2, 3})
+  print(s.first())  # Prints 1
+  print(s.pop())  # Prints 1
+  print(s.first())  # Prints 2
   ```
 * **update()**: This method allows you to add a sequence of elements to the set.
   ```python

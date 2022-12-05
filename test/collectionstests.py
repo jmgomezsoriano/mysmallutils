@@ -165,7 +165,9 @@ class MyTestCase(unittest.TestCase):
         self.assertLess(s[1], s[8])
         self.assertGreater(s.time(8), s.time(1))
         t1 = datetime.now()
-        s.update({2, 3, 4, 5, 6})
+        for item in {2, 3, 4, 5, 6}:
+            s.add(item)
+            time.sleep(0.1)
         before_set = s.before(t1)
         self.assertSetEqual(before_set, {8, 1})
         for item in before_set:
@@ -179,11 +181,46 @@ class MyTestCase(unittest.TestCase):
         self.assertSetEqual(s.after(s[3]), {4, 5, 6})
         self.assertSetEqual(s.since(s[3]), {3, 4, 5, 6})
 
+    def test_ordered_set_first(self) -> None:
+        s = OrderedSet()
+        s.add(1)
+        self.assertEqual(s.first(), 1)
+        s.add(2)
+        self.assertEqual(s.first(), 1)
+        s.add(3)
+        self.assertEqual(s.pop(), 1)
+        self.assertEqual(s.first(), 2)
+        self.assertEqual(s.pop(), 2)
+        self.assertEqual(s.first(), 3)
+        self.assertEqual(s.pop(), 3)
+        with self.assertRaises(KeyError):
+            s.first()
+
+
     def test_ordered_set_remove(self):
         s = OrderedSet([1, 2, 3])
         s.remove(2)
         self.assertEqual(len(s), 2)
         self.assertSetEqual(s, {1, 3})
+        time.sleep(0.1)
+        s.add(4)
+        time.sleep(0.1)
+        s.add(5)
+        copy_set = s.copy()
+        s.remove_before(s[4])
+        self.assertSetEqual(s, {4, 5})
+        s = copy_set.copy()
+        s.remove_after(s[4])
+        self.assertSetEqual(s, {1, 3, 4})
+        s = copy_set.copy()
+        s.remove_until(s[4])
+        self.assertSetEqual(s, {5})
+        s = copy_set.copy()
+        s.remove_since(s[4])
+        self.assertSetEqual(s, {1, 3})
+        s = OrderedSet([1, 2, 3, 4, 5])
+        s.remove_items([2, 3, 4])
+        self.assertSetEqual(s, {1, 5})
 
     def test_ordered_set_discard(self):
         s = OrderedSet([1, 2, 3])
