@@ -2,7 +2,7 @@ import unittest
 
 from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, \
     merge_tuples, merge_dicts, first_key_value, first_item, last_item, item, first_key, last_key, key, first_value, \
-    last_value, value, concat_lists
+    last_value, value, concat_lists, OrderedSet
 from mysutils.collections import list_union
 
 
@@ -143,6 +143,176 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(first_key_value(lst, 'c'), 3)
         with self.assertRaises(KeyError):
             first_key_value(lst, 'd')
+
+    def test_ordered_set_add(self):
+        s = OrderedSet()
+        s.add(1)
+        self.assertEqual(len(s), 1)
+        self.assertTrue(1 in s)
+        s = OrderedSet({5, 4, 3})
+        s.add(8)
+        self.assertSetEqual(s, {8, 5, 4, 3})
+
+    def test_ordered_set_remove(self):
+        s = OrderedSet([1, 2, 3])
+        s.remove(2)
+        self.assertEqual(len(s), 2)
+        self.assertSetEqual(s, {1, 3})
+
+    def test_ordered_set_discard(self):
+        s = OrderedSet([1, 2, 3])
+        s.discard(2)
+        self.assertEqual(len(s), 2)
+        self.assertSetEqual(s, {1, 3})
+
+    def test_ordered_set_pop(self) -> None:
+        s = OrderedSet([24, 32, 18, 1, 6])
+        self.assertEqual(s.pop(), 24)
+        self.assertSetEqual(s, {32, 18, 1, 6})
+        self.assertEqual(s.pop(last=True), 6)
+        self.assertSetEqual(s, {32, 18, 1})
+
+    def test_ordered_set_update(self) -> None:
+        s = OrderedSet([24, 32, 18, 1, 6])
+        s.update([1, 2, 3])
+        self.assertSetEqual(s, {1, 2, 3, 6, 18, 24, 32})
+
+    def test_ordered_set_clear(self):
+        s = OrderedSet([1, 2, 3])
+        s.clear()
+        self.assertEqual(len(s), 0)
+        self.assertSetEqual(s, set())
+
+    def test_ordered_set_copy(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = s1.copy()
+        self.assertEqual(len(s1), len(s2))
+        self.assertSetEqual(s1, s2)
+
+    def test_ordered_set_difference(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([2, 3, 4])
+        s3 = {1, 2, 3}
+        s4 = {2, 3, 4}
+        diff = s1.difference(s2)
+        self.assertEqual(len(diff), 1)
+        self.assertSetEqual(diff, {1})
+        diff = s1 - s2
+        self.assertEqual(len(diff), 1)
+        self.assertSetEqual(diff, {1})
+        diff = s1 - s4
+        self.assertEqual(len(diff), 1)
+        self.assertSetEqual(diff, {1})
+        diff = s3 - s2
+        self.assertEqual(len(diff), 1)
+        self.assertSetEqual(diff, {1})
+
+    def test_ordered_set_difference_update(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([2, 3, 4])
+        s1.difference_update(s2)
+        self.assertEqual(len(s1), 1)
+        self.assertSetEqual(s1, {1})
+        s1 = OrderedSet([1, 2, 3])
+        s1.difference_update({2, 3, 4})
+        self.assertEqual(len(s1), 1)
+        self.assertSetEqual(s1, {1})
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([2, 3, 4])
+        s2.difference_update(s1)
+        self.assertEqual(len(s2), 1)
+        self.assertSetEqual(s2, {4})
+        s1 = OrderedSet([1, 2, 3])
+        s2 = {2, 3, 4}
+        s2.difference_update(s1)
+        self.assertEqual(len(s2), 1)
+        self.assertSetEqual(s2, {4})
+
+    def test_ordered_set_intersection(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([2, 3, 4])
+        intersect = s1.intersection(s2)
+        self.assertEqual(len(intersect), 2)
+        self.assertSetEqual(intersect, {2, 3})
+        intersect = s1 & s2
+        self.assertEqual(len(intersect), 2)
+        self.assertSetEqual(intersect, {2, 3})
+        intersect = s2 & s1
+        self.assertEqual(len(intersect), 2)
+        self.assertSetEqual(intersect, {2, 3})
+        intersect = s1 & {2, 3, 4}
+        self.assertEqual(len(intersect), 2)
+        self.assertSetEqual(intersect, {2, 3})
+        intersect = {1, 2, 3} & s2
+        self.assertEqual(len(intersect), 2)
+        self.assertSetEqual(intersect, {2, 3})
+
+    def test_ordered_set_intersection_update(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([2, 3, 4])
+        s1.intersection_update(s2)
+        self.assertEqual(len(s1), 2)
+        self.assertSetEqual(s1, {2, 3})
+
+    def test_ordered_set_union(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([3, 4, 5])
+        s3 = set(iter([1, 2, 3]))
+        s4 = set(iter([3, 4, 5]))
+        union = s1.union(s2)
+        self.assertSetEqual(union, {1, 2, 3, 4, 5})
+        self.assertTrue(union != {1, 2, 3, 4, 5, 6})
+        union = s1 | s2
+        self.assertTrue(union == {1, 2, 3, 4, 5})
+        self.assertTrue(union != {1, 2, 3, 4, 5, 6})
+        union = s1 | s4
+        self.assertTrue(union == {1, 2, 3, 4, 5})
+        self.assertTrue(union != {1, 2, 3, 4, 5, 6})
+        union = s4.union(s1)
+        self.assertTrue(union == {1, 2, 3, 4, 5})
+        self.assertTrue(union != {1, 2, 3, 4, 5, 6})
+        union = s3.union(s4)
+        self.assertSetEqual(union, {1, 2, 3, 4, 5})
+        self.assertTrue(union != {1, 2, 3, 4, 5, 6})
+
+    def test_ordered_set_issubset(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([1, 2, 3, 4, 5, 6])
+        self.assertTrue(s1.issubset(s2))
+        self.assertFalse(s2.issubset(s1))
+        self.assertTrue(s1 <= s2)
+        self.assertFalse(s2 <= s1)
+
+    def test_ordered_set_issuperset(self):
+        s1 = OrderedSet([1, 2, 3, 4, 5, 6])
+        s2 = OrderedSet([1, 2, 3])
+        self.assertTrue(s1.issuperset(s2))
+        self.assertFalse(s2.issuperset(s1))
+        self.assertTrue(s1 >= s2)
+        self.assertFalse(s2 >= s1)
+
+    def test_ordered_set_isdisjoint(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([4, 5, 6])
+        s3 = OrderedSet([1, 5, 6])
+        self.assertTrue(s1.isdisjoint(s2))
+        self.assertFalse(s3.isdisjoint(s2))
+
+    def test_ordered_set_symmetric_difference(self):
+        s1 = OrderedSet([1, 2, 3])
+        s2 = OrderedSet([3, 4, 5])
+        s3 = set(iter([1, 2, 3]))
+        s4 = set(iter([3, 4, 5]))
+        symmetric_diff = s1.symmetric_difference(s2)
+        self.assertSetEqual(symmetric_diff, {1, 2, 4, 5})
+        symmetric_diff = s1 ^ s2
+        self.assertSetEqual(symmetric_diff, {1, 2, 4, 5})
+        symmetric_diff = s1 ^ s4
+        self.assertSetEqual(symmetric_diff, {1, 2, 4, 5})
+        symmetric_diff = s3 ^ s2
+        self.assertSetEqual(symmetric_diff, {1, 2, 4, 5})
+        symmetric_diff = s3.symmetric_difference(s4)
+        self.assertSetEqual(symmetric_diff, {1, 2, 4, 5})
 
 
 if __name__ == '__main__':

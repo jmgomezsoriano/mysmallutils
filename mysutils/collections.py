@@ -1,4 +1,6 @@
-from typing import Union, List, Any, Callable, Dict, Iterable, Tuple, Optional
+import collections
+from collections import OrderedDict
+from typing import Union, List, Any, Callable, Dict, Iterable, Tuple, Optional, Hashable
 
 
 def head(obj: Union[dict, set], top: int = 10) -> Union[dict, set]:
@@ -59,6 +61,7 @@ def concat_lists(*lists: list) -> list:
     for l in lists:
         result.extend(l)
     return result
+
 
 def del_keys(d: dict, *keys: Any, ignore_errors: bool = True) -> dict:
     """ Remove the dictionary items from their keys and return the modified dictionary.
@@ -295,3 +298,221 @@ def merge_tuples(tuples: Iterable[tuple]) -> tuple:
         for i, e in enumerate(t):
             result[i].append(e)
     return result
+
+
+class OrderedSet(collections.Set, Iterable):
+    """ An ordered set with pop() method, which can be extracted using FIFO or LIFO. """
+
+    def __init__(self, items: Iterable = iter([])) -> None:
+        """ Initialize the OrderedSet with an empty dictionary or a list of elements.
+
+        :param items: The elements to add.
+        """
+        self.items = OrderedDict()
+        self.update(items)
+
+    def update(self, items: Iterable) -> None:
+        """ Update the OrderedSet with a list of elements.
+
+        :param items: The elements to add.
+        """
+        for item in items:
+            self.add(item)
+
+    def add(self, item: Hashable) -> None:
+        """ Add an element to the set.
+
+        :param item: The element to add.
+        """
+        if item not in self.items:
+            self.items[item] = True
+
+    def remove(self, item: Hashable) -> None:
+        """ Remove an element from the set.
+
+        :param item: The element to remove.
+        """
+        if item in self.items:
+            del self.items[item]
+
+    def pop(self, last: bool = False) -> Any:
+        """ Pop an element from the set. By default, it pops the first element introduced,
+          but also it is possible to pop the last.
+
+        :param last: If True, the last element introduced will be removed, otherwise the first one.
+        :return: The last element from the set.
+        """
+        return self.items.popitem(last)[0]
+
+    def discard(self, item: Hashable) -> None:
+        """ Remove an element from the set.
+
+        :param item: The element to remove.
+        """
+        del self.items[item]
+
+    def clear(self) -> None:
+        """ Remove all elements from the set. """
+        self.items.clear()
+
+    def copy(self) -> 'OrderedSet':
+        """ Return a copy of the OrderedSet."""
+        return OrderedSet([k for k in self.items.keys()])
+
+    def difference(self, other: collections.Set) -> 'OrderedSet':
+        """ Get the elements in the set which are not present in the other set.
+
+        :param other: The other set.
+        :return: The elements which are not present in the other set.
+        """
+        return OrderedSet(self.items.keys() - set(other))
+
+    def __sub__(self, other: collections.Set) -> 'OrderedSet':
+        """ Get the elements in the set which are not present in the other set.
+
+        :param other: The other set.
+        :return: The elements which are not present in the other set.
+        """
+        return self.difference(other)
+
+    def difference_update(self, other: collections.Set) -> None:
+        """ Remove the elements in the set which are not present in the other set.
+
+        :param other: The other set.
+        """
+        items = self.items.keys() - set(other)
+        self.items = OrderedDict()
+        self.update(items)
+
+    def intersection(self, other: collections.Set) -> 'OrderedSet':
+        """ Get the elements in the set which are present in the other set.
+
+        :param other: The other set.
+        :return: The elements which are present in the other set.
+        """
+        return OrderedSet(self.items.keys() & set(other))
+
+    def __and__(self, other: collections.Set) -> 'OrderedSet':
+        """ Get the elements in the set which are present in the other set.
+
+        :param other: The other set.
+        :return: The elements which are present in the other set.
+        """
+        return self.intersection(other)
+
+    def intersection_update(self, other: collections.Set) -> None:
+        """ Remove the elements in the set which are not present in the other set.
+
+        :param other: The other set.
+        """
+        items = self.items.keys() & set(other)
+        self.items = OrderedDict()
+        self.update(items)
+
+    def union(self, other: collections.Set) -> 'OrderedSet':
+        """ Return the union of two sets as a new `OrderedSet`.
+
+        :param other: The other set to union with.
+        :return: The union of the two sets as a new `OrderedSet`.
+        """
+        return OrderedSet(self.items.keys() | set(other))
+
+    def __or__(self, other: collections.Set) -> 'OrderedSet':
+        """ Return the union of two sets as a new `OrderedSet`.
+
+        :param other: The other set to union with.
+        :return: The union of the two sets as a new `OrderedSet`.
+        """
+        return self.union(other)
+
+    def isdisjoint(self, other: collections.Set) -> bool:
+        """ Check if the set is disjoint from the other set.
+
+        :param other: The other set.
+        :return: True if the set is disjoint from the other set, False otherwise.
+        """
+        return not bool(self.items.keys() & set(other))
+
+    def issubset(self, other: collections.Set) -> bool:
+        """ Check if the set is a subset of the other set.
+
+        :param other: The other set.
+        :return: True if the set is a subset of the other set, False otherwise.
+        """
+        return self.items.keys() <= set(other)
+
+    def __le__(self, other: collections.Set) -> bool:
+        """ Check if the set is a subset of the other set.
+
+        :param other: The other set.
+        :return: True if the set is a subset of the other set, False otherwise.
+        """
+        return self.issubset(other)
+
+    def issuperset(self, other: collections.Set) -> bool:
+        """ Check if the set is a superset of the other set.
+
+        :param other: The other set.
+        :return: True if the set is a superset of the other set, False otherwise.
+        """
+        return self.items.keys() >= set(other)
+
+    def __ge__(self, other: collections.Set) -> bool:
+        """ Check if the set is a superset of the other set.
+
+        :param other: The other set.
+        :return: True if the set is a superset of the other set, False otherwise.
+        """
+        return self.issuperset(other)
+
+    def symmetric_difference(self, other: collections.Set) -> 'OrderedSet':
+        """ Return the symmetric difference of two sets as a new `OrderedSet`.
+
+        :param other: The other set to take the symmetric difference with.
+        :return: The symmetric difference of the two sets as a new `OrderedSet`.
+        """
+        return OrderedSet(self.items.keys() ^ set(other))
+
+    def __pow__(self, other: collections.Set) -> 'OrderedSet':
+        """ Return the symmetric difference of two sets as a new `OrderedSet`.
+
+        :param other: The other set to take the symmetric difference with.
+        :return: The symmetric difference of the two sets as a new `OrderedSet`.
+        """
+        return self.symmetric_difference(other)
+
+    def __len__(self):
+        """ Get the number of elements in the set. """
+        return len(self.items)
+
+    def __contains__(self, item):
+        """ Check if the set contains an element. """
+        return item in self.items
+
+    def __iter__(self):
+        """ Iterate over the elements in the set. """
+        return iter(self.items.keys())
+
+    def __list__(self):
+        """ Get the elements in the set. """
+        return list(self.items.keys())
+
+    def __eq__(self, other: collections.Set) -> bool:
+        """ Check if the set is equal to the other set.
+
+        :param other: The other set.
+        :return: True if the set is equal to the other set, False otherwise.
+        """
+        return set(self.items.keys()) == set(other)
+
+    def __neq__(self, other: collections.Set) -> bool:
+        """ Check if the set is not equal to the other set.
+
+        :param other: The other set.
+        :return: True if the set is not equal to the other set, False otherwise.
+        """
+        return set(self.items.keys()) != set(other)
+
+    def __repr__(self):
+        """ Get the string representation of the set. """
+        return repr(set(self.items.keys()))

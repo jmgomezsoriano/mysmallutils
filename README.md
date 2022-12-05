@@ -15,6 +15,7 @@ This module is divided into the following categories:
   * [Dictionary operations](#dictionary-operations)
   * [Filter lists](#filter-lists)
   * [Tuples](#tuples)
+  * [OrderedSet](#orderedset)
 * [Text](#text)
   * [Remove URLs](#remove-urls)
   * [Replace URLs](#replace-urls)
@@ -307,6 +308,184 @@ from mysutils.collections import merge_tuples
 lst = [(1, 10), (2, 11), (3, 12)]
 t = merge_tuples(lst)  # The value of t is ([1, 2, 3], [10, 11, 12])
 ```
+
+## OrderedSet<a id="orderedset" name="orderedset"></a>
+
+The OrderedSet class is an implementation of an ordered set in Python. An ordered set is a data structure that allows 
+you to store unique elements in an ordered manner, meaning that they are maintained in the order in which they were
+inserted. This class is based on the Set class from the collections library and also implements the iteration protocol.
+Basic Set Operations.
+
+The OrderedSet class provides the basic set operations that are defined by the Set class from the collections library.
+These operations include:
+
+* **add()**: This method allows you to add a single element to the set.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s = OrderedSet({5, 4, 3})
+  s.add(8)
+  print(s)  # Prints {8, 3, 4, 5}
+  ```
+* **remove()**: This method allows you to remove an element from the set.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s = OrderedSet([1, 2, 3])
+  s.remove(2)
+  print(s)  # Prints {1, 3}
+  s.remove(2)  # Throws a KeyError exception.
+  ```
+* **discard()**: This method allows you to remove an element from the set.
+  It is similar to the remove() method, but it does not raise an error if the element is not present in the set.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s = OrderedSet([1, 2, 3])
+  s.discard(2)
+  print(s)  # Prints {1, 3}
+  s.discard(2)  # Throws a KeyError exception.
+  ```
+* **pop()**: This method allows you to extract an element from the set.
+  By default, it removes the first element that was added to the set,
+  but you can also specify that it should remove the last element instead.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s = OrderedSet([24, 32, 18, 1, 6])
+  print(s.pop())  # Prints 24
+  print(s)  # Prints {32, 18, 1, 6}
+  print(s.pop(last=True))  # Prints 6
+  print(s)  # Prints {32, 18, 1}
+  ```
+* **update()**: This method allows you to add a sequence of elements to the set.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s = OrderedSet([24, 32, 18, 1, 6])
+  s.update([1, 2, 3])
+  print(s)  # Prints {32, 1, 2, 3, 6, 18, 24}
+  ```
+* **clear()**: This method allows you to remove all elements from the set, effectively clearing the set.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s = OrderedSet([1, 2, 3])
+  s.clear()
+  pritn(s)  # Prints {}  
+  ```
+* **copy()**: This method allows you to create a copy of the set.
+  The copy will have the same elements as the original set, but it will be a separate object.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = s1.copy()
+  print(s1, s2)  # {1, 2, 3} {1, 2, 3}
+  ```
+
+### Additional Set Operations
+
+* **difference()**: This method allows you to find the elements in the set that are not present in another set.
+  It returns a new OrderedSet object that contains only the elements that are unique to the original set.
+  You can also use the operator -, for example:
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = OrderedSet([2, 3, 4])
+  print(s1.difference(s2))  # Prints {1}
+  print(s1 - s2)  # Prints {1}
+  ```
+* **difference_update()**: This method allows you to remove the elements in the set that are not present in another set.
+  It modifies the original set in-place, removing the elements that are not present in the other set.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = OrderedSet([2, 3, 4])
+  s1.difference_update(s2)
+  print(s1)  # Prints {1}
+  ```
+* **intersection()**: This method allows you to find the elements in the set that are present in another set.
+  It returns a new OrderedSet object. You can also use the operator &, for example:
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = OrderedSet([2, 3, 4])
+  print(s1.intersection(s2))  # Prints {2, 3}
+  print(s1 & s2)  # Prints {2, 3}
+  ```
+* **intersection_update()**: This method allows you to remove the elements in the set that are not present in another 
+  set. It modifies the original set in-place, removing the elements that are not present in the other set.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = OrderedSet([2, 3, 4])
+  s1.intersection_update(s2)
+  print(s1)  # Prints {2, 3}
+  ```
+* **union()**: This is an operator method that allows you to use the | operator to find the union of two sets.
+  It returns a new OrderedSet object that contains all elements from both sets.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = OrderedSet([3, 4, 5])
+  print(s1.union(s2))  # Print {1, 2, 3, 4, 5})
+  print(s1 | s2)  # Print {1, 2, 3, 4, 5})
+  ```
+* **issubset()**: This method allows you to check if the set is a subset of another set.
+  It returns True if all elements in the set are also present in the other set, and False otherwise.
+  You can also use the operator <=, for example:
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = OrderedSet([1, 2, 3, 4, 5, 6])
+  print(s1.issubset(s2))  # Prints True
+  print(s2.issubset(s1))  # Prints False
+  print(s1 <= s2)   # Prints True
+  print(s2 <= s1)   # Prints False
+  ```
+* **issuperset()**: This method allows you to check if the set is a superset of another set.
+  It returns True if all elements in the other set are also present in the set, and False otherwise.
+  You can also use the operator >=, for example:
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3, 4, 5, 6])
+  s2 = OrderedSet([1, 2, 3])
+  print(s1.issuperset(s2))  # Prints True
+  print(s2.issuperset(s1))  # Prints False
+  print(s1 >= s2)  # Prints True
+  print(s2 >= s1)  # Prints False
+  ```
+* **isdisjoint()**: This method allows you to check if the set has no elements in common with another set.
+  It returns True if the sets have no elements in common, and False otherwise.
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = OrderedSet([4, 5, 6])
+  s3 = OrderedSet([1, 5, 6])
+  print(s1.isdisjoint(s2))  # Prints True
+  print(s3.isdisjoint(s2))  # Prints False
+  ```
+* **symmetric_difference()**: This method returns the symmetric difference of two sets as a new `OrderedSet`.
+  You can also use the operator ^, for example:
+  ```python
+  from mysutils.collections import OrderedSet
+  
+  s1 = OrderedSet([1, 2, 3])
+  s2 = OrderedSet([3, 4, 5])
+  s3 = set(iter([1, 2, 3]))
+  s4 = set(iter([3, 4, 5]))
+  print(s1.symmetric_difference(s2))   # Prints {1, 2, 4, 5}
+  print(s1 ^ s2)  # Prints {1, 2, 4, 5}
+  ```
 
 # Text<a id="text" name="text"></a>
 Simple functions related to text.
