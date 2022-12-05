@@ -1,4 +1,6 @@
+import time
 import unittest
+from datetime import datetime
 
 from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, \
     merge_tuples, merge_dicts, first_key_value, first_item, last_item, item, first_key, last_key, key, first_value, \
@@ -152,6 +154,30 @@ class MyTestCase(unittest.TestCase):
         s = OrderedSet({5, 4, 3})
         s.add(8)
         self.assertSetEqual(s, {8, 5, 4, 3})
+
+    def test_ordered_set_time(self):
+        s = OrderedSet()
+        s.add(1)
+        time.sleep(0.5)
+        s.add(8)
+        self.assertIsInstance(s[1], datetime)
+        self.assertLess(s.time(1), s.time(8))
+        self.assertLess(s[1], s[8])
+        self.assertGreater(s.time(8), s.time(1))
+        t1 = datetime.now()
+        s.update({2, 3, 4, 5, 6})
+        before_set = s.before(t1)
+        self.assertSetEqual(before_set, {8, 1})
+        for item in before_set:
+            self.assertEqual(s[item], before_set[item])
+        after_set = s.after(t1)
+        self.assertSetEqual(after_set, {2, 3, 4, 5, 6})
+        for item in after_set:
+            self.assertEqual(s[item], after_set[item])
+        self.assertSetEqual(s.before(s[8]), {1})
+        self.assertSetEqual(s.until(s[8]), {1, 8})
+        self.assertSetEqual(s.after(s[3]), {4, 5, 6})
+        self.assertSetEqual(s.since(s[3]), {3, 4, 5, 6})
 
     def test_ordered_set_remove(self):
         s = OrderedSet([1, 2, 3])

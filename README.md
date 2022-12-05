@@ -327,6 +327,76 @@ These operations include:
   s.add(8)
   print(s)  # Prints {8, 3, 4, 5}
   ```
+* **time()**: Get the time when an element was added. You can also use [item] operator, for example:
+  ```python
+  from mysutils.collections import OrderedSet
+  import time
+  
+  s = OrderedSet()
+  s.add(1)
+  time.sleep(0.5)
+  s.add(8)
+  print(s[1])  # Prints a datatime object with the time when the element 1 was added
+  print(s[8])  # Prints a datatime object with the time when the element 1 was added
+  print(s[1] < s[8])  # Prints True
+  print(s[1] > s[8])  # Prints False
+  ```
+* **before()**: Get a copy of the OrderedSet with items were introduced before the given date.
+  ```python
+  from mysutils.collections import OrderedSet
+  from datetime import datetime
+  import time
+  
+  s = OrderedSet()
+  s.add(1)
+  time.sleep(0.5)
+  s.add(8)
+  t1 = datetime.now()
+  s.update({2, 3, 4, 5, 6})
+  print(s.before(t1))  # Prints {8, 1}
+  ```
+* **after()**: 
+  ```python
+  from mysutils.collections import OrderedSet
+  from datetime import datetime
+  import time
+  
+  s = OrderedSet()
+  s.add(1)
+  time.sleep(0.5)
+  s.add(8)
+  t1 = datetime.now()
+  s.update({2, 3, 4, 5, 6})
+  print(s.after(t1))  # Prints {2, 3, 4, 5, 6}
+  ```
+* **until()**: Get a copy of the OrderedSet with items were introduced since the given date, including the same date).
+  ```python
+  from mysutils.collections import OrderedSet
+  from datetime import datetime
+  import time
+  
+  s = OrderedSet()
+  s.add(1)
+  time.sleep(0.5)
+  s.add(8)
+  t1 = datetime.now()
+  s.update({2, 3, 4, 5, 6})
+  print(s.until(s[8]))  # Prints {8, 1}
+  ```
+* **since()**: Get a copy of the OrderedSet with items were introduced since the given date, including the same date).
+  ```python
+  from mysutils.collections import OrderedSet
+  from datetime import datetime
+  import time
+  
+  s = OrderedSet()
+  s.add(1)
+  time.sleep(0.5)
+  s.add(8)
+  t1 = datetime.now()
+  s.update({2, 3, 4, 5, 6})
+  print(s.since(s[3]))  # Print {3, 4, 5, 6}
+  ```
 * **remove()**: This method allows you to remove an element from the set.
   ```python
   from mysutils.collections import OrderedSet

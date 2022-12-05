@@ -1,6 +1,7 @@
 import collections
 from collections import OrderedDict
-from typing import Union, List, Any, Callable, Dict, Iterable, Tuple, Optional, Hashable
+from typing import Union, List, Any, Callable, Dict, Iterable, Tuple, Optional, Set, Hashable, Sequence
+from datetime import datetime
 
 
 def head(obj: Union[dict, set], top: int = 10) -> Union[dict, set]:
@@ -325,7 +326,83 @@ class OrderedSet(collections.Set, Iterable):
         :param item: The element to add.
         """
         if item not in self.items:
-            self.items[item] = True
+            self.items[item] = datetime.now()
+
+    def time(self, item: Hashable) -> datetime:
+        """ Get the time when an element was added.
+
+        :param item: The item to search the time.
+        :return: A datetime object with the time where the object was introduced in the set.
+        """
+        return self.items[item]
+
+    def __getitem__(self, item: Hashable) -> datetime:
+        """ Get the time when an element was added.
+
+        :param item: The item to search the time.
+        :return: A datetime object with the time when the object was introduced in the set.
+        """
+        return self.time(item)
+
+    def set_time(self, item: Hashable, date: datetime) -> None:
+        """ Set the time of an element in the set.
+
+        :param item: The item to modify its introduction date.
+        :param date: The date to modify.
+        """
+        self.items[item] = date
+
+    def __setitem__(self, key: Hashable, value: datetime) -> None:
+        """ Set the time of an element in the set.
+
+        :param item: The item to modify its introduction date.
+        :param date: The date to modify.
+        """
+        self.set_time(key, value)
+
+    def before(self, date: datetime) -> 'OrderedSet':
+        """ Get a copy of the OrderedSet with items were introduced before the given date.
+
+        :param date: The date to search the set.
+        :return: A copy of the OrderedSet with items added before the given date.
+        """
+        items = OrderedSet()
+        for item in [i for i in self.items if self[i] < date]:
+            items[item] = self.items[item]
+        return items
+
+    def until(self, date: datetime) -> 'OrderedSet':
+        """ Get a copy of the OrderedSet with items were introduced util the given date, including the same date.
+
+        :param date: The date to search the set.
+        :return: A copy of the OrderedSet with items added until the given date.
+        """
+        items = OrderedSet()
+        for item in [i for i in self.items if self[i] <= date]:
+            items[item] = self.items[item]
+        return items
+
+    def after(self, date: datetime) -> 'OrderedSet':
+        """ Get a copy of the OrderedSet with items were introduced before the given date.
+
+        :param date: The date to search the set.
+        :return: A copy of the OrderedSet with items added before the given date.
+        """
+        items = OrderedSet()
+        for item in [i for i in self.items if self[i] > date]:
+            items[item] = self.items[item]
+        return items
+
+    def since(self, date: datetime) -> 'OrderedSet':
+        """ Get a copy of the OrderedSet with items were introduced since the given date, including the same date).
+
+        :param date: The date to search the set.
+        :return: A copy of the OrderedSet with items added since the given date.
+        """
+        items = OrderedSet()
+        for item in [i for i in self.items if self[i] >= date]:
+            items[item] = self.items[item]
+        return items
 
     def remove(self, item: Hashable) -> None:
         """ Remove an element from the set.
