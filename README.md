@@ -1632,46 +1632,6 @@ from mysutils.request import json_post
 json_post('https://postman-echo.com/post', {"msg": "Hello world!"})
 ```
 
-# Git monitor<a id="git-monitor" name="git-monitor"></a>
-
-## Deprecated from 1.1.3 and it will be remvoed in version 1.2!
-This class is going to be removed in 1.2 version because it is moved to another independent module called tempgit.
-You can install it with:
-
-```bash
-pip install tempgit
-```
-
-And use it with:
-
-```python
-from tempgit import GitMonitor
-```
----
-
-Monitor a Git repository to check if there is any change in the remote repository with respect the local one.
-
-```python
-from mysutils.git import GitMonitor
-
-# Function to execute when the is a change
-def func(*files: str) -> None:
-  # Print the changed files
-  print(files)
-
-# Create a monitor instance to execute one only time  
-monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name')
-# Execute the monitor
-monitor.monitor()
-# Execute the monitor as a thread
-monitor.start()
-
-# If you want to check the git repository several times you need add an interval to
-monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name', interval=30)  # 30 seconds
-# If you want to execute func() the first time although the repository has not changed, use force
-monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name', force=True, interval=30)
-```
-
 # File unit tests<a id="unit-tests" name="unit-tests"></a>
 A small class that inherits from TestCase and have methods to assert the typical file options like exists or isdir.
 

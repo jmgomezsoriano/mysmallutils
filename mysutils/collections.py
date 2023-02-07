@@ -1,5 +1,5 @@
-import collections
 from collections import OrderedDict
+from collections.abc import Set
 from typing import Union, List, Any, Callable, Dict, Iterable, Tuple, Optional, Hashable
 from datetime import datetime
 
@@ -301,7 +301,7 @@ def merge_tuples(tuples: Iterable[tuple]) -> tuple:
     return result
 
 
-class OrderedSet(collections.Set, Iterable):
+class OrderedSet(Set, Iterable):
     """ An ordered set with pop() method, which can be extracted using FIFO or LIFO. """
 
     def __init__(self, items: Iterable = iter([])) -> None:
@@ -493,7 +493,7 @@ class OrderedSet(collections.Set, Iterable):
             items[item] = self.items[item]
         return items
 
-    def difference(self, other: collections.Set) -> 'OrderedSet':
+    def difference(self, other: set) -> 'OrderedSet':
         """ Get the elements in the set which are not present in the other set.
 
         :param other: The other set.
@@ -501,7 +501,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return OrderedSet(self.items.keys() - set(other))
 
-    def __sub__(self, other: collections.Set) -> 'OrderedSet':
+    def __sub__(self, other: set) -> 'OrderedSet':
         """ Get the elements in the set which are not present in the other set.
 
         :param other: The other set.
@@ -509,7 +509,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return self.difference(other)
 
-    def difference_update(self, other: collections.Set) -> None:
+    def difference_update(self, other: set) -> None:
         """ Remove the elements in the set which are not present in the other set.
 
         :param other: The other set.
@@ -518,7 +518,7 @@ class OrderedSet(collections.Set, Iterable):
         self.items = OrderedDict()
         self.update(items)
 
-    def intersection(self, other: collections.Set) -> 'OrderedSet':
+    def intersection(self, other: set) -> 'OrderedSet':
         """ Get the elements in the set which are present in the other set.
 
         :param other: The other set.
@@ -526,7 +526,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return OrderedSet(self.items.keys() & set(other))
 
-    def __and__(self, other: collections.Set) -> 'OrderedSet':
+    def __and__(self, other: set) -> 'OrderedSet':
         """ Get the elements in the set which are present in the other set.
 
         :param other: The other set.
@@ -534,7 +534,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return self.intersection(other)
 
-    def intersection_update(self, other: collections.Set) -> None:
+    def intersection_update(self, other: set) -> None:
         """ Remove the elements in the set which are not present in the other set.
 
         :param other: The other set.
@@ -543,7 +543,7 @@ class OrderedSet(collections.Set, Iterable):
         self.items = OrderedDict()
         self.update(items)
 
-    def union(self, other: collections.Set) -> 'OrderedSet':
+    def union(self, other: set) -> 'OrderedSet':
         """ Return the union of two sets as a new `OrderedSet`.
 
         :param other: The other set to union with.
@@ -551,7 +551,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return OrderedSet(self.items.keys() | set(other))
 
-    def __or__(self, other: collections.Set) -> 'OrderedSet':
+    def __or__(self, other: set) -> 'OrderedSet':
         """ Return the union of two sets as a new `OrderedSet`.
 
         :param other: The other set to union with.
@@ -559,7 +559,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return self.union(other)
 
-    def isdisjoint(self, other: collections.Set) -> bool:
+    def isdisjoint(self, other: set) -> bool:
         """ Check if the set is disjoint from the other set.
 
         :param other: The other set.
@@ -567,7 +567,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return not bool(self.items.keys() & set(other))
 
-    def issubset(self, other: collections.Set) -> bool:
+    def issubset(self, other: set) -> bool:
         """ Check if the set is a subset of the other set.
 
         :param other: The other set.
@@ -575,7 +575,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return self.items.keys() <= set(other)
 
-    def __le__(self, other: collections.Set) -> bool:
+    def __le__(self, other: set) -> bool:
         """ Check if the set is a subset of the other set.
 
         :param other: The other set.
@@ -583,7 +583,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return self.issubset(other)
 
-    def issuperset(self, other: collections.Set) -> bool:
+    def issuperset(self, other: set) -> bool:
         """ Check if the set is a superset of the other set.
 
         :param other: The other set.
@@ -591,7 +591,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return self.items.keys() >= set(other)
 
-    def __ge__(self, other: collections.Set) -> bool:
+    def __ge__(self, other: set) -> bool:
         """ Check if the set is a superset of the other set.
 
         :param other: The other set.
@@ -599,7 +599,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return self.issuperset(other)
 
-    def symmetric_difference(self, other: collections.Set) -> 'OrderedSet':
+    def symmetric_difference(self, other: set) -> 'OrderedSet':
         """ Return the symmetric difference of two sets as a new `OrderedSet`.
 
         :param other: The other set to take the symmetric difference with.
@@ -607,7 +607,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return OrderedSet(self.items.keys() ^ set(other))
 
-    def __pow__(self, other: collections.Set) -> 'OrderedSet':
+    def __pow__(self, other: set) -> 'OrderedSet':
         """ Return the symmetric difference of two sets as a new `OrderedSet`.
 
         :param other: The other set to take the symmetric difference with.
@@ -631,7 +631,7 @@ class OrderedSet(collections.Set, Iterable):
         """ Get the elements in the set. """
         return list(self.items.keys())
 
-    def __eq__(self, other: collections.Set) -> bool:
+    def __eq__(self, other: set) -> bool:
         """ Check if the set is equal to the other set.
 
         :param other: The other set.
@@ -639,7 +639,7 @@ class OrderedSet(collections.Set, Iterable):
         """
         return set(self.items.keys()) == set(other)
 
-    def __neq__(self, other: collections.Set) -> bool:
+    def __neq__(self, other: set) -> bool:
         """ Check if the set is not equal to the other set.
 
         :param other: The other set.
