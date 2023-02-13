@@ -11,9 +11,7 @@ from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile, rmtree
 from sys import stdout
 from shutil import move
-from typing import Union, Optional, TextIO, Any, List, Tuple
-
-from typing.io import IO
+from typing import Union, Optional, TextIO, Any, List, Tuple, IO
 
 
 def open_file(filename: Union[PathLike, str, bytes],
@@ -373,7 +371,7 @@ def read_file(filename: Union[PathLike, str, bytes], line_break: bool = True) ->
     :return: An array with the contents of the file.
     """
     with open_file(filename, 'rt') as file:
-        return [line[:-1] if not line_break and line[-1] == '\n' else line for line in file]
+        return [line.rstrip('\n') if not line_break else line for line in file]
 
 
 def read_files(*filenames: Union[PathLike, str, bytes], line_break: bool = True) -> List[str]:
@@ -471,9 +469,14 @@ def move_files(dest: Union[PathLike, str, bytes], *files: Union[PathLike, str, b
     if force:
         mkdirs(dest)
     for file in files:
-        if exists(join(dest, file)) and replace:
-            remove(join(dest, file))
+        if not exists(dest):
+            raise FileNotFoundError(f'The folder {dest} does not exist.')
+        if exists(dest) and not isdir(dest):
+            raise NotADirectoryError(f'The folder {dest} is not a directory.')
+        if exists(join(dest, basename(file))) and replace:
+            remove(join(dest, basename(file)))
         move(file, dest)
+
 
 
 def list_dir(folder: Union[PathLike, str, bytes] = '.', filter: str = None, reverse: bool = False) -> List[str]:

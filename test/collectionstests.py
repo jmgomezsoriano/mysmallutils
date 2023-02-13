@@ -166,6 +166,7 @@ class MyTestCase(unittest.TestCase):
         self.assertGreater(s.time(8), s.time(1))
         time.sleep(0.1)
         t1 = datetime.now()
+        time.sleep(0.1)
         for item in {2, 3, 4, 5, 6}:
             s.add(item)
             time.sleep(0.1)

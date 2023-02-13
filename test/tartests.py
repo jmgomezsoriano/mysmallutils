@@ -169,11 +169,11 @@ class MyTestCase(unittest.FileTestCase):
                 touch(join(folder, '1.txt'), join(folder, '2.txt'), join(folder, '3.txt'))
                 with removable_files('test.tar', 'test.tar.gz') as files:
                     for file in files:
-                        create_tar(file, 'test.json', 'test.json.gz', 'data/')
+                        create_tar(file, 'test.json', 'test.json.gz', 'data')
                         self.assertTrue(exist_tar_files(file, 'test.json', 'test.json.gz',
-                                        join(folder, '1.txt'), join(folder, '2.txt'), join(folder, '3.txt')))
+                                                        f'{folder}/1.txt', f'{folder}/2.txt', f'{folder}/3.txt'))
                         self.assertFalse(exist_tar_files(file, 'test.json', 'test.json.gz',
-                                     join(folder, '1.txt'), join(folder, '2.txt'), join(folder, '4.txt')))
+                                                         f'{folder}/1.txt', f'{folder}/2.txt', f'{folder}/4.txt'))
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 import shutil
-from os import remove, rmdir
-from os.path import exists
+from os import remove, rmdir, mkdir
+from os.path import exists, join
 
 from mysutils.command import execute_command
 from mysutils import unittest
@@ -32,89 +32,100 @@ class FileTestCase(unittest.FileTestCase):
             'version': 1.0,
             'file_list': ['1.txt', '2.txt']
         }
-        save_json(d, 'test1.json')
-        d2 = load_json('test1.json')
-        self.assertDictEqual(d, d2)
-        remove('test1.json')
-        save_json(d, 'test1.json.gz')
-        d2 = load_json('test1.json.gz')
-        self.assertDictEqual(d, d2)
-        remove('test1.json.gz')
-        with self.assertRaises(FileNotFoundError):
-            save_json(d, 'data/test1.json')
-        with self.assertRaises(FileNotFoundError):
-            save_json(d, 'data/test1.json.gz')
-        save_json(d, 'data/test1.json', force=True)
-        d2 = load_json('data/test1.json')
-        self.assertDictEqual(d, d2)
-        remove_files('data/test1.json', 'data/')
-        self.assertListEqual([False, False], [exists('data/test1.json'), exists('data/')])
-        save_json(d, 'data/test1.json.gz', force=True)
-        d2 = load_json('data/test1.json.gz')
-        self.assertDictEqual(d, d2)
-        remove_files('data/test1.json.gz', 'data/')
+        with removable_tmp(True) as tmp:
+            save_json(d, join(tmp, 'test1.json'))
+            d2 = load_json(join(tmp, 'test1.json'))
+            self.assertDictEqual(d, d2)
+            remove(join(tmp, 'test1.json'))
+            save_json(d, join(tmp, 'test1.json.gz'))
+            d2 = load_json(join(tmp, 'test1.json.gz'))
+            self.assertDictEqual(d, d2)
+            remove(join(tmp, 'test1.json.gz'))
+            with self.assertRaises(FileNotFoundError):
+                save_json(d, join(tmp, 'data', 'test1.json'))
+            with self.assertRaises(FileNotFoundError):
+                save_json(d, join(tmp, 'data', 'test1.json.gz'))
+            save_json(d, join(tmp, 'data', 'test1.json'), force=True)
+            d2 = load_json(join(tmp, 'data', 'test1.json'))
+            self.assertDictEqual(d, d2)
+            remove_files(join(tmp, 'data', 'test1.json'), join(tmp, 'data'))
+            self.assertListEqual([False, False], [exists(join(tmp, 'data', 'test1.json')), exists(join(tmp, 'data'))])
+            save_json(d, join(tmp, 'data', 'test1.json.gz'), force=True)
+            d2 = load_json(join(tmp, 'data', 'test1.json.gz'))
+            self.assertDictEqual(d, d2)
+            remove_files(join(tmp, 'data', 'test1.json.gz'), join(tmp, 'data'))
 
     def test_pickle(self) -> None:
         d = {
             'version': 1.0,
             'file_list': ['1.txt', '2.txt']
         }
-        save_pickle(d, 'test1.pkl')
-        d2 = load_pickle('test1.pkl')
-        self.assertDictEqual(d, d2)
-        remove('test1.pkl')
-        save_pickle(d, 'test1.pkl.gz')
-        d2 = load_pickle('test1.pkl.gz')
-        self.assertDictEqual(d, d2)
-        remove('test1.pkl.gz')
-        with self.assertRaises(FileNotFoundError):
-            save_pickle(d, 'data/test1.pkl')
-        with self.assertRaises(FileNotFoundError):
-            save_pickle(d, 'data/test1.pkl.gz')
-        save_pickle(d, 'data/test1.pkl', force=True)
-        d2 = load_pickle('data/test1.pkl')
-        self.assertDictEqual(d, d2)
-        remove_files('data/test1.pkl', 'data/')
-        save_pickle(d, 'data/test1.pkl.gz', force=True)
-        d2 = load_pickle('data/test1.pkl.gz')
-        self.assertDictEqual(d, d2)
-        remove_files('data/test1.pkl.gz', 'data/')
+        with removable_tmp(True) as tmp:
+            save_pickle(d, join(tmp, 'test1.pkl'))
+            d2 = load_pickle(join(tmp, 'test1.pkl'))
+            self.assertDictEqual(d, d2)
+            remove(join(tmp, 'test1.pkl'))
+            save_pickle(d, join(tmp, 'test1.pkl.gz'))
+            d2 = load_pickle(join(tmp, 'test1.pkl.gz'))
+            self.assertDictEqual(d, d2)
+            remove(join(tmp, 'test1.pkl.gz'))
+            with self.assertRaises(FileNotFoundError):
+                save_pickle(d, join(tmp, 'data', 'test1.pkl'))
+            with self.assertRaises(FileNotFoundError):
+                save_pickle(d, join(tmp, 'data', 'test1.pkl.gz'))
+            save_pickle(d, join(tmp, 'data', 'test1.pkl'), force=True)
+            d2 = load_pickle(join(tmp, 'data', 'test1.pkl'))
+            self.assertDictEqual(d, d2)
+            remove_files(join(tmp, 'data', 'test1.pkl'), join(tmp, 'data'))
+            save_pickle(d, join(tmp, 'data', 'test1.pkl.gz'), force=True)
+            d2 = load_pickle(join(tmp, 'data', 'test1.pkl.gz'))
+            self.assertDictEqual(d, d2)
+            remove_files(join(tmp, 'data', 'test1.pkl.gz'), join(tmp, 'data'))
 
     def test_yaml(self) -> None:
         d = {
             'version': 1.0,
             'file_list': ['1.txt', '2.txt']
         }
-        save_yaml(d, 'test1.pkl')
-        d2 = load_yaml('test1.pkl')
-        self.assertDictEqual(d, d2)
-        remove('test1.pkl')
-        save_yaml(d, 'test1.pkl.gz')
-        d2 = load_yaml('test1.pkl.gz')
-        self.assertDictEqual(d, d2)
-        remove('test1.pkl.gz')
-        with self.assertRaises(FileNotFoundError):
-            save_yaml(d, 'data/test1.pkl')
-        with self.assertRaises(FileNotFoundError):
-            save_yaml(d, 'data/test1.pkl.gz')
-        save_yaml(d, 'data/test1.pkl', force=True)
-        d2 = load_yaml('data/test1.pkl')
-        self.assertDictEqual(d, d2)
-        remove_files('data/test1.pkl', 'data/')
-        save_yaml(d, 'data/test1.pkl.gz', force=True)
-        d2 = load_yaml('data/test1.pkl.gz')
-        self.assertDictEqual(d, d2)
-        remove_files('data/test1.pkl.gz', 'data/')
+        with removable_tmp(True) as tmp:
+            save_yaml(d, join(tmp, 'test1.pkl'))
+            d2 = load_yaml(join(tmp, 'test1.pkl'))
+            self.assertDictEqual(d, d2)
+            remove(join(tmp, 'test1.pkl'))
+            save_yaml(d, join(tmp, 'test1.pkl.gz'))
+            d2 = load_yaml(join(tmp, 'test1.pkl.gz'))
+            self.assertDictEqual(d, d2)
+            remove(join(tmp, 'test1.pkl.gz'))
+            with self.assertRaises(FileNotFoundError):
+                save_yaml(d, join(tmp, 'data', 'test1.pkl'))
+            with self.assertRaises(FileNotFoundError):
+                save_yaml(d, join(tmp, 'data', 'test1.pkl.gz'))
+            save_yaml(d, join(tmp, 'data', 'test1.pkl'), force=True)
+            d2 = load_yaml(join(tmp, 'data', 'test1.pkl'))
+            self.assertDictEqual(d, d2)
+            remove_files(join(tmp, 'data', 'test1.pkl'), join(tmp, 'data'))
+            save_yaml(d, join(tmp, 'data', 'test1.pkl.gz'), force=True)
+            d2 = load_yaml(join(tmp, 'data', 'test1.pkl.gz'))
+            self.assertDictEqual(d, d2)
 
     def test_copy_files_(self) -> None:
-        copy_files('data/', 'mysutils/__init__.py', 'mysutils/file.py')
-        self.assertListEqual([True, True], [exists('data/__init__.py'), exists('data/file.py')])
-        self.assertTupleEqual(execute_command(['ls', 'data']), ('file.py\n__init__.py\n', ''))
-        remove_files('data/__init__.py', 'data/file.py', 'data/')
-        with self.assertRaises(FileNotFoundError):
-            copy_files('data/', 'mysutils/__init__.py', 'mysutils/file.py', force=False)
-        self.assertTupleEqual(execute_command(['ls', 'data']),
-                              ('', "ls: cannot access 'data': No such file or directory\n"))
+        with removable_tmp(True) as tmp:
+            touch(join(tmp, 'test1.txt'), join(tmp, 'test2.txt'))
+            mkdir(join(tmp, 'data'))
+            copy_files(join(tmp, 'data'), join(tmp, 'test1.txt'), join(tmp, 'test2.txt'))
+            self.assertListEqual([True, True], [exists(join(tmp, 'test1.txt')), exists(join(tmp, 'test2.txt'))])
+            self.assertListEqual([True, True],
+                                 [exists(join(tmp, 'data', 'test1.txt')), exists(join(tmp, 'data', 'test2.txt'))])
+            self.assertListEqual([f.rsplit('\\', 1)[1] for f in list_dir(tmp)], ['data', 'test1.txt', 'test2.txt'])
+            remove_files(join(tmp, 'test1.txt'), join(tmp, 'test2.txt'), join(tmp, 'data/'), recursive=True)
+            self.assertListEqual([False] * 3, [exists(join(tmp, f)) for f in ['test1.txt', 'test2.txt', 'data']])
+            touch(join(tmp, 'test1.txt'), join(tmp, 'test2.txt'))
+            with removable_tmp(True) as tmp2:
+                with self.assertRaises(FileNotFoundError):
+                    copy_files(join(tmp2, 'data'), join(tmp, 'test1.txt'), join(tmp, 'test2.txt'), force=False)
+                self.assertListEqual(list_dir(tmp2), [])
+                copy_files(join(tmp2, 'data'), join(tmp, 'test1.txt'), join(tmp, 'test2.txt'))
+                self.assertExists(*[join(tmp2, 'data', f) for f in ['test1.txt', 'test2.txt']])
 
     def test_compress_gzip(self) -> None:
         # Create a file
@@ -122,40 +133,38 @@ class FileTestCase(unittest.FileTestCase):
             'version': 1.0,
             'file_list': ['1.txt', '2.txt']
         }
-        save_json(d, 'test.json')
-
-        # Compress the file
-        gzip_compress('test.json', 'test.json.gz')
-        # Decompress the file
-        gzip_decompress('test.json.gz', 'test2.json')
-        # Load and compare the decompress file
-        d2 = load_json('test2.json')
-        self.assertDictEqual(d, d2)
-        with self.assertRaises(ValueError):
-            gzip_compress('test.json', 'test.json')
-        with self.assertRaises(ValueError):
-            gzip_decompress('test.json.gz', 'test.json.gz')
-
-        remove_files('test.json', 'test.json.gz', 'test2.json')
+        with removable_tmp(True) as tmp:
+            save_json(d, join(tmp, 'test.json'))
+            # Compress the file
+            gzip_compress(join(tmp, 'test.json'), join(tmp, 'test.json.gz'))
+            # Decompress the file
+            gzip_decompress(join(tmp, 'test.json.gz'), join(tmp, 'test2.json'))
+            # Load and compare the decompress file
+            d2 = load_json(join(tmp, 'test2.json'))
+            self.assertDictEqual(d, d2)
+            with self.assertRaises(ValueError):
+                gzip_compress(join(tmp, 'test.json'), join(tmp, 'test.json'))
+            with self.assertRaises(ValueError):
+                gzip_decompress(join(tmp, 'test.json.gz'), join(tmp, 'test.json.gz'))
 
     def test_first_line(self) -> None:
-        # Test with \n at the end
-        with open_file('text.txt.gz', 'wt') as file:
-            print('First line', file=file)
-            print('Second line', file=file)
-        line = first_line('text.txt.gz')
-        self.assertEqual(line, 'First line')
-        # Test empty file
-        with open_file('text.txt.gz', 'wt'):
-            pass
-        line = first_line('text.txt.gz')
-        self.assertEqual(line, '')
-        # Test without \n at the end
-        with open_file('text.txt', 'wt') as file:
-            file.write('First line')
-        line = first_line('text.txt')
-        self.assertEqual(line, 'First line')
-        remove_files('text.txt', 'text.txt.gz')
+        with removable_tmp(True) as tmp:
+            # Test with \n at the end
+            with open_file(join(tmp, 'text.txt.gz'), 'wt') as file:
+                print('First line', file=file)
+                print('Second line', file=file)
+            line = first_line(join(tmp, 'text.txt.gz'))
+            self.assertEqual(line, 'First line')
+            # Test empty file
+            with open_file(join(tmp, 'text.txt.gz'), 'wt'):
+                pass
+            line = first_line(join(tmp, 'text.txt.gz'))
+            self.assertEqual(line, '')
+            # Test without \n at the end
+            with open_file(join(tmp, 'text.txt'), 'wt') as file:
+                file.write('First line')
+            line = first_line(join(tmp, 'text.txt'))
+            self.assertEqual(line, 'First line')
 
     def test_exist_files(self) -> None:
         self.assertTrue(exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py'))
@@ -163,11 +172,11 @@ class FileTestCase(unittest.FileTestCase):
         self.assertFalse(exist_files('data/test/filetests.py', 'test/mysutils/file.py'))
 
     def test_count_lines(self) -> None:
-        with open_file('text.txt.gz', 'wt') as file:
-            print('First line', file=file)
-            print('Second line', file=file)
-        self.assertEqual(count_lines('text.txt.gz'), 2)
-        remove_files('text.txt.gz')
+        with removable_tmp(suffix='.gz') as tmp:
+            with open_file(tmp, 'wt') as file:
+                print('First line', file=file)
+                print('Second line', file=file)
+            self.assertEqual(count_lines(tmp), 2)
 
     def test_touch(self) -> None:
         touch('text.txt')
@@ -246,55 +255,61 @@ class FileTestCase(unittest.FileTestCase):
         rmdir('new_folder')
 
     def test_move_files(self) -> None:
-        touch('1.txt', '2.txt', '3.txt')
-        move_files('test/', '1.txt', '2.txt', '3.txt')
-        self.assertExists('test/1.txt', 'test/2.txt', 'test/3.txt')
-        self.assertNotExists('1.txt', '2.txt', '3.txt')
-        with self.assertRaises(IsADirectoryError):
-            move_files('test2/', 'test/1.txt', 'test/2.txt', 'test/3.txt')
-        move_files('test2/', 'test/1.txt', 'test/2.txt', 'test/3.txt', force=True)
-        self.assertExists('test2/1.txt', 'test2/2.txt', 'test2/3.txt')
-        self.assertNotExists('test/1.txt', 'test/2.txt', 'test/3.txt')
-        touch('1.txt', '2.txt', '3.txt')
-        with self.assertRaises(shutil.Error):
-            move_files('test2/', '1.txt', '2.txt', '3.txt')
-        move_files('test2/', '1.txt', '2.txt', '3.txt', replace=True)
-        remove_files('test2/1.txt', 'test2/2.txt', 'test2/3.txt', 'test2')
+        with removable_tmp(True) as tmp:
+            files = [join(tmp, f) for f in ['1.txt', '2.txt', '3.txt']]
+            files_test = [join(tmp, 'test', f) for f in ['1.txt', '2.txt', '3.txt']]
+            files_test2 = [join(tmp, 'test2', f) for f in ['1.txt', '2.txt', '3.txt']]
+            touch(*files)
+            mkdirs(join(tmp, 'test'))
+            move_files(join(tmp, 'test'), *files)
+            self.assertExists(*files_test)
+            self.assertNotExists(*files)
+            with self.assertRaises(FileNotFoundError):
+                move_files(join(tmp, 'test2'), *files_test)
+            move_files(join(tmp, 'test2'), *files_test, force=True)
+            self.assertExists(*files_test2)
+            self.assertNotExists(*files_test)
+            touch(*files)
+            with self.assertRaises(NotADirectoryError):
+                move_files(join(tmp, 'test2', '1.txt'), *files)
+            with self.assertRaises(shutil.Error):
+                move_files(join(tmp, 'test2'), *files)
+            move_files(join(tmp, 'test2'), *files, replace=True)
 
     def test_first_and_last(self) -> None:
-        touch('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
-        self.assertExists('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
-        self.assertEqual(first_file(), './.git')
-        self.assertEqual(first_file('test'), 'test/__init__.py')
-        self.assertEqual(first_file('.', r'.*\.txt$'), './1.txt')
-        self.assertEqual(first_file('.', r'.*\.out$'), './x.out')
-        self.assertEqual(last_file(), './z.out')
-        self.assertEqual(last_file('test'), 'test/webtests.py')
-        self.assertEqual(last_file('.', r'.*\.txt$'), './requirements.txt')
-        self.assertEqual(last_file('.', r'.*\.out$'), './z.out')
-        remove_files('1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out')
+        with removable_tmp(True) as tmp:
+            files = [join(tmp, f) for f in ['1.txt', '2.txt', '3.txt', 'x.out', 'y.out', 'z.out']]
+            touch(*files)
+            self.assertExists(*files)
+            self.assertIn('1.txt', first_file(tmp), True)
+            self.assertEqual(first_file(tmp, r'.*\.txt$'), join(tmp, '1.txt'))
+            self.assertEqual(first_file(tmp, r'.*\.out$'), join(tmp, 'x.out'))
+            self.assertEqual(last_file(tmp), join(tmp, 'z.out'))
+            self.assertEqual(last_file(tmp, r'.*\.txt$'), join(tmp, '3.txt'))
+            self.assertEqual(last_file(tmp, r'.*\.out$'), join(tmp, 'z.out'))
 
     def test_output_file_path(self) -> None:
-        self.assertRegex(output_file_path(), r'^./[0-9]{8}-[0-9]{6}$')
-        self.assertRegex(output_file_path('model'), r'^model/[0-9]{8}-[0-9]{6}$')
-        self.assertRegex(output_file_path('model', '.tar.gz'), r'^model/[0-9]{8}-[0-9]{6}.tar.gz$')
+        self.assertRegex(output_file_path(), r'^.(/|\\)[0-9]{8}-[0-9]{6}$')
+        self.assertRegex(output_file_path('model'), r'^model(/|\\)[0-9]{8}-[0-9]{6}$')
+        self.assertRegex(output_file_path('model', '.tar.gz'), r'^model(/|\\)[0-9]{8}-[0-9]{6}.tar.gz$')
         self.assertRegex(
             output_file_path('model', '.tar.gz', True, method='svm', k=0.7, passes=300, lemma=True, stopw=False),
-            r'^model/[0-9]{8}-[0-9]{6}-svm-0.7-300-lemma.tar.gz$')
-        self.assertEqual(
+            r'^model(/|\\)[0-9]{8}-[0-9]{6}-svm-0.7-300-lemma.tar.gz$')
+        self.assertRegex(
             output_file_path('model', '.tar.gz', False, method='svm', k=0.7, passes=300, lemma=True, stopw=False),
-            'model/svm-0.7-300-lemma.tar.gz')
-        self.assertEqual(
+            r'model(/|\\)svm-0.7-300-lemma.tar.gz')
+        self.assertRegex(
             output_file_path('model', '.tar.gz', False, method=None, k=0.7, passes='', lemma=False, stopw=True),
-            'model/0.7-stopw.tar.gz'
+            r'model(/|\\)0.7-stopw.tar.gz'
         )
 
     def test_list_folder(self) -> None:
-        mkdirs('data')
-        touch('data/1.txt', 'data/2.txt', 'data/3.out')
-        self.assertListEqual(list_dir('data'), ['data/1.txt', 'data/2.txt', 'data/3.out'])
-        self.assertListEqual(list_dir('data', r'.*\.out$'), ['data/3.out'])
-        remove_files('data', recursive=True)
+        with removable_tmp(True) as tmp:
+            mkdirs(join(tmp, 'data'))
+            touch(*[join(tmp, 'data', f) for f in ['1.txt', '2.txt', '3.out']])
+            self.assertListEqual(list_dir(join(tmp, 'data')), [join(tmp, 'data', f) for f in ['1.txt', '2.txt', '3.out']])
+            self.assertListEqual(list_dir(join(tmp, 'data'), r'.*\.out$'), [join(tmp, 'data', '3.out')])
+            remove_files(join(tmp, 'data'), recursive=True)
 
     def test_head(self) -> None:
         self.assertListEqual(head('README.md', 2), ['# MySmallUtils', 'Small Python utils to do life easier.'])
