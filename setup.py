@@ -1,4 +1,8 @@
+import glob
 import os
+from os.path import exists
+from shutil import rmtree
+
 import setuptools
 
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -16,7 +20,12 @@ class CleanCommand(setuptools.Command):
         pass
 
     def run(self):
-        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
+        if exists('build'):
+            rmtree('build')
+        if exists('dist'):
+            rmtree('dist')
+        for file in glob.glob('*.egg-info'):
+            rmtree(file)
 
 
 class PrepublishCommand(setuptools.Command):
@@ -40,7 +49,7 @@ setuptools.setup(
         'prepublish': PrepublishCommand,
     },
     name='mysmallutils',
-    version='2.0.0',
+    version='2.0.1',
     url='https://github.com/jmgomezsoriano/mysmallutils',
     license='LGPL2',
     author='José Manuel Gómez Soriano',
