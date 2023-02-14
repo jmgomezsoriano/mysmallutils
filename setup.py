@@ -20,10 +20,8 @@ class CleanCommand(setuptools.Command):
         pass
 
     def run(self):
-        if exists('build'):
-            rmtree('build')
-        if exists('dist'):
-            rmtree('dist')
+        rmtree('build', ignore_errors=True)
+        rmtree('dist', ignore_errors=True)
         for file in glob.glob('*.egg-info'):
             rmtree(file)
 
@@ -49,7 +47,7 @@ setuptools.setup(
         'prepublish': PrepublishCommand,
     },
     name='mysmallutils',
-    version='2.0.1',
+    version='2.0.2',
     url='https://github.com/jmgomezsoriano/mysmallutils',
     license='LGPL2',
     author='José Manuel Gómez Soriano',

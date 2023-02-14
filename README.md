@@ -29,16 +29,17 @@ This module is divided into the following categories:
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)
   * [Copy files](#copy-files)
+  * [Move files](#move-files)
   * [Remove files](#remove-files)
   * [Check if exists several files](#check-if-exists-several-files)
   * [Count lines](#count-lines)
   * [Touch](#touch)
   * [Cat](#cat)
   * [Make directories](#make-directories)
-  * [Move files](#move-files)
   * [List files](#list-files)
   * [Generate output file paths](#generate-output-file-paths)
   * [Check file encoding](#check-file-encoding)
+  * [Expand wildcards](#expand-wildcards)
 * [Removable files](#remove-files)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
@@ -52,7 +53,6 @@ This module is divided into the following categories:
   * [Endpoint](#endpoint)
   * [Generate service help](#generate-service-help)
   * [JSON post](#json-post)
-* [Git monitor](#git-monitor)
 * [File unit tests](#unit-tests)
 * [Miscellany](#miscellany)
 
@@ -745,7 +745,7 @@ with open_file('file.txt.gz', 'w') as file:
 
 # Open a file in a directory, if the directory does not exist, 
 # then create the parent directories.
-with force_open('file.txt') as file:
+with force_open('file.txt', 'w') as file:
     pass
 
 # The same as previously, but with a compressed file.
@@ -893,6 +893,28 @@ copy_files('data/', 'file1.txt', 'file2.txt')
 
 # To avoid create the folder if it does not exist.
 copy_files('data/', 'file1.txt', 'file2.txt', force=False)
+
+# Moreover, you can use file wildcards
+copy_files('data/', '*.txt', '*.py')
+```
+
+## Move files<a id="move-files" name="move-files"></a>
+Move several files at once.
+
+```python
+from mysutils.file import move_files
+
+# Move several files to test/
+move_files('test/', '1.txt', '2.txt', '3.txt')
+
+# Create the folder test/ if it does not exist
+move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
+
+# Replace the files if already exists in test/
+move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
+
+# Moreover, you can use file wildcards
+move_files('test/', '*.txt', '*.py')
 ```
 
 ## Remove files<a id="remove-files" name="remove-files"></a>
@@ -909,6 +931,9 @@ remove_files('test2.json', 'data/test1.json', 'data/', ignore_errors=True)
 
 # Remove three files or folders at once, if the folder contains more files, also will be removed.
 remove_files('test2.json', 'data/test1.json', 'data/', recursive=True)
+
+# Moreover, you can use file wildcards
+remove_files('*.json', 'data/*.json')
 ```
 
 If the file to remove is a directory, it has to be empty. If you want to remove directories with subdirectories or 
@@ -1075,22 +1100,6 @@ mkdirs('new_folder')
 mkdirs('folder1', 'folder2', 'folder3')
 ```
 
-## Move files<a id="move-files" name="move-files"></a>
-Move several files at once.
-
-```python
-from mysutils.file import move_files
-
-# Move several files to test/
-move_files('test/', '1.txt', '2.txt', '3.txt')
-
-# Create the folder test/ if it does not exist
-move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
-
-# Replace the files if already exists in test/
-move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
-```
-
 ## List files<a id="list-files" name="list-files"></a>
 Functions to list a folder and obtain the first or last file of a folder.
 
@@ -1162,6 +1171,20 @@ from mysutils.file import has_encoding
 # Return True if the file 1.txt is compatible with utf-8
 has_encoding('1.txt', 'utf-8')
 ```
+
+## Expand wildcards<a id="expand-wildcards" name="expand-wildcards"></a>
+From strings or file paths which might contain wildcards, the function expand_wildcards() expands them, 
+returning a list of existing files that match with the wildcards.
+
+```python
+from mysutils.file import expand_wildcards, touch
+
+# Create 4 files with different extensions
+touch('1.txt', '2.txt', '3.json', '4.yaml')
+# Return ['1.txt', '2.txt', '4.yaml']
+expand_wildcards('*.txt', '*.yaml')
+```
+
 
 # Removable files<a id="removable-files"></a>
 Many times it is necessary to remove temporal files after their use, even if there are any problem with the process.

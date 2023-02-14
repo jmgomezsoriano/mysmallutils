@@ -2,12 +2,11 @@ import shutil
 from os import remove, rmdir, mkdir
 from os.path import exists, join
 
-from mysutils.command import execute_command
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
     first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files, read_from, read_until, \
-    has_encoding, write_file
+    has_encoding, write_file, expand_wildcards
 from mysutils.tmp import removable_files, removable_tmp, removable_tmps
 from mysutils.yaml import load_yaml, save_yaml
 
@@ -108,7 +107,7 @@ class FileTestCase(unittest.FileTestCase):
             d2 = load_yaml(join(tmp, 'data', 'test1.pkl.gz'))
             self.assertDictEqual(d, d2)
 
-    def test_copy_files_(self) -> None:
+    def test_copy_files(self) -> None:
         with removable_tmp(True) as tmp:
             touch(join(tmp, 'test1.txt'), join(tmp, 'test2.txt'))
             mkdir(join(tmp, 'data'))
@@ -126,6 +125,76 @@ class FileTestCase(unittest.FileTestCase):
                 self.assertListEqual(list_dir(tmp2), [])
                 copy_files(join(tmp2, 'data'), join(tmp, 'test1.txt'), join(tmp, 'test2.txt'))
                 self.assertExists(*[join(tmp2, 'data', f) for f in ['test1.txt', 'test2.txt']])
+
+    def test_move_files(self) -> None:
+        with removable_tmp(True) as tmp:
+            files = [join(tmp, f) for f in ['1.txt', '2.txt', '3.txt']]
+            files_test = [join(tmp, 'test', f) for f in ['1.txt', '2.txt', '3.txt']]
+            files_test2 = [join(tmp, 'test2', f) for f in ['1.txt', '2.txt', '3.txt']]
+            touch(*files)
+            mkdirs(join(tmp, 'test'))
+            move_files(join(tmp, 'test'), *files)
+            self.assertExists(*files_test)
+            self.assertNotExists(*files)
+            with self.assertRaises(FileNotFoundError):
+                move_files(join(tmp, 'test2'), *files_test)
+            move_files(join(tmp, 'test2'), *files_test, force=True)
+            self.assertExists(*files_test2)
+            self.assertNotExists(*files_test)
+            touch(*files)
+            with self.assertRaises(NotADirectoryError):
+                move_files(join(tmp, 'test2', '1.txt'), *files)
+            with self.assertRaises(shutil.Error):
+                move_files(join(tmp, 'test2'), *files)
+            move_files(join(tmp, 'test2'), *files, replace=True)
+
+    def test_remove_files(self) -> None:
+        with removable_tmp(True) as tmp:
+            files = [join(tmp, f) for f in ['1.txt', '2.txt', '3.json', '4.yaml']]
+            touch(*files)
+            self.assertExists(*files)
+            remove_files(*files)
+            self.assertNotExists(*files)
+            touch(*files)
+            remove_files(join(tmp, '*.txt'), join(tmp, '*.yaml'))
+            self.assertExists(join(tmp, '3.json'))
+            files = [join(tmp, 'data', f) for f in ['1.txt', '2.txt', '3.json', '4.yaml']]
+            mkdirs(join(tmp, 'data'))
+            touch(*files)
+            with self.assertRaises(OSError):
+                remove_files(join(tmp, 'data'))
+            self.assertExists(*files)
+            remove_files(join(tmp, 'data'), recursive=True)
+            self.assertNotExists(join(tmp, 'data'))
+
+    def test_expanding_wildcards(self) -> None:
+        with removable_tmp(True) as tmp:
+            files = [join(tmp, f) for f in ['1.txt', '2.txt', '3.json', '4.yaml']]
+            touch(*files)
+            self.assertListEqual(expand_wildcards(join(tmp, '*.txt'), join(tmp, '*.yaml')),
+                                 [files[0], files[1], files[3]])
+
+    def test_copy_files_wildcards(self) -> None:
+        with removable_tmp(True) as tmp:
+            files = join(tmp, 'test1.txt'), join(tmp, 'test2.txt'), join(tmp, 'test3.json'), join(tmp, 'test4.yaml')
+            touch(*files)
+            mkdir(join(tmp, 'data'))
+            copy_files(join(tmp, 'data'), join(tmp, '*.txt'), join(tmp, '*.yaml'))
+            data_tmp = join(tmp, 'data')
+            self.assertExists(join(data_tmp, 'test1.txt'), join(data_tmp, 'test2.txt'), join(data_tmp, 'test4.yaml'))
+            self.assertNotExists(join(data_tmp, 'test3.json'))
+            self.assertExists(*files)
+
+    def test_move_files_wildcards(self) -> None:
+        with removable_tmp(True) as tmp:
+            files = [join(tmp, f) for f in ['1.txt', '2.txt', '3.json', '4.yaml']]
+            touch(*files)
+            mkdirs(join(tmp, 'data'))
+            move_files(join(tmp, 'data'), join(tmp, '*.txt'), join(tmp, '*.yaml'))
+            self.assertExists(join(tmp, 'data', '1.txt'), join(tmp, 'data', '2.txt'), join(tmp, 'data', '4.yaml'))
+            self.assertNotExists(join(tmp, 'data', 'test3.json'))
+            self.assertNotExists(join(tmp, '1.txt'), join(tmp, '2.txt'), join(tmp, '4.yaml'))
+            self.assertExists(join(tmp, '3.json'))
 
     def test_compress_gzip(self) -> None:
         # Create a file
@@ -253,28 +322,6 @@ class FileTestCase(unittest.FileTestCase):
         # Do nothing because the folder was already created.
         mkdirs('new_folder')
         rmdir('new_folder')
-
-    def test_move_files(self) -> None:
-        with removable_tmp(True) as tmp:
-            files = [join(tmp, f) for f in ['1.txt', '2.txt', '3.txt']]
-            files_test = [join(tmp, 'test', f) for f in ['1.txt', '2.txt', '3.txt']]
-            files_test2 = [join(tmp, 'test2', f) for f in ['1.txt', '2.txt', '3.txt']]
-            touch(*files)
-            mkdirs(join(tmp, 'test'))
-            move_files(join(tmp, 'test'), *files)
-            self.assertExists(*files_test)
-            self.assertNotExists(*files)
-            with self.assertRaises(FileNotFoundError):
-                move_files(join(tmp, 'test2'), *files_test)
-            move_files(join(tmp, 'test2'), *files_test, force=True)
-            self.assertExists(*files_test2)
-            self.assertNotExists(*files_test)
-            touch(*files)
-            with self.assertRaises(NotADirectoryError):
-                move_files(join(tmp, 'test2', '1.txt'), *files)
-            with self.assertRaises(shutil.Error):
-                move_files(join(tmp, 'test2'), *files)
-            move_files(join(tmp, 'test2'), *files, replace=True)
 
     def test_first_and_last(self) -> None:
         with removable_tmp(True) as tmp:
