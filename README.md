@@ -17,6 +17,8 @@ This module is divided into the following categories:
   * [Tuples](#tuples)
   * [OrderedSet](#orderedset)
 * [Text](#text)
+  * [Find URLs](#find-urls)
+  * [Get URLs](#get-urls)
   * [Remove URLs](#remove-urls)
   * [Replace URLs](#replace-urls)
   * [Clean text](#clean-text)
@@ -629,8 +631,50 @@ These operations include:
 # Text<a id="text" name="text"></a>
 Simple functions related to text.
 
+## Find URLs<a id="find-urls" name="find-urls"></a>
+Find URLs in a text.
+
+```python
+from mysutils.text import find_urls
+
+text = """This is a test!
+     Clean punctuation symbols and urls like this: https://example.com/my_space/user?a=b&c=3#first https://example.com/your_space/user#first
+More urls:
+https://example.com/my_space/user
+https://example.com/your_space
+"""
+
+matches = find_urls(text)
+for match in matches:
+    start, end = match.span()[0], match.span()[1]
+    print(text[start:end])
+
+# The same but only with URLs that end with a slash
+matches = find_urls(text, '/')
+```
+
+## Get URLs<a id="get-urls" name="get-urls"></a>
+Get the URLs from a text.
+
+```python
+from mysutils.text import get_urls
+
+text = """This is a test!
+     Clean punctuation symbols and urls like this: https://example.com/my_space/user?a=b&c=3#first https://example.com/your_space/user#first
+More urls:
+https://example.com/my_space/user
+https://example.com/your_space
+"""
+
+# Get all the URLs from the text
+urls = get_urls(text)
+
+# Get all the URLs from the text that end with a slash
+urls = get_urls(text, '/')
+```
+
 ## Remove URLs<a id="remove-urls" name="remove-urls"></a>
-Remove URLs from a text.
+Remove the URLs from a text.
 
 ```python
 from mysutils.text import remove_urls

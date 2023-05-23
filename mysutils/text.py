@@ -22,11 +22,7 @@ def get_urls(text: str, end_with: str = '') -> List[str]:
     :param end_with: If set, only remove the URLs that finish with that regular expression.
         By default, all the URLs are returned.
     """
-    urls = []
-    for match in find_urls(text, end_with):
-        start, end = match.span()[0], match.span()[1]
-        urls.append(text[start:end])
-    return urls
+    return [text[match.span()[0]:match.span()[1]] for match in find_urls(text, end_with)]
 
 
 def remove_urls(text: str, end_with: str = '') -> str:
