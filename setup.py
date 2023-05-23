@@ -1,6 +1,5 @@
 import glob
 import os
-from os.path import exists
 from shutil import rmtree
 
 import setuptools
@@ -47,7 +46,7 @@ setuptools.setup(
         'prepublish': PrepublishCommand,
     },
     name='mysmallutils',
-    version='2.0.2',
+    version='2.0.3',
     url='https://github.com/jmgomezsoriano/mysmallutils',
     license='LGPL2',
     author='José Manuel Gómez Soriano',

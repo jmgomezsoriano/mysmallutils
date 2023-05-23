@@ -1,8 +1,32 @@
 import re
 from enum import Enum, unique
-from typing import Union
+from re import Match
+from typing import Union, Iterator, List
 
 URL_PATTERN = r'[A-Za-z0-9]+://[A-Za-z0-9%-_]+(/[A-Za-z0-9%-_])*(#|\\?)[A-Za-z0-9%-_&=]*'
+
+
+def find_urls(text: str, end_with: str = '') -> Iterator[Match[str]]:
+    """ Find all the urls in the text.
+    :param text: The text to search in.
+    :param end_with: If set, only remove the URLs that finish with that regular expression.
+        By default, all the URLs are matched.
+    :return: An iterator over the url matches.
+    """
+    return re.finditer(URL_PATTERN + end_with, text)
+
+
+def get_urls(text: str, end_with: str = '') -> List[str]:
+    """ Get all the urls in the text.
+    :param text: The text to search in.
+    :param end_with: If set, only remove the URLs that finish with that regular expression.
+        By default, all the URLs are returned.
+    """
+    urls = []
+    for match in find_urls(text, end_with):
+        start, end = match.span()[0], match.span()[1]
+        urls.append(text[start:end])
+    return urls
 
 
 def remove_urls(text: str, end_with: str = '') -> str:
@@ -10,7 +34,7 @@ def remove_urls(text: str, end_with: str = '') -> str:
 
     :param text: The text to remove urls.
     :param end_with: If set, only remove the URLs that finish with that regular expression.
-        By default, all the URLs are remvoed.
+        By default, all the URLs are removed.
     :return: The same text but without urls.
     """
     return replace_urls(text, '', end_with)
@@ -21,11 +45,11 @@ def replace_urls(text: str, replace: str, end_with: str = '') -> str:
 
     :param text: The text to replace.
     :param replace: The text to replace with.
-    :param end_with: A regular expression which the URL has to finish with.
-         By default, replace all the URLs.
+    :param end_with: If set, only remove the URLs that finish with that regular expression.
+        By default, all the URLs are replaced.
     :return: The replaced text.
     """
-    matches = list(re.finditer(URL_PATTERN + end_with, text))
+    matches = list(find_urls(text, end_with))
     matches.reverse()
     for match in matches:
         start, end = match.span()[0], match.span()[1]
