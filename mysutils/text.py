@@ -21,6 +21,22 @@ def find_urls(text: str, end_with: str = '') -> Iterator[Match[str]]:
     return re.finditer(URL_PATTERN + end_with, text)
 
 
+def is_url(text: str) -> bool:
+    """ Check if the text is a URL.
+    :param text: The text to check.
+    :return: True if the text is a URL, False otherwise.
+    """
+    return bool(re.match(URL_PATTERN, text))
+
+
+def has_url(text: str) -> bool:
+    """ Check if the text contains a URL.
+    :param text: The text to check.
+    :return: True if the text contains a URL, False otherwise.
+    """
+    return bool(re.search(URL_PATTERN, text))
+
+
 def get_urls(text: str, end_with: str = '') -> List[str]:
     """ Get all the urls in the text.
     :param text: The text to search in.

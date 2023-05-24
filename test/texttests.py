@@ -1,6 +1,7 @@
 import unittest
 
-from mysutils.text import clean_text, remove_urls, AnsiCodes, markup, color, bg_color, un_color, replace_urls, get_urls
+from mysutils.text import clean_text, remove_urls, AnsiCodes, markup, color, bg_color, un_color, replace_urls, get_urls, \
+    is_url, has_url
 
 
 class MyTestCase(unittest.TestCase):
@@ -24,7 +25,7 @@ class MyTestCase(unittest.TestCase):
                          'This is a test!\n     Clean punctuation symbols and urls like this: '
                          'https://hello.com https://example.com/your_space')
 
-    def test_clean_text(self):
+    def test_clean_text(self) -> None:
         text = 'This is a test!\n     Clean punctuation symbols and urls like this: ' \
                'https://example.com/my_space/user?a=b&c=3#first ' \
                'https://example.com/my_space/user#first'
@@ -34,7 +35,7 @@ class MyTestCase(unittest.TestCase):
                          'This is a test Clean punctuation symbols and urls like this https example com my space user '
                          'a b c 3 first https example com my space user first')
 
-    def test_get_urls(self):
+    def test_get_urls(self) -> None:
         text = 'This is a test!\n     Clean punctuation symbols and urls like this: ' \
                'https://example.com/my_space/user?a=b&c=3#first ' \
                'https://example.com/your_space/user#first\n' \
@@ -43,7 +44,8 @@ class MyTestCase(unittest.TestCase):
                'https://example.com/your_space\n' \
                '[Markdown](https://pepe@example.com:3306/documents/exportation.pdf?id=3&b=2#1234' \
                ')[)](undefined,) style url.\n' \
-               'git+https://github.com/huggingface/peft.git'
+               'git+https://github.com/huggingface/peft.git\n' \
+               'www.example.com'
 
         self.assertListEqual(get_urls(text), [
             'https://example.com/my_space/user?a=b&c=3#first',
@@ -51,10 +53,28 @@ class MyTestCase(unittest.TestCase):
             'https://example.com/my_space/user',
             'https://example.com/your_space',
             'https://pepe@example.com:3306/documents/exportation.pdf?id=3&b=2#1234',
-            'git+https://github.com/huggingface/peft.git'
-        ]
-)
-    def test_markup(self):
+            'git+https://github.com/huggingface/peft.git',
+            'www.example.com'
+        ])
+
+    def test_check_url(self) -> None:
+        text = 'This is a test!\n     Clean punctuation symbols and urls like this:'\
+               'https://example.com/my_space/user?a=b&c=3#first'\
+               'https://example.com/your_space/user#first\n' \
+               'More urls:\n' \
+               'https://example.com/my_space/user\n' \
+               'https://example.com/your_space\n' \
+               '[Markdown](https://pepe@example.com:3306/documents/exportation.pdf?id=3&b=2#1234' \
+               ')[)](undefined,) style url.\n' \
+               'git+https://github.com/huggingface/peft.git'
+
+        self.assertTrue(is_url('https://example.com/my_space/user?a=b&'))
+        self.assertFalse(is_url(text))
+        self.assertTrue(has_url('https://example.com/my_space/user?'))
+        self.assertTrue(has_url(text))
+        self.assertFalse(has_url('Another text without urls.'))
+
+    def test_markup(self) -> None:
         text = markup('This is a text with effects', AnsiCodes.YELLOW, AnsiCodes.ITALIC, AnsiCodes.SLOW_BLINK)
         self.assertEqual(text, '\033[33m\033[3m\033[5mThis is a text with effects\033[0m')
         text = markup('This is a text with effects', 'yellow', 'italic', 'SLOW_BLINK')

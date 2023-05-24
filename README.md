@@ -21,6 +21,7 @@ This module is divided into the following categories:
   * [Get URLs](#get-urls)
   * [Remove URLs](#remove-urls)
   * [Replace URLs](#replace-urls)
+  * [Check URLs in a text](#check-urls-in-a-text)
   * [Clean text](#clean-text)
   * [Text markup](#text-markup)
 * [File access, load and save files](#file-access-load-and-save-files)
@@ -717,6 +718,21 @@ replace_urls(text, 'https://hello.com', r'my_space/user')
 # Result:
 # 'This is a test!\n
 #      Clean punctuation symbols and urls like this: https://hello.com https://example.com/your_space')
+```
+
+## Check URLs in a text<a id="check-urls-in-a-text" name="check-urls-in-a-text"></a>
+Check if a text is a URL or contain one.
+
+```python
+from mysutils.text import is_url, has_url
+
+text = '...'
+# Check if a text is a URL
+if is_url(text):
+  print('It is a URL!')
+# Check if a text contains a URL
+if has_url(text):
+  print('It contains, at least, a URL!')
 ```
 
 ## Clean text<a id="clean-text" name="clean-text"></a>
