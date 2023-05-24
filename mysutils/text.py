@@ -3,7 +3,7 @@ from enum import Enum, unique
 from re import Match
 from typing import Union, Iterator, List
 
-PROTOCOL_PATTERN = r'([\w\+]+://)?'
+PROTOCOL_PATTERN = r'[\w\+]+://'
 DOMAIN_PATTERN = r'\w[\w%@:\-_]+(\.\w[\w%@:\-_]*)+/?'
 PATH_PATTERN = r'([\w%@\.\-_]+/?)*'
 QUERY_PATTERN = r'(\?[\w%\-_&=]*)?'
@@ -11,53 +11,72 @@ HASH_PATTERN = r'(#[\w%\-_&=]*)*'
 URL_PATTERN = PROTOCOL_PATTERN + DOMAIN_PATTERN + PATH_PATTERN + QUERY_PATTERN + HASH_PATTERN
 
 
-def find_urls(text: str, end_with: str = '') -> Iterator[Match[str]]:
+def _get_pattern(protocol: bool) -> str:
+    """ Get the regular expression for URLs, with or without protocols, depending on the parameter.
+    :param protocol: If set, only finds the URLs that start with a protocol.
+    """
+    if protocol:
+        return URL_PATTERN
+    return f'({PROTOCOL_PATTERN})?{DOMAIN_PATTERN}{PATH_PATTERN}{QUERY_PATTERN}{HASH_PATTERN}'
+
+
+def find_urls(text: str, end_with: str = '', protocol: bool = True) -> Iterator[Match[str]]:
     """ Find all the urls in the text.
     :param text: The text to search in.
     :param end_with: If set, only remove the URLs that finish with that regular expression.
         By default, all the URLs are matched.
+    :param protocol: If set, only finds the URLs that start with a protocol.
+       Otherwise, it will search URLs without protocols, but it may find wrong URLs.
     :return: An iterator over the url matches.
     """
-    return re.finditer(URL_PATTERN + end_with, text)
+    return re.finditer(_get_pattern(protocol) + end_with, text)
 
 
-def is_url(text: str) -> bool:
+def is_url(text: str, protocol: bool = True) -> bool:
     """ Check if the text is a URL.
     :param text: The text to check.
+    :param protocol: If set, only detect the URLs that start with a protocol.
+       Otherwise, it will search URLs without protocols, but it may find wrong URLs.
     :return: True if the text is a URL, False otherwise.
     """
-    return bool(re.match(URL_PATTERN, text))
+    return bool(re.match(_get_pattern(protocol), text))
 
 
-def has_url(text: str) -> bool:
+def has_url(text: str, protocol: bool = True) -> bool:
     """ Check if the text contains a URL.
     :param text: The text to check.
+    :param protocol: If set, only detect the URLs that start with a protocol.
+       Otherwise, it will search URLs without protocols, but it may find wrong URLs.
     :return: True if the text contains a URL, False otherwise.
     """
-    return bool(re.search(URL_PATTERN, text))
+    return bool(re.search(_get_pattern(protocol), text))
 
 
-def get_urls(text: str, end_with: str = '') -> List[str]:
+def get_urls(text: str, end_with: str = '', protocol: bool = True) -> List[str]:
     """ Get all the urls in the text.
     :param text: The text to search in.
+    :param protocol: If set, only returns the URLs that start with a protocol.
+       Otherwise, it will search URLs without protocols, but it may find wrong URLs.
     :param end_with: If set, only remove the URLs that finish with that regular expression.
         By default, all the URLs are returned.
     """
-    return [text[match.span()[0]:match.span()[1]] for match in find_urls(text, end_with)]
+    return [text[match.span()[0]:match.span()[1]] for match in find_urls(text, end_with, protocol)]
 
 
-def remove_urls(text: str, end_with: str = '') -> str:
+def remove_urls(text: str, end_with: str = '', protocol: bool = True) -> str:
     """ Remove any url in the text.
 
     :param text: The text to remove urls.
     :param end_with: If set, only remove the URLs that finish with that regular expression.
         By default, all the URLs are removed.
+    :param protocol: If set, only remove the URLs that start with a protocol.
+       Otherwise, it will search URLs without protocols, but it may remove wrong URLs.
     :return: The same text but without urls.
     """
-    return replace_urls(text, '', end_with)
+    return replace_urls(text, '', end_with, protocol)
 
 
-def replace_urls(text: str, replace: str, end_with: str = '') -> str:
+def replace_urls(text: str, replace: str, end_with: str = '', protocol: bool = True) -> str:
     """ Replace all the URLs with path by a text.
 
     :param text: The text to replace.
@@ -66,7 +85,7 @@ def replace_urls(text: str, replace: str, end_with: str = '') -> str:
         By default, all the URLs are replaced.
     :return: The replaced text.
     """
-    matches = list(find_urls(text, end_with))
+    matches = list(find_urls(text, end_with, protocol))
     matches.reverse()
     for match in matches:
         start, end = match.span()[0], match.span()[1]

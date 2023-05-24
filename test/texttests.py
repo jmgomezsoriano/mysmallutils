@@ -45,7 +45,7 @@ class MyTestCase(unittest.TestCase):
                '[Markdown](https://pepe@example.com:3306/documents/exportation.pdf?id=3&b=2#1234' \
                ')[)](undefined,) style url.\n' \
                'git+https://github.com/huggingface/peft.git\n' \
-               'www.example.com'
+               'www.example.com on 10.05.2015'
 
         self.assertListEqual(get_urls(text), [
             'https://example.com/my_space/user?a=b&c=3#first',
@@ -53,8 +53,18 @@ class MyTestCase(unittest.TestCase):
             'https://example.com/my_space/user',
             'https://example.com/your_space',
             'https://pepe@example.com:3306/documents/exportation.pdf?id=3&b=2#1234',
+            'git+https://github.com/huggingface/peft.git'
+        ])
+
+        self.assertListEqual(get_urls(text, protocol=False), [
+            'https://example.com/my_space/user?a=b&c=3#first',
+            'https://example.com/your_space/user#first',
+            'https://example.com/my_space/user',
+            'https://example.com/your_space',
+            'https://pepe@example.com:3306/documents/exportation.pdf?id=3&b=2#1234',
             'git+https://github.com/huggingface/peft.git',
-            'www.example.com'
+            'www.example.com',
+            '10.05.2015'
         ])
 
     def test_check_url(self) -> None:
