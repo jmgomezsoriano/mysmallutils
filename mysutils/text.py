@@ -3,7 +3,12 @@ from enum import Enum, unique
 from re import Match
 from typing import Union, Iterator, List
 
-URL_PATTERN = r'[A-Za-z0-9]+://[A-Za-z0-9%-_]+(/[A-Za-z0-9%-_])*(#|\\?)[A-Za-z0-9%-_&=]*'
+PROTOCOL_PATTERN = r'([\w\+]+://)?'
+DOMAIN_PATTERN = r'\w[\w%@:\-_]+(\.\w[\w%@:\-_]*)+/?'
+PATH_PATTERN = r'([\w%@\.\-_]+/?)*'
+QUERY_PATTERN = r'(\?[\w%\-_&=]*)?'
+HASH_PATTERN = r'(#[\w%\-_&=]*)*'
+URL_PATTERN = PROTOCOL_PATTERN + DOMAIN_PATTERN + PATH_PATTERN + QUERY_PATTERN + HASH_PATTERN
 
 
 def find_urls(text: str, end_with: str = '') -> Iterator[Match[str]]:

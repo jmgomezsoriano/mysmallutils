@@ -40,12 +40,18 @@ class MyTestCase(unittest.TestCase):
                'https://example.com/your_space/user#first\n' \
                'More urls:\n' \
                'https://example.com/my_space/user\n' \
-               'https://example.com/your_space'
+               'https://example.com/your_space\n' \
+               '[Markdown](https://pepe@example.com:3306/documents/exportation.pdf?id=3&b=2#1234' \
+               ')[)](undefined,) style url.\n' \
+               'git+https://github.com/huggingface/peft.git'
+
         self.assertListEqual(get_urls(text), [
             'https://example.com/my_space/user?a=b&c=3#first',
             'https://example.com/your_space/user#first',
             'https://example.com/my_space/user',
-            'https://example.com/your_space'
+            'https://example.com/your_space',
+            'https://pepe@example.com:3306/documents/exportation.pdf?id=3&b=2#1234',
+            'git+https://github.com/huggingface/peft.git'
         ]
 )
     def test_markup(self):
