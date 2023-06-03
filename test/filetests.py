@@ -6,7 +6,7 @@ from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
     first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files, read_from, read_until, \
-    has_encoding, write_file, expand_wildcards
+    has_encoding, write_file, expand_wildcards, to_filename
 from mysutils.tmp import removable_files, removable_tmp, removable_tmps
 from mysutils.yaml import load_yaml, save_yaml
 
@@ -438,6 +438,10 @@ class FileTestCase(unittest.FileTestCase):
                 self.assertDictEqual(d, load_json(json_tmp + '.json'))
             with self.assertRaises(FileNotFoundError):
                 self.assertDictEqual(d, load_yaml(yaml_tmp + '.yaml'))
+
+    def test_to_filename(self) -> None:
+        self.assertEqual(to_filename('Hello World! How are you?'), "Hello World_ How are you_")
+        self.assertEqual(to_filename('Hello World! How are you?', '.srt'), "Hello World_ How are you_.srt")
 
     def test_defaults(self) -> None:
         d = {'name': 'John Smith', 'message': 'Hello world!'}

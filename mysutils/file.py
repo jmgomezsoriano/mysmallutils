@@ -13,6 +13,7 @@ from sys import stdout
 from shutil import move
 from typing import Union, Optional, TextIO, Any, List, Tuple, IO
 import glob
+from string import ascii_letters, digits
 
 
 def expand_wildcards(*filenames: Union[PathLike, str, bytes]) -> List[str]:
@@ -564,3 +565,13 @@ def has_encoding(file: Union[PathLike, str, bytes], encoding: str) -> bool:
     except UnicodeDecodeError:
         return False
     return True
+
+
+def to_filename(text: str, ext: str = '') -> str:
+    """ Convert a string to a valid filename.
+    :param text: The string to convert.
+    :param ext: The file extension.
+    :return: The converted string.
+    """
+    valid_chars = f'-_.() {ascii_letters}{digits}'
+    return ''.join(c if c in valid_chars else '_' for c in text) + ext

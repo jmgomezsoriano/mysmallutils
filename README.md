@@ -787,6 +787,17 @@ print('This is a ' + \
 ```
 **Important note:** All these font variants, styles and color do not work in all the consoles/terminals.
 
+## Hash a text
+
+An very easy way to hash a text.
+
+```python
+from mysutils.text import hash_text
+
+# Print the SHA256 hash of that text
+print(hash_text('This is a text'))
+```
+
 # File access, load and save files<a id="file-access-load-and-save-files" name="file-access-load-and-save-files"></a>
 With these functions you can open files, create json and pickle files, and execute external commands very easily.
 Moreover, only changing the file extension you can store the information in a compressed file with gzip.
@@ -1245,6 +1256,19 @@ touch('1.txt', '2.txt', '3.json', '4.yaml')
 expand_wildcards('*.txt', '*.yaml')
 ```
 
+## Text to filename
+
+Convert a text into a filename, removing unsupported characters.
+
+```python
+from mysutils.file import to_filename
+
+# Print "Hello World_ How are you_"
+print(to_filename('Hello World! How are you?'))
+
+# Print "Hello World_ How are you_.srt"
+print(to_filename('Hello World! How are you?', '.srt'))
+```
 
 # Removable files<a id="removable-files"></a>
 Many times it is necessary to remove temporal files after their use, even if there are any problem with the process.

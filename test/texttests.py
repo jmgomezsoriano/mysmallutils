@@ -1,7 +1,7 @@
 import unittest
 
 from mysutils.text import clean_text, remove_urls, AnsiCodes, markup, color, bg_color, un_color, replace_urls, get_urls, \
-    is_url, has_url
+    is_url, has_url, hash_text
 
 
 class MyTestCase(unittest.TestCase):
@@ -99,6 +99,10 @@ class MyTestCase(unittest.TestCase):
                                                bg_color(60, 60, 60), un_color(80, 80, 255)) + ' with effects.',
                          'This is a \x1b[4m\x1b[38;2;255;255;20m\x1b[48;2;60;60;60m\x1b[58;2;80;80;255mtext\x1b[0m '
                          'with effects.')
+
+    def test_hash(self) -> None:
+        self.assertEqual(hash_text('This is a text'),
+                         '1719b9ed2519f52da363bef16266c80c679be1c3ad3b481722938a8f1a9c589b')
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 import re
 from enum import Enum, unique
+from hashlib import sha256
 from re import Match
 from typing import Union, Iterator, List
 
@@ -275,3 +276,12 @@ def is_color(color_code: str) -> bool:
     :return: True if the color is valid, False otherwise.
     """
     return bool(re.match(r'^\033\[(([3-4][0-7]|39|49|59)|(38|48|58);(5;[0-9]+|2;[0-9]+;[0-9]+;[0-9]+))m$', color_code))
+
+
+def hash_text(text: str, encoding='utf-8') -> str:
+    """ Hash the text with SHA256.
+    :param text: The text to hash.
+    :param encoding: The encoding to convert to bytes.
+    :return: A SHA256 hash that represents that text.
+    """
+    return sha256(text.encode(encoding)).hexdigest()
