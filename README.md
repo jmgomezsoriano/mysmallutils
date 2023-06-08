@@ -24,6 +24,8 @@ This module is divided into the following categories:
   * [Check URLs in a text](#check-urls-in-a-text)
   * [Clean text](#clean-text)
   * [Text markup](#text-markup)
+  * [Hash a text](#hash-a-text)
+  * [Is float](#is-float)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Read file](#read-file)
@@ -787,15 +789,35 @@ print('This is a ' + \
 ```
 **Important note:** All these font variants, styles and color do not work in all the consoles/terminals.
 
-## Hash a text
+## Hash a text<a id="hash-a-text" name="hash-a-text"></a>
 
-An very easy way to hash a text.
+A very easy way to hash a text.
 
 ```python
 from mysutils.text import hash_text
 
-# Print the SHA256 hash of that text
+# Print the SHA256 hash of that text in utf-8
 print(hash_text('This is a text'))
+
+# Print the SHA256 hash of that text in iso8859-1
+print(hash_text('This is a text', encoding='iso8859-1'))
+```
+
+## Is float<a id="is-float" name="is-float"></a>
+
+Check when a string is a float valid number or not.
+
+```python
+from mysutils.text import is_float
+
+print(is_float('1.23'))  # Print True
+print(is_float('3.14159'))  # Print True
+print(is_float('1.23e6'))  # Print True
+print(is_float('3.45e-2'))  # Print True
+print(is_float(Fraction(22, 7)))  # Print True
+print(is_float('123'))  # Print True
+print(is_float('1,234'))  # Print  False
+print(is_float('a1234'))  # Print False
 ```
 
 # File access, load and save files<a id="file-access-load-and-save-files" name="file-access-load-and-save-files"></a>

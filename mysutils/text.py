@@ -285,3 +285,15 @@ def hash_text(text: str, encoding='utf-8') -> str:
     :return: A SHA256 hash that represents that text.
     """
     return sha256(text.encode(encoding)).hexdigest()
+
+
+def is_float(value: str) -> bool:
+    """ Check if a value is a float.
+    :param value: The value to evaluate.
+    :return: True if the value is a float, False otherwise.
+    """
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False

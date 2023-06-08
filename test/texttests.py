@@ -1,7 +1,8 @@
 import unittest
+from fractions import Fraction
 
 from mysutils.text import clean_text, remove_urls, AnsiCodes, markup, color, bg_color, un_color, replace_urls, get_urls, \
-    is_url, has_url, hash_text
+    is_url, has_url, hash_text, is_float
 
 
 class MyTestCase(unittest.TestCase):
@@ -103,6 +104,20 @@ class MyTestCase(unittest.TestCase):
     def test_hash(self) -> None:
         self.assertEqual(hash_text('This is a text'),
                          '1719b9ed2519f52da363bef16266c80c679be1c3ad3b481722938a8f1a9c589b')
+
+    def test_is_float(self) -> None:
+        self.assertEqual(is_float('1.23'), True)
+        self.assertEqual(is_float('3.14159'), True)
+        self.assertEqual(is_float('2.0'), True)
+        self.assertEqual(is_float('-0.5'), True)
+        self.assertEqual(is_float('10.75'), True)
+        self.assertEqual(is_float('1.23e6'), True)
+        self.assertEqual(is_float('3.45e-2'), True)
+        self.assertEqual(is_float('314.16e-2'), True)
+        self.assertEqual(is_float(Fraction(22, 7)), True)
+        self.assertEqual(is_float('123'), True)
+        self.assertEqual(is_float('1,234'), False)
+        self.assertEqual(is_float('a1234'), False)
 
 
 if __name__ == '__main__':
