@@ -247,10 +247,14 @@ def remove_files(*files: Union[PathLike, str, bytes], ignore_errors: bool = Fals
     """
     for file in expand_wildcards(*files):
         if isdir(file):
-            if recursive:
-                rmtree(file)
-            else:
-                rmdir(file)
+            try:
+                if recursive:
+                    rmtree(file)
+                else:
+                    rmdir(file)
+            except Exception as e:
+                if not ignore_errors:
+                    raise e
         elif not ignore_errors or exists(file):
             remove(file)
 

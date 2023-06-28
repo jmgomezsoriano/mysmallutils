@@ -1,5 +1,4 @@
 import glob
-import os
 from shutil import rmtree
 
 import setuptools
@@ -25,28 +24,10 @@ class CleanCommand(setuptools.Command):
             rmtree(file)
 
 
-class PrepublishCommand(setuptools.Command):
-    """ Custom prepublish command. """
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        os.system('python setup.py clean')
-        os.system('python setup.py sdist bdist_wheel')
-
-
 setuptools.setup(
-    cmdclass={
-        'clean': CleanCommand,
-        'prepublish': PrepublishCommand,
-    },
+    cmdclass={'clean': CleanCommand},
     name='mysmallutils',
-    version='2.0.8',
+    version='2.0.9',
     url='https://github.com/jmgomezsoriano/mysmallutils',
     license='LGPL2',
     author='José Manuel Gómez Soriano',
