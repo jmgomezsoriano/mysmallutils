@@ -1,6 +1,6 @@
 import shutil
 from os import remove, rmdir, mkdir
-from os.path import exists, join
+from os.path import exists, join, basename
 
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
@@ -115,7 +115,7 @@ class FileTestCase(unittest.FileTestCase):
             self.assertListEqual([True, True], [exists(join(tmp, 'test1.txt')), exists(join(tmp, 'test2.txt'))])
             self.assertListEqual([True, True],
                                  [exists(join(tmp, 'data', 'test1.txt')), exists(join(tmp, 'data', 'test2.txt'))])
-            self.assertListEqual([f.rsplit('\\', 1)[1] for f in list_dir(tmp)], ['data', 'test1.txt', 'test2.txt'])
+            self.assertListEqual([basename(f) for f in list_dir(tmp)], ['data', 'test1.txt', 'test2.txt'])
             remove_files(join(tmp, 'test1.txt'), join(tmp, 'test2.txt'), join(tmp, 'data/'), recursive=True)
             self.assertListEqual([False] * 3, [exists(join(tmp, f)) for f in ['test1.txt', 'test2.txt', 'data']])
             touch(join(tmp, 'test1.txt'), join(tmp, 'test2.txt'))
