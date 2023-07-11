@@ -27,6 +27,16 @@ class MyTestCase(unittest.TestCase):
         replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_04.html'), True))
         self.assertEqual(body_html, replaced_html)
 
+    def test_replace_endpoints(self) -> None:
+        text = '[27 Member States of the European Union](http://europa.eu/about-eu/countries/index_es.htm).'
+        replaced_text = replace_endpoint(text, '/admin/')
+        self.assertEqual(text, replaced_text)
+        replaced_text = replace_endpoint(text, '/index_es.htm')
+        self.assertEqual(replaced_text,
+                         r"[27 Member States of the European Union](<script>"
+                         r"document.write(window.location.href.replace(/\/[^\/]*$/, '/index_es.htm'));</script>)."
+                         )
+
 
 if __name__ == '__main__':
     unittest.main()

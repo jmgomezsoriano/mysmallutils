@@ -5,11 +5,12 @@ from re import Match
 from typing import Union, Iterator, List
 
 PROTOCOL_PATTERN = r'[\w\+]+://'
-DOMAIN_PATTERN = r'\w[\w%@:\-_]+(\.\w[\w%@:\-_]*)+/?'
-PATH_PATTERN = r'([\w%@\.\-_]+/?)*'
+DOMAIN_PATTERN = r'[\w&][\w&;%@:\-_]+(\.\w[\w%@:\-_]*)*/?'
+PATH_PATTERN = r'([\w%@\.\-_]+/)*'
+FILE_PATTERN = r'([\w%@\.\-_]+)?'
 QUERY_PATTERN = r'(\?[\w%\-_&=]*)?'
 HASH_PATTERN = r'(#[\w%\-_&=]*)*'
-URL_PATTERN = PROTOCOL_PATTERN + DOMAIN_PATTERN + PATH_PATTERN + QUERY_PATTERN + HASH_PATTERN
+URL_PATTERN = PROTOCOL_PATTERN + DOMAIN_PATTERN + PATH_PATTERN + FILE_PATTERN + QUERY_PATTERN + HASH_PATTERN
 
 
 def _get_pattern(protocol: bool) -> str:
@@ -18,7 +19,7 @@ def _get_pattern(protocol: bool) -> str:
     """
     if protocol:
         return URL_PATTERN
-    return f'({PROTOCOL_PATTERN})?{DOMAIN_PATTERN}{PATH_PATTERN}{QUERY_PATTERN}{HASH_PATTERN}'
+    return f'({PROTOCOL_PATTERN})?{DOMAIN_PATTERN}{PATH_PATTERN}{FILE_PATTERN}{QUERY_PATTERN}{HASH_PATTERN}'
 
 
 def find_urls(text: str, end_with: str = '', protocol: bool = True) -> Iterator[Match[str]]:
