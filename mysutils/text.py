@@ -22,7 +22,7 @@ def _get_pattern(protocol: bool) -> str:
     return f'({PROTOCOL_PATTERN})?{DOMAIN_PATTERN}{PATH_PATTERN}{FILE_PATTERN}{QUERY_PATTERN}{HASH_PATTERN}'
 
 
-def find_urls(text: str, end_with: str = '', protocol: bool = True) -> Iterator[Match[str]]:
+def find_urls(text: str, end_with: str = '', protocol: bool = True) -> Iterator[Match]:
     """ Find all the urls in the text.
     :param text: The text to search in.
     :param end_with: If set, only remove the URLs that finish with that regular expression.
