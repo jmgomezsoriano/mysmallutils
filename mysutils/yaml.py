@@ -1,5 +1,6 @@
 import gzip
-from collections import OrderedDict, Hashable
+from collections import OrderedDict
+from collections.abc import Hashable
 from os import PathLike
 from typing import Union, Dict, Any, Optional
 

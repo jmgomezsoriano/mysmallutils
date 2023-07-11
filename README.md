@@ -17,10 +17,15 @@ This module is divided into the following categories:
   * [Tuples](#tuples)
   * [OrderedSet](#orderedset)
 * [Text](#text)
+  * [Find URLs](#find-urls)
+  * [Get URLs](#get-urls)
   * [Remove URLs](#remove-urls)
   * [Replace URLs](#replace-urls)
+  * [Check URLs in a text](#check-urls-in-a-text)
   * [Clean text](#clean-text)
   * [Text markup](#text-markup)
+  * [Hash a text](#hash-a-text)
+  * [Is float](#is-float)
 * [File access, load and save files](#file-access-load-and-save-files)
   * [Open files](#open-files)
   * [Read file](#read-file)
@@ -29,16 +34,17 @@ This module is divided into the following categories:
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)
   * [Copy files](#copy-files)
+  * [Move files](#move-files)
   * [Remove files](#remove-files)
   * [Check if exists several files](#check-if-exists-several-files)
   * [Count lines](#count-lines)
   * [Touch](#touch)
   * [Cat](#cat)
   * [Make directories](#make-directories)
-  * [Move files](#move-files)
   * [List files](#list-files)
   * [Generate output file paths](#generate-output-file-paths)
   * [Check file encoding](#check-file-encoding)
+  * [Expand wildcards](#expand-wildcards)
 * [Removable files](#remove-files)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
@@ -52,7 +58,6 @@ This module is divided into the following categories:
   * [Endpoint](#endpoint)
   * [Generate service help](#generate-service-help)
   * [JSON post](#json-post)
-* [Git monitor](#git-monitor)
 * [File unit tests](#unit-tests)
 * [Miscellany](#miscellany)
 
@@ -629,8 +634,50 @@ These operations include:
 # Text<a id="text" name="text"></a>
 Simple functions related to text.
 
+## Find URLs<a id="find-urls" name="find-urls"></a>
+Find URLs in a text.
+
+```python
+from mysutils.text import find_urls
+
+text = """This is a test!
+     Clean punctuation symbols and urls like this: https://example.com/my_space/user?a=b&c=3#first https://example.com/your_space/user#first
+More urls:
+https://example.com/my_space/user
+https://example.com/your_space
+"""
+
+matches = find_urls(text)
+for match in matches:
+    start, end = match.span()[0], match.span()[1]
+    print(text[start:end])
+
+# The same but only with URLs that end with a slash
+matches = find_urls(text, '/')
+```
+
+## Get URLs<a id="get-urls" name="get-urls"></a>
+Get the URLs from a text.
+
+```python
+from mysutils.text import get_urls
+
+text = """This is a test!
+     Clean punctuation symbols and urls like this: https://example.com/my_space/user?a=b&c=3#first https://example.com/your_space/user#first
+More urls:
+https://example.com/my_space/user
+https://example.com/your_space
+"""
+
+# Get all the URLs from the text
+urls = get_urls(text)
+
+# Get all the URLs from the text that end with a slash
+urls = get_urls(text, '/')
+```
+
 ## Remove URLs<a id="remove-urls" name="remove-urls"></a>
-Remove URLs from a text.
+Remove the URLs from a text.
 
 ```python
 from mysutils.text import remove_urls
@@ -673,6 +720,21 @@ replace_urls(text, 'https://hello.com', r'my_space/user')
 # Result:
 # 'This is a test!\n
 #      Clean punctuation symbols and urls like this: https://hello.com https://example.com/your_space')
+```
+
+## Check URLs in a text<a id="check-urls-in-a-text" name="check-urls-in-a-text"></a>
+Check if a text is a URL or contain one.
+
+```python
+from mysutils.text import is_url, has_url
+
+text = '...'
+# Check if a text is a URL
+if is_url(text):
+  print('It is a URL!')
+# Check if a text contains a URL
+if has_url(text):
+  print('It contains, at least, a URL!')
 ```
 
 ## Clean text<a id="clean-text" name="clean-text"></a>
@@ -727,6 +789,37 @@ print('This is a ' + \
 ```
 **Important note:** All these font variants, styles and color do not work in all the consoles/terminals.
 
+## Hash a text<a id="hash-a-text" name="hash-a-text"></a>
+
+A very easy way to hash a text.
+
+```python
+from mysutils.text import hash_text
+
+# Print the SHA256 hash of that text in utf-8
+print(hash_text('This is a text'))
+
+# Print the SHA256 hash of that text in iso8859-1
+print(hash_text('This is a text', encoding='iso8859-1'))
+```
+
+## Is float<a id="is-float" name="is-float"></a>
+
+Check when a string is a float valid number or not.
+
+```python
+from mysutils.text import is_float
+
+print(is_float('1.23'))  # Print True
+print(is_float('3.14159'))  # Print True
+print(is_float('1.23e6'))  # Print True
+print(is_float('3.45e-2'))  # Print True
+print(is_float(Fraction(22, 7)))  # Print True
+print(is_float('123'))  # Print True
+print(is_float('1,234'))  # Print  False
+print(is_float('a1234'))  # Print False
+```
+
 # File access, load and save files<a id="file-access-load-and-save-files" name="file-access-load-and-save-files"></a>
 With these functions you can open files, create json and pickle files, and execute external commands very easily.
 Moreover, only changing the file extension you can store the information in a compressed file with gzip.
@@ -745,7 +838,7 @@ with open_file('file.txt.gz', 'w') as file:
 
 # Open a file in a directory, if the directory does not exist, 
 # then create the parent directories.
-with force_open('file.txt') as file:
+with force_open('file.txt', 'w') as file:
     pass
 
 # The same as previously, but with a compressed file.
@@ -893,6 +986,28 @@ copy_files('data/', 'file1.txt', 'file2.txt')
 
 # To avoid create the folder if it does not exist.
 copy_files('data/', 'file1.txt', 'file2.txt', force=False)
+
+# Moreover, you can use file wildcards
+copy_files('data/', '*.txt', '*.py')
+```
+
+## Move files<a id="move-files" name="move-files"></a>
+Move several files at once.
+
+```python
+from mysutils.file import move_files
+
+# Move several files to test/
+move_files('test/', '1.txt', '2.txt', '3.txt')
+
+# Create the folder test/ if it does not exist
+move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
+
+# Replace the files if already exists in test/
+move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
+
+# Moreover, you can use file wildcards
+move_files('test/', '*.txt', '*.py')
 ```
 
 ## Remove files<a id="remove-files" name="remove-files"></a>
@@ -909,6 +1024,9 @@ remove_files('test2.json', 'data/test1.json', 'data/', ignore_errors=True)
 
 # Remove three files or folders at once, if the folder contains more files, also will be removed.
 remove_files('test2.json', 'data/test1.json', 'data/', recursive=True)
+
+# Moreover, you can use file wildcards
+remove_files('*.json', 'data/*.json')
 ```
 
 If the file to remove is a directory, it has to be empty. If you want to remove directories with subdirectories or 
@@ -1075,22 +1193,6 @@ mkdirs('new_folder')
 mkdirs('folder1', 'folder2', 'folder3')
 ```
 
-## Move files<a id="move-files" name="move-files"></a>
-Move several files at once.
-
-```python
-from mysutils.file import move_files
-
-# Move several files to test/
-move_files('test/', '1.txt', '2.txt', '3.txt')
-
-# Create the folder test/ if it does not exist
-move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
-
-# Replace the files if already exists in test/
-move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
-```
-
 ## List files<a id="list-files" name="list-files"></a>
 Functions to list a folder and obtain the first or last file of a folder.
 
@@ -1161,6 +1263,33 @@ from mysutils.file import has_encoding
 
 # Return True if the file 1.txt is compatible with utf-8
 has_encoding('1.txt', 'utf-8')
+```
+
+## Expand wildcards<a id="expand-wildcards" name="expand-wildcards"></a>
+From strings or file paths which might contain wildcards, the function expand_wildcards() expands them, 
+returning a list of existing files that match with the wildcards.
+
+```python
+from mysutils.file import expand_wildcards, touch
+
+# Create 4 files with different extensions
+touch('1.txt', '2.txt', '3.json', '4.yaml')
+# Return ['1.txt', '2.txt', '4.yaml']
+expand_wildcards('*.txt', '*.yaml')
+```
+
+## Text to filename
+
+Convert a text into a filename, removing unsupported characters.
+
+```python
+from mysutils.file import to_filename
+
+# Print "Hello World_ How are you_"
+print(to_filename('Hello World! How are you?'))
+
+# Print "Hello World_ How are you_.srt"
+print(to_filename('Hello World! How are you?', '.srt'))
 ```
 
 # Removable files<a id="removable-files"></a>
@@ -1630,46 +1759,6 @@ from mysutils.request import json_post
 
 # Send the dictionary '{"msg": "Hello world!"}' to the service with that url 
 json_post('https://postman-echo.com/post', {"msg": "Hello world!"})
-```
-
-# Git monitor<a id="git-monitor" name="git-monitor"></a>
-
-## Deprecated from 1.1.3 and it will be remvoed in version 1.2!
-This class is going to be removed in 1.2 version because it is moved to another independent module called tempgit.
-You can install it with:
-
-```bash
-pip install tempgit
-```
-
-And use it with:
-
-```python
-from tempgit import GitMonitor
-```
----
-
-Monitor a Git repository to check if there is any change in the remote repository with respect the local one.
-
-```python
-from mysutils.git import GitMonitor
-
-# Function to execute when the is a change
-def func(*files: str) -> None:
-  # Print the changed files
-  print(files)
-
-# Create a monitor instance to execute one only time  
-monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name')
-# Execute the monitor
-monitor.monitor()
-# Execute the monitor as a thread
-monitor.start()
-
-# If you want to check the git repository several times you need add an interval to
-monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name', interval=30)  # 30 seconds
-# If you want to execute func() the first time although the repository has not changed, use force
-monitor = GitMonitor(func, 'local_dir', 'remote_url', 'branch_name', force=True, interval=30)
 ```
 
 # File unit tests<a id="unit-tests" name="unit-tests"></a>

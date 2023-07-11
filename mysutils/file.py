@@ -11,9 +11,23 @@ from os.path import exists, dirname, join, basename, isdir
 from shutil import copyfile, rmtree
 from sys import stdout
 from shutil import move
-from typing import Union, Optional, TextIO, Any, List, Tuple
+from typing import Union, Optional, TextIO, Any, List, Tuple, IO
+import glob
+from string import ascii_letters, digits
 
-from typing.io import IO
+
+def expand_wildcards(*filenames: Union[PathLike, str, bytes]) -> List[str]:
+    """ Expand a list of files if they have wildcards.
+    :param filenames: List of filenames to expand.
+    :return: List of expanded filenames.
+    """
+    result = []
+    for filename in filenames:
+        if glob.has_magic(filename):
+            result.extend(glob.glob(filename))
+        else:
+            result.append(filename)
+    return result
 
 
 def open_file(filename: Union[PathLike, str, bytes],
@@ -115,8 +129,29 @@ def copy_files(dest: Union[PathLike, str, bytes], *files: Union[PathLike, str, b
     """
     if not exists(dest) and force:
         makedirs(dest)
-    for file in files:
+    for file in expand_wildcards(*files):
         copyfile(file, join(dest, basename(file)))
+
+
+def move_files(dest: Union[PathLike, str, bytes], *files: Union[PathLike, str, bytes],
+               force: bool = False, replace: bool = False) -> None:
+    """ Move several files at once.
+
+    :param dest: The destination folder.
+    :param files: The files to move.
+    :param force: If True, create the folder if it doesn't exist.
+    :param replace: if any of the files exist, replace them.
+    """
+    if force:
+        mkdirs(dest)
+    for file in expand_wildcards(*files):
+        if not exists(dest):
+            raise FileNotFoundError(f'The folder {dest} does not exist.')
+        if exists(dest) and not isdir(dest):
+            raise NotADirectoryError(f'The folder {dest} is not a directory.')
+        if exists(join(dest, basename(file))) and replace:
+            remove(join(dest, basename(file)))
+        move(file, dest)
 
 
 def save_json(obj: Any,
@@ -210,12 +245,16 @@ def remove_files(*files: Union[PathLike, str, bytes], ignore_errors: bool = Fals
     :param ignore_errors: If True, ignore the error if the file or directory does not exist.
     :param recursive: If True, delete the folder recursively with all its content.
     """
-    for file in files:
+    for file in expand_wildcards(*files):
         if isdir(file):
-            if recursive:
-                rmtree(file)
-            else:
-                rmdir(file)
+            try:
+                if recursive:
+                    rmtree(file)
+                else:
+                    rmdir(file)
+            except Exception as e:
+                if not ignore_errors:
+                    raise e
         elif not ignore_errors or exists(file):
             remove(file)
 
@@ -309,7 +348,7 @@ def are_dir(*files: Union[PathLike, str, bytes]) -> bool:
     """ Check if a sequence of files are directories.
 
     :param files: The list of file paths to check.
-    :return: True if all of the files are directories, otherwise False.
+    :return: True if all files are directories, otherwise False.
     """
     for file in files:
         if not isdir(file):
@@ -373,7 +412,7 @@ def read_file(filename: Union[PathLike, str, bytes], line_break: bool = True) ->
     :return: An array with the contents of the file.
     """
     with open_file(filename, 'rt') as file:
-        return [line[:-1] if not line_break and line[-1] == '\n' else line for line in file]
+        return [line.rstrip('\n') if not line_break else line for line in file]
 
 
 def read_files(*filenames: Union[PathLike, str, bytes], line_break: bool = True) -> List[str]:
@@ -459,23 +498,6 @@ def mkdirs(*paths: Union[PathLike, str, bytes], mode: int = 0o777,
     return paths
 
 
-def move_files(dest: Union[PathLike, str, bytes], *files: Union[PathLike, str, bytes],
-               force: bool = False, replace: bool = False) -> None:
-    """ Move several files at once.
-
-    :param dest: The destination folder.
-    :param files: The files to move.
-    :param force: If True, create the folder if it doesn't exist.
-    :param replace: if any of the files exist, replace them.
-    """
-    if force:
-        mkdirs(dest)
-    for file in files:
-        if exists(join(dest, file)) and replace:
-            remove(join(dest, file))
-        move(file, dest)
-
-
 def list_dir(folder: Union[PathLike, str, bytes] = '.', filter: str = None, reverse: bool = False) -> List[str]:
     """ List a directory and return a list with all file path of that directory that satisfy the given filter,
         ordered alphabetically.
@@ -547,3 +569,13 @@ def has_encoding(file: Union[PathLike, str, bytes], encoding: str) -> bool:
     except UnicodeDecodeError:
         return False
     return True
+
+
+def to_filename(text: str, ext: str = '') -> str:
+    """ Convert a string to a valid filename.
+    :param text: The string to convert.
+    :param ext: The file extension.
+    :return: The converted string.
+    """
+    valid_chars = f'-_.() {ascii_letters}{digits}'
+    return ''.join(c if c in valid_chars else '_' for c in text) + ext

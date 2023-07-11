@@ -39,5 +39,5 @@ def replace_endpoint(text: str, path: str) -> str:
     matches.reverse()
     for match in matches:
         start, end = match.span()[0], match.span()[1]
-        text = text[:start] + endpoint(path, is_embedded_url(text, start, end))  + text[end:]
+        text = text[:start] + endpoint(path, is_embedded_url(text, start, end)) + text[end:]
     return text

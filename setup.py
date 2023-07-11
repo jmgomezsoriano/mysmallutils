@@ -1,4 +1,6 @@
-import os
+import glob
+from shutil import rmtree
+
 import setuptools
 
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -16,31 +18,16 @@ class CleanCommand(setuptools.Command):
         pass
 
     def run(self):
-        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
-
-
-class PrepublishCommand(setuptools.Command):
-    """ Custom prepublish command. """
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        os.system('python setup.py clean')
-        os.system('python setup.py sdist bdist_wheel')
+        rmtree('build', ignore_errors=True)
+        rmtree('dist', ignore_errors=True)
+        for file in glob.glob('*.egg-info'):
+            rmtree(file)
 
 
 setuptools.setup(
-    cmdclass={
-        'clean': CleanCommand,
-        'prepublish': PrepublishCommand,
-    },
+    cmdclass={'clean': CleanCommand},
     name='mysmallutils',
-    version='1.1.10',
+    version='2.0.10',
     url='https://github.com/jmgomezsoriano/mysmallutils',
     license='LGPL2',
     author='José Manuel Gómez Soriano',
@@ -55,8 +42,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.7',
-    install_requires=[
-        'deprecation==2.1.0'
-    ]
+    python_requires='>=3.7,<4'
 )

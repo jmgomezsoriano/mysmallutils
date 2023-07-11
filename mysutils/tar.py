@@ -8,7 +8,7 @@ from os.path import basename, isdir, join, exists, splitext, dirname, normpath
 from typing import List, Any, Union
 from shutil import move
 
-from typing.io import IO
+from typing import IO
 
 
 from mysutils.file import copy_files, list_dir

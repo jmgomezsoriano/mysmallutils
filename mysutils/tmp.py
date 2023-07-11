@@ -61,7 +61,7 @@ class Removable(object):
         return str(self.__files)
 
     def __getitem__(self, item: int) -> Union[PathLike, str, bytes]:
-        """ Obtain an path of the removable files.
+        """ Obtain a path of the removable files.
         :param item: The index of the file to retrieve.
         :return: The path to the removable file of the index item.
         """
@@ -93,7 +93,7 @@ def removable_files(*files: Union[PathLike, str, bytes], recursive: bool = False
     :param files: The files to remove al the end.
     :param recursive: If True, remove the folders recursively.
     :param ignore_errors: If True, ignore the errors, for example the file not found error.
-    :return: A object with enter and exit methods.
+    :return: An object with enter and exit methods.
     """
     return Removable(*files, recursive=recursive, ignore_errors=ignore_errors)
 
@@ -139,7 +139,7 @@ def removable_tmp(is_folder: bool = False, suffix: str = '', prefix: str = '') -
     :param suffix: The temporal file suffix.
     :param prefix: The temporal file prefix.
 
-    :return: A object with enter and exit methods.
+    :return: An object with enter and exit methods.
     """
     return RemovableTemp(is_folder, suffix, prefix)
 
@@ -175,6 +175,6 @@ def removable_tmps(num: int = 1, is_folder: bool = False, suffix: str = '', pref
     :param suffix: The temporal file suffixes.
     :param prefix: The temporal file prefixes.
 
-    :return: A object with enter and exit methods.
+    :return: An object with enter and exit methods.
     """
     return RemovableTemps(num, is_folder, suffix, prefix)
