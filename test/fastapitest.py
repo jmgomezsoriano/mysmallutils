@@ -36,6 +36,15 @@ class MyTestCase(unittest.TestCase):
                          r"[27 Member States of the European Union](<script>"
                          r"document.write(window.location.href.replace(/\/[^\/]*$/, '/index_es.htm'));</script>)."
                          )
+        text = """
+curl -X GET -H "Accept: application/json" http://localhost:8000/api/types/interaction/
+curl -X GET -H "Accept: application/json" http://localhost:8000/api/types/interaction/?mode=dict
+"""
+        replaced_text = replace_endpoint(text, '/api/')
+        self.assertEqual(replaced_text, """
+curl -X GET -H "Accept: application/json" <script>document.write(window.location.href.replace(/\/[^\/]*$/, '/api/'));</script>types/interaction/
+curl -X GET -H "Accept: application/json" <script>document.write(window.location.href.replace(/\/[^\/]*$/, '/api/'));</script>types/interaction/?mode=dict
+""")
 
 
 if __name__ == '__main__':

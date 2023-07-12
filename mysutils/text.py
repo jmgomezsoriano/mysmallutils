@@ -5,7 +5,7 @@ from re import Match
 from typing import Union, Iterator, List
 
 PROTOCOL_PATTERN = r'[\w\+]+://'
-DOMAIN_PATTERN = r'([\w][\w%@:\-_]+(\.\w[\w%@:\-_]*)+|&lt;url&gt;|localhost)/?'
+DOMAIN_PATTERN = r'([\w][\w%@:\-_]+(\.\w[\w%@:\-_]*)+|&lt;url&gt;|localhost(:[0-9]+)?)/?'
 PATH_PATTERN = r'([\w%@\.\-_]+/)*'
 FILE_PATTERN = r'([\w%@\.\-_]+)?'
 QUERY_PATTERN = r'(\?[\w%\-_&=]*)?'
