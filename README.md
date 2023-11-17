@@ -1735,8 +1735,11 @@ def home() -> str:
   """ Show the help.
   :return: The HTML code to show the help.
   """
+  # Specify paths manually
   return gen_service_help('Page title', 'README.md', '# Web API',
                           '/service1', '/service2', '/service3')
+    # Specify paths automatically
+  return gen_service_help('Page title', 'README.md', '# Web API', *app.routes)
 ```
 
 This way, it will generate a Web page with the title 'Page title', using the information in the README.md file
