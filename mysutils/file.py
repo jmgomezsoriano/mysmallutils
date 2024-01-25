@@ -442,6 +442,7 @@ def read_from(filename: Union[PathLike, str, bytes],
     """
     pattern = re.compile(regex, flags=re.IGNORECASE if ignore_case else 0)
     from_detected, lines = not regex, []
+
     with open_file(filename, 'rt') as file:
         for line in file:
             from_detected = from_detected or pattern.match(line)
@@ -462,12 +463,57 @@ def read_until(filename: Union[PathLike, str, bytes], regexp: str = '',
     """
     pattern = re.compile(regexp, flags=re.IGNORECASE if ignore_case else 0)
     until_detected, lines = False, []
+
     with open_file(filename, 'rt') as file:
         for line in file:
             until_detected = until_detected or regexp and pattern.match(line)
             if not until_detected:
                 lines.append(line[:-1] if not line_break and line[-1] == '\n' else line)
     return lines
+
+
+def read_body(filename: Union[PathLike, str, bytes], from_re: str = '', until_re: str = '',
+               ignore_case: bool = False, line_break: bool = True) -> List[str]:
+    """ Read from the line that matches with a from_re regular expression until the line that matches with until_re.
+
+    :param filename: The path to the file.
+    :param from_re: The regular expression.
+    :param from_re: The regular expression.
+    :param ignore_case: If ignore case or not.
+    :param line_break: If True, the newline character is conserved, otherwise is removed.
+    :return: A list of strings with each file line.
+    """
+    from_pattern = re.compile(from_re, flags=re.IGNORECASE if ignore_case else 0)
+    until_pattern = re.compile(until_re, flags=re.IGNORECASE if ignore_case else 0)
+    from_detected, until_detected, lines = not from_re, False, []
+
+    with open_file(filename, 'rt') as file:
+        for line in file:
+            from_detected = from_detected or from_pattern.match(line)
+            until_detected = until_detected or until_re and until_pattern.match(line)
+
+            if from_detected and not until_detected:
+                lines.append(line[:-1] if not line_break and line[-1] == '\n' else line)
+
+        return lines
+
+
+def read_line(filename: Union[PathLike, str, bytes], regexp: str,
+              ignore_case: bool = False, line_break: bool = True) -> Optional[str]:
+    """ Read the line that matches with a regular expression.
+
+    :param filename: The path to the file.
+    :param regexp: The regular expression.
+    :param ignore_case: If ignore case or not.
+    :param line_break: If True, the newline character is conserved, otherwise is removed.
+    :return: A string with the line or None.
+    """
+    pattern = re.compile(regexp, flags=re.IGNORECASE if ignore_case else 0)
+    with open_file(filename, 'rt') as file:
+        for line in file:
+            if pattern.match(line):
+                return line[:-1] if not line_break and line[-1] == '\n' else line
+    return None
 
 
 def write_file(filename: Union[PathLike, str, bytes, int], content: Union[str, List[str]]) -> None:
