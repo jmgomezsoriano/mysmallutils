@@ -6,7 +6,7 @@ from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
     first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files, read_from, read_until, \
-    has_encoding, write_file, expand_wildcards, to_filename
+    has_encoding, write_file, expand_wildcards, to_filename, read_line, read_body
 from mysutils.tmp import removable_files, removable_tmp, removable_tmps
 from mysutils.yaml import load_yaml, save_yaml
 
@@ -386,30 +386,37 @@ class FileTestCase(unittest.FileTestCase):
 
     def test_read_from(self) -> None:
         with removable_files(*generate_example_files()):
-            lines = read_from('test1.txt')
-            self.assertEqual(len(lines), 10)
-            lines = read_until('test1.txt')
-            self.assertEqual(len(lines), 10)
-            lines = read_from('test1.txt', '5')
-            self.assertEqual(len(lines), 5)
-            lines = read_until('test1.txt', '5')
-            self.assertEqual(len(lines), 5)
-            lines = read_from('test2.txt.gz')
-            self.assertEqual(len(lines), 10)
-            lines = read_until('test2.txt.gz')
-            self.assertEqual(len(lines), 10)
-            lines = read_from('test2.txt.gz', 'F')
-            self.assertEqual(len(lines), 5)
-            lines = read_until('test2.txt.gz', 'F')
-            self.assertEqual(len(lines), 5)
-            lines = read_from('test1.txt', '10')
-            self.assertEqual(len(lines), 0)
-            lines = read_until('test2.txt.gz', 'f')
-            self.assertEqual(len(lines), 10)
-            lines = read_from('test2.txt.gz', '^f', True)
-            self.assertEqual(len(lines), 5)
-            lines = read_until('test2.txt.gz', '^f', True)
-            self.assertEqual(len(lines), 5)
+            self.assertEqual(len(read_from('test1.txt')), 10)
+            self.assertEqual(len(read_until('test1.txt')), 10)
+            self.assertEqual(len(read_from('test1.txt', '5')), 5)
+            self.assertEqual(len(read_until('test1.txt', '5')), 5)
+            self.assertEqual(len(read_from('test2.txt.gz')), 10)
+            self.assertEqual(len(read_until('test2.txt.gz')), 10)
+            self.assertEqual(len(read_from('test2.txt.gz', 'F')), 5)
+            self.assertEqual(len(read_until('test2.txt.gz', 'F')), 5)
+            self.assertEqual(len(read_from('test1.txt', '10')), 0)
+            self.assertEqual(len(read_until('test2.txt.gz', 'f')), 10)
+            self.assertEqual(len(read_from('test2.txt.gz', '^f', True)), 5)
+            self.assertEqual(len(read_until('test2.txt.gz', '^f', True)), 5)
+            self.assertEqual(read_line('test1.txt', '5', False, False), '5')
+            self.assertEqual(read_line('test1.txt', '5', False, True), '5\n')
+            self.assertIsNone(read_line('test1.txt', '235', False, True))
+            self.assertEqual(read_line('test2.txt.gz', 'F', False, True), 'F\n')
+            self.assertIsNone(read_line('test2.txt.gz', 'f', False, True))
+            self.assertEqual(read_line('test2.txt.gz', 'f', True, False), 'F')
+            self.assertEqual(len(read_body('test1.txt', '4', '6')), 2)
+            self.assertEqual(len(read_body('test1.txt', '', '')), 10)
+            self.assertListEqual(read_body('test1.txt', '4', '6', False, False), ['4', '5'])
+            self.assertListEqual(read_body('test2.txt.gz', 'e', 'g', False, False), [])
+            self.assertListEqual(read_body('test2.txt.gz', '^E', 'G', False, False), ['E', 'F'])
+            self.assertListEqual(read_body('test2.txt.gz', 'e', 'g', True, False), ['E', 'F'])
+            self.assertListEqual(read_body('test2.txt.gz', '^E', 'G', True, False), ['E', 'F'])
+            self.assertListEqual(read_body('test2.txt.gz', '^E', 'G', False, True), ['E\n', 'F\n'])
+            self.assertListEqual(read_body('test2.txt.gz', 'H', '', False, False), ['H', 'I', 'J'])
+            self.assertListEqual(read_body('test2.txt.gz', '', 'D', False, False), ['A', 'B', 'C'])
+            self.assertListEqual(read_body('test2.txt.gz', '', 'A', False, False), [])
+            self.assertListEqual(read_body('test2.txt.gz', 'J', '', False, False), ['J'])
+            self.assertListEqual(read_body('test2.txt.gz', 'J', 'A', False, False), [])
 
     def test_encoding(self) -> None:
         with removable_tmp() as tmp:
