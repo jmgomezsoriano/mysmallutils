@@ -2,6 +2,8 @@
 
 A service to create the phonetic transcriber of a text in different languages.
 
+# Web API   
+
 To use this service you can simplify do the following: 
 
 ```bash
@@ -14,4 +16,7 @@ curl -X POST -H "Content-Type: application/json" --data "{\"text\": <text>}" \
      "http://<url>/my_project/api/delete/<lang>" 
 ```
 
+# More information
+
 For more information [visit our help page](http://&lt;url&gt;/miprojec/help): http://&lt;url&gt;/miprojec/help
+

@@ -3,7 +3,7 @@ from logging import getLogger
 from os.path import exists
 from typing import Any
 
-from mysutils.file import read_from
+from mysutils.file import read_from, read_body
 from mysutils.service import replace_endpoint
 
 try:
@@ -20,10 +20,9 @@ try:
 except ImportError:
     logger.warning('If you wants to colourful code, please install Pygments:\n\npip install Pygments>=2.10.0,~=2.11.2')
 
-README = 'README.md'
 
-
-def gen_service_help(title: str, file: str = README, regex: str = '', *endpoints: Any) -> str:
+def gen_service_help(title: str, file: str = 'README.md', regex: str = '', *endpoints: Any,
+                     until: str = '', swagger: bool = True) -> str:
     """ Generate a HTML page from a README file or other Markdown file.
 
     :param title: The page title.
@@ -33,11 +32,12 @@ def gen_service_help(title: str, file: str = README, regex: str = '', *endpoints
     :return: The Web page.
     """
     help_text = html_header(title)
-    help_text += f'<h1>{title}</h1>' \
-                 f'<p><b>Note: </b>Apart of this online help, you may use the <a href="docs">API documentation</a> or ' \
-                 f'<a href="redoc">API specification</a>.</p>\n'
+    help_text += f'<h1>{title}</h1>'
+    if swagger:
+        help_text += f'<p><b>Note: </b>Apart of this online help, you may use the ' \
+                     f'<a href="docs">API documentation</a> or <a href="redoc">API specification</a>.</p>\n'
     if exists(file):
-        readme_text = ''.join(read_from(file, regex)[1:])
+        readme_text = ''.join(read_body(file, regex, until)[1:])
         help_text += markdown(readme_text, extensions=['fenced_code', 'codehilite'])
         for e in endpoints:
             if isinstance(e, str):
@@ -46,9 +46,9 @@ def gen_service_help(title: str, file: str = README, regex: str = '', *endpoints
                 help_text = replace_endpoint(help_text, re.sub(r'(/[A-z0-9]+/?).*', r'\1', e.path))
     else:
         logger.warning(f'If you want to show an online help, please, add the file {file} to the project root.')
-
-    help_text += '<p>For more information, see the <a href="docs">API documentation</a> or ' \
-                 '<a href="redoc">API specification</a>.</p>\n'
+    if swagger:
+        help_text += '<p>For more information, see the <a href="docs">API documentation</a> or ' \
+                     '<a href="redoc">API specification</a>.</p>\n'
     return help_text + html_footer()
 
 

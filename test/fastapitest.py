@@ -26,6 +26,33 @@ class MyTestCase(unittest.TestCase):
                                      '/help')
         replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_04.html'), True))
         self.assertEqual(body_html, replaced_html)
+        body_html = gen_service_help('Generate service help',
+                                     'test/data/test_replace_url.md',
+                                     '# Web API',
+                                     '/api/replace',
+                                     '/api/delete',
+                                     '/help')
+        replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_05.html'), True))
+        self.assertEqual(body_html, replaced_html)
+        body_html = gen_service_help('Generate service help',
+                                     'test/data/test_replace_url.md',
+                                     '# Web API',
+                                     '/api/replace',
+                                     '/api/delete',
+                                     '/help',
+                                     until='# More information')
+        replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_06.html'), True))
+        self.assertEqual(body_html, replaced_html)
+        body_html = gen_service_help('Generate service help',
+                                     'test/data/test_replace_url.md',
+                                     '# Web API',
+                                     '/api/replace',
+                                     '/api/delete',
+                                     '/help',
+                                     until='# More information',
+                                     swagger=False)
+        replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_07.html'), True))
+        self.assertEqual(body_html, replaced_html)
 
     def test_replace_endpoints(self) -> None:
         text = '[27 Member States of the European Union](http://europa.eu/about-eu/countries/index_es.htm).'

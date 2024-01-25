@@ -1130,7 +1130,7 @@ Here is included functions to read a file of several forms.
 
 ```python
 from mysutils.file import read_file, first_line, last_line, head, tail, body, \
-  read_files, read_from, read_until
+  read_files, read_from, read_until, read_line, read_body
 
 # Read the file 'text.txt'
 lines = read_file('text.txt')
@@ -1150,12 +1150,19 @@ last_lines = tail('README.md', 20)
 # Read the lines between the 5 to 20
 body_lines = body('README.md', 5, 20)
 # Read lines from the line that starts with "# Text" appears to the end of file
-read_from('README.md', r'^# Text')
+lines_from = read_from('README.md', r'^# Text')
 # Read lines until the line that starts with "# Text" is found
-read_until('README.md', r'^# Text')
+lines_until = read_until('README.md', r'^# Text')
+# Read lines from whose starts with E until the line that starts with G 
+lines_from_to = read_body('test2.txt.gz', r'^E', r'^G')
+# Read only the line that matches with "Web API" 
+line = read_line('test2.txt.gz', r'^# Web API')
 
 # Read several files at once and return a unique list with the content of all the files
 lines = read_files('README.md', 'requirements.txt')
+
+
+
 ```
 
 ## Write in a file<a id="write-in-a-file" name="write-in-a-file"></a>
@@ -1738,7 +1745,7 @@ def home() -> str:
   # Specify paths manually
   return gen_service_help('Page title', 'README.md', '# Web API',
                           '/service1', '/service2', '/service3')
-    # Specify paths automatically
+  # Specify paths automatically
   return gen_service_help('Page title', 'README.md', '# Web API', *app.routes)
 ```
 
@@ -1751,7 +1758,7 @@ then it will return the real URL of the service.
 *Note:* To use this function, you need to install markdown package, and, optionally, if you want colorful embedded code, you also need to install pygments:
 
 ```bash
-pip install markdown~=3.3.6 Pygments>=2.10.0,~=2.11.2
+pip install "Markdown>=3.3.6,<4" "Pygments>=2.10.0,<3"
 ```
 
 ## JSON post<a id="json-post" name="json-post"></a>
