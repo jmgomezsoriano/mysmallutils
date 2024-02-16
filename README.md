@@ -49,6 +49,7 @@ This module is divided into the following categories:
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
   * [Tar](#tar)
+* [Hashing](#hashing)
 * [External commands](#external-commands)
 * [Configuration files](#configuration-files)
 * [Logging](#logging)
@@ -1531,6 +1532,33 @@ create_tar('test.tar.gz', 'test.json', 'test.json.gz')
 exist_tar_files('test.tar.gz', 'test.json', 'test.json.gz')
 # This will return False
 exist_tar_files('test.tar.gz', 'other.json', 'test.json.gz')
+```
+
+# Hashing<a id="hashing" name="hashing"></a>
+Generate hash codes from the content of files in different formats and codifications.
+
+```python
+from mysutils.hash import file_md5, file_sha1, file_sha224, file_sha256, file_sha384, file_sha512
+from mysutils.file import write_file
+from mysutils.tmp import removable_tmp
+
+with removable_tmp() as tmp:
+  # Write a text in a temporal file 
+  write_file(tmp, 'Hello World!')
+  # Print in hexadecimal string representation
+  print(file_md5(tmp))  # The md5 of "Hellow World!"
+  print(file_sha1(tmp))  # The md5 of "Hellow World!"
+  print(file_sha224(tmp))  # The md5 of "Hellow World!"
+  print(file_sha256(tmp))  # The md5 of "Hellow World!"
+  print(file_sha384(tmp))  # The md5 of "Hellow World!"
+  print(file_sha512(tmp))  # The md5 of "Hellow World!"
+  # Print in binary
+  print(file_md5(tmp, False))  # The md5 of "Hellow World!"
+  print(file_sha1(tmp, False))  # The md5 of "Hellow World!"
+  print(file_sha224(tmp, False))  # The md5 of "Hellow World!"
+  print(file_sha256(tmp, False))  # The md5 of "Hellow World!"
+  print(file_sha384(tmp, False))  # The md5 of "Hellow World!"
+  print(file_sha512(tmp, False))  # The md5 of "Hellow World!"
 ```
 
 # External commands<a id="external-commands" name="external-commands"></a>
