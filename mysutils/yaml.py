@@ -11,7 +11,7 @@ try:
     from yaml import add_representer, dump, load, SafeLoader
 except ModuleNotFoundError as e:
     raise ModuleNotFoundError('ModuleNotFoundError: No module named \'yaml\'. Please install it with the command:\n\n'
-                              'pip install PyYAML~=5.4.1')
+                              'pip install PyYAML>=5.4.1,<7')
 
 
 def save_yaml(data: Union[Dict[Hashable, Any], list, None],

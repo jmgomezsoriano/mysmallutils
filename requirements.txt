@@ -1,4 +1,4 @@
-requests==2.25.1
-tqdm==4.61.0
-PyYAML~=5.4.1
-setuptools~=57.4.0
+requests>=2.25.1
+tqdm>=4.61.0
+PyYAML>=5.4.1,<7
+setuptools>=57.4.0
