@@ -379,6 +379,26 @@ class MyTestCase(unittest.TestCase):
         symmetric_diff = s3.symmetric_difference(s4)
         self.assertSetEqual(symmetric_diff, {1, 2, 4, 5})
 
+    def test_convert_tuple_values(self) -> None:
+        from mysutils.collections import convert_tuple_values
+
+        row = ('5', '9.99', 'USB device')
+
+        # Convert the first element in integer, the second in float and the third in string
+        quantity, price, item = convert_tuple_values(row, int, float, str)
+        self.assertEqual(quantity, 5)
+        self.assertIsInstance(quantity, int)
+        self.assertEqual(price, 9.99)
+        self.assertIsInstance(price, float)
+        self.assertEqual(item, 'USB device')
+        self.assertIsInstance(item, str)
+        with self.assertRaises(ValueError) as e:
+            convert_tuple_values(row, int, float)
+        self.assertEqual(str(e.exception), 'The tuple size must be as long as the list of types: 3 vs 2')
+        with self.assertRaises(ValueError) as e:
+            convert_tuple_values(row, int, float, str, float)
+        self.assertEqual(str(e.exception), 'The tuple size must be as long as the list of types: 3 vs 4')
+
 
 if __name__ == '__main__':
     unittest.main()

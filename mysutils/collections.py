@@ -650,3 +650,21 @@ class OrderedSet(Set, Iterable):
     def __repr__(self):
         """ Get the string representation of the set. """
         return repr(set(self.items.keys()))
+
+
+def convert_tuple_values(t: tuple, *types: Union[Callable, type]) -> tuple:
+    """ Convert the values of a tuple using conversion functions.
+    For example:
+
+        ```python
+        row = ('5', '9.99', 'USB device')
+        # Convert the first element in integer, the second in float and the third in string
+        quantity, price, item = convert_tuple_values(row, int, float, str)
+        ```
+
+    :param t: The tuple.
+    :param t: The types or conversion functions.
+    """
+    if len(t) != len(types):
+        raise ValueError(f'The tuple size must be as long as the list of types: {len(t)} vs {len(types)}')
+    return tuple(types[i](val) for i, val in enumerate(t))

@@ -315,6 +315,17 @@ lst = [(1, 10), (2, 11), (3, 12)]
 t = merge_tuples(lst)  # The value of t is ([1, 2, 3], [10, 11, 12])
 ```
 
+Convert the values of a tuple using conversion functions. For example:
+
+```python
+from mysutils.collections import convert_tuple_values
+
+row = ('5', '9.99', 'USB device')
+
+# Convert the first element in integer, the second in float and the third in string
+quantity, price, item = convert_tuple_values(row, int, float, str)
+```
+
 ## OrderedSet<a id="orderedset" name="orderedset"></a>
 
 The OrderedSet class is an implementation of an ordered set in Python. An ordered set is a data structure that allows 
