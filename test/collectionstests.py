@@ -2,9 +2,11 @@ import time
 import unittest
 from datetime import datetime
 
-from mysutils.collections import dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, \
-    merge_tuples, merge_dicts, first_key_value, first_item, last_item, item, first_key, last_key, key, first_value, \
-    last_value, value, concat_lists, OrderedSet
+from mysutils.collections import (
+    dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, merge_tuples, merge_dicts,
+    first_key_value, first_item, last_item, item, first_key, last_key, key, first_value, last_value, value,
+    concat_lists, OrderedSet
+)
 from mysutils.collections import list_union
 
 
@@ -197,7 +199,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(s.pop(), 3)
         with self.assertRaises(KeyError):
             s.first()
-
 
     def test_ordered_set_remove(self):
         s = OrderedSet([1, 2, 3])
