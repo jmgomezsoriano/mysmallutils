@@ -711,3 +711,27 @@ class LRUDict(OrderedDict):
         value = super().__getitem__(key)
         self.move_to_end(key)
         return value
+
+    def update(self, *args, **kwargs) -> None:
+        """
+        Update the dictionary with the key/value pairs from other, overwriting existing keys.
+        Move each updated item to the end to mark it as the most recently used.
+
+        :param args: Other dictionaries or iterable of key-value pairs.
+        :param kwargs: Key-value pairs.
+        """
+        if args:
+            if len(args) > 1:
+                raise TypeError(f"update expected at most 1 argument, got {len(args)}")
+            other = args[0]
+            if isinstance(other, dict):
+                for key, value in other.items():
+                    self[key] = value
+            elif hasattr(other, "__iter__"):
+                for key, value in other:
+                    self[key] = value
+            else:
+                raise TypeError("update() argument must be a dict or an iterable of key/value pairs")
+
+        for key, value in kwargs.items():
+            self[key] = value

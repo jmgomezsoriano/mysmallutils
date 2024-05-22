@@ -457,6 +457,12 @@ class MyTestCase(unittest.TestCase):
         lru_dict['d'] = 4
         self.assertEqual(list(lru_dict.items()), [('b', 2), ('c', 3), ('a', 1), ('d', 4)])
 
+    def test_dict_update(self):
+        lru_dict = LRUDict(3)
+        lru_dict.update({'a': 1, 'b': 2, 'c': 3, 'd': 4})
+
+        self.assertEqual(list(lru_dict.items()), [('b', 2), ('c', 3), ('d', 4)])
+
 
 if __name__ == '__main__':
     unittest.main()
