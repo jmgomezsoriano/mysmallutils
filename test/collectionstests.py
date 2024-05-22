@@ -5,7 +5,7 @@ from datetime import datetime
 from mysutils.collections import (
     dh, sh, head, del_keys, filter_lst, add_keys, mod_key, mod_keys, mod_value, mod_values, merge_tuples, merge_dicts,
     first_key_value, first_item, last_item, item, first_key, last_key, key, first_value, last_value, value,
-    concat_lists, OrderedSet
+    concat_lists, OrderedSet, LRUDict
 )
 from mysutils.collections import list_union
 
@@ -399,6 +399,51 @@ class MyTestCase(unittest.TestCase):
         with self.assertRaises(ValueError) as e:
             convert_tuple_values(row, int, float, str, float)
         self.assertEqual(str(e.exception), 'The tuple size must be as long as the list of types: 3 vs 4')
+
+    def test_insertion_and_eviction(self):
+        lru_dict = LRUDict(max_size=3)
+        lru_dict['a'] = 1
+        lru_dict['b'] = 2
+        lru_dict['c'] = 3
+        self.assertEqual(list(lru_dict.items()), [('a', 1), ('b', 2), ('c', 3)])
+
+        lru_dict['d'] = 4
+        self.assertEqual(list(lru_dict.items()), [('b', 2), ('c', 3), ('d', 4)])
+
+    def test_access_order_update(self):
+        lru_dict = LRUDict(max_size=3)
+        lru_dict['a'] = 1
+        lru_dict['b'] = 2
+        lru_dict['c'] = 3
+
+        _ = lru_dict['a']
+        self.assertEqual(list(lru_dict.items()), [('b', 2), ('c', 3), ('a', 1)])
+
+        lru_dict['d'] = 4
+        self.assertEqual(list(lru_dict.items()), [('c', 3), ('a', 1), ('d', 4)])
+
+    def test_update_existing_key(self):
+        lru_dict = LRUDict(max_size=3)
+        lru_dict['a'] = 1
+        lru_dict['b'] = 2
+        lru_dict['c'] = 3
+
+        lru_dict['b'] = 20
+        self.assertEqual(list(lru_dict.items()), [('a', 1), ('c', 3), ('b', 20)])
+
+        lru_dict['d'] = 4
+        self.assertEqual(list(lru_dict.items()), [('c', 3), ('b', 20), ('d', 4)])
+
+    def test_eviction_order(self):
+        lru_dict = LRUDict(max_size=2)
+        lru_dict['a'] = 1
+        lru_dict['b'] = 2
+
+        lru_dict['a'] = 10
+        self.assertEqual(list(lru_dict.items()), [('b', 2), ('a', 10)])
+
+        lru_dict['c'] = 3
+        self.assertEqual(list(lru_dict.items()), [('a', 10), ('c', 3)])
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 import hashlib
+from json import dumps
 from os import PathLike
 from typing import Callable, Union
 

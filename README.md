@@ -16,6 +16,7 @@ This module is divided into the following categories:
   * [Filter lists](#filter-lists)
   * [Tuples](#tuples)
   * [OrderedSet](#orderedset)
+  * [LRUDict](#lrudict)
 * [Text](#text)
   * [Find URLs](#find-urls)
   * [Get URLs](#get-urls)
@@ -642,6 +643,33 @@ These operations include:
   print(s1.symmetric_difference(s2))   # Prints {1, 2, 4, 5}
   print(s1 ^ s2)  # Prints {1, 2, 4, 5}
   ```
+## LRUDict<a id="lrudict" name="lrudict"></a>
+
+A dictionary with a maximum capacity. 
+When it is reached, the first element added or acceded is removed to be able to add the new ones.
+
+Examples:
+
+```python
+from mysutils.collections import LRUDict
+
+lru_dict = LRUDict(max_size=3)
+lru_dict['a'] = 1
+lru_dict['b'] = 2
+lru_dict['c'] = 3
+print(list(lru_dict.items()))  # Prints [('a', 1), ('b', 2), ('c', 3)]
+
+# Add a new element and remove the old one
+lru_dict['d'] = 4
+print(list(lru_dict.items()))  # Prints [('b', 2), ('c', 3), ('d', 4)]
+
+# Access to item 'b' and put it at the end
+_ = lru_dict['b']
+print(list(lru_dict.items()))  # Prints [('c', 3), ('a', 1), ('b', 2)]
+
+# Create a dict without limit (equivalent to OrderedDict)
+lru_dict = LRUDict()
+```
 
 # Text<a id="text" name="text"></a>
 Simple functions related to text.
