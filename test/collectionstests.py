@@ -445,6 +445,18 @@ class MyTestCase(unittest.TestCase):
         lru_dict['c'] = 3
         self.assertEqual(list(lru_dict.items()), [('a', 10), ('c', 3)])
 
+    def test_access_order_update_without_limit(self):
+        lru_dict = LRUDict()
+        lru_dict['a'] = 1
+        lru_dict['b'] = 2
+        lru_dict['c'] = 3
+
+        _ = lru_dict['a']
+        self.assertEqual(list(lru_dict.items()), [('b', 2), ('c', 3), ('a', 1)])
+
+        lru_dict['d'] = 4
+        self.assertEqual(list(lru_dict.items()), [('b', 2), ('c', 3), ('a', 1), ('d', 4)])
+
 
 if __name__ == '__main__':
     unittest.main()
