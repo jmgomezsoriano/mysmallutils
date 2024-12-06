@@ -236,9 +236,9 @@ class FileTestCase(unittest.FileTestCase):
             self.assertEqual(line, 'First line')
 
     def test_exist_files(self) -> None:
-        self.assertTrue(exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py'))
-        self.assertFalse(exist_files('mysutils/collections.py', 'test/filetests.py', 'test/mysutils/file.py'))
-        self.assertFalse(exist_files('data/test/filetests.py', 'test/mysutils/file.py'))
+        self.assertTrue(exist_files('mysutils/collections/utils.py', 'test/filetests.py', 'mysutils/file.py'))
+        self.assertFalse(exist_files('mysutils/collections/utils.py', 'test/filetests.py', 'test/mysutils/file.py'))
+        self.assertFalse(exist_files('data/test/collections/utils.py', 'test/mysutils/file.py'))
 
     def test_count_lines(self) -> None:
         with removable_tmp(suffix='.gz') as tmp:

@@ -15,6 +15,7 @@ class MyTestCase(unittest.TestCase):
                          'This is a test!\n     Clean punctuation symbols and urls like this:  '
                          'https://example.com/your_space/user#first')
 
+
     def test_replace_url(self) -> None:
         text = 'This is a test!\n     Clean punctuation symbols and urls like this: ' \
                'https://example.com/my_space/user ' \

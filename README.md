@@ -17,6 +17,7 @@ This module is divided into the following categories:
   * [Tuples](#tuples)
   * [OrderedSet](#orderedset)
   * [LRUDict](#lrudict)
+  * [CallableQueueThread](#callablequeuethread)
 * [Text](#text)
   * [Find URLs](#find-urls)
   * [Get URLs](#get-urls)
@@ -671,7 +672,47 @@ print(list(lru_dict.items()))  # Prints [('c', 3), ('a', 1), ('b', 2)]
 lru_dict = LRUDict()
 ```
 
-# Text<a id="text" name="text"></a>
+## CallableQueueThread
+<a id="callablequeuethread" name="callablequeuethread"></a>
+
+Create a FIFO queue to call the callable when an element is added to the queue or while the queue has elements.
+When an element is used in the callable, the element is removed from the queue. 
+This is composed by a single class CallableQueueThread, which has 2 parameters: 
+_func_, with the function to call, and _args_mode_, the mode to use the queue item as parameter to the function.
+
+Examples:
+
+```python
+from mysutils.collections import CallableQueueThread, ArgsMode
+
+def func(a: int, b: str = 'a'):
+    print(a, b)
+    
+queue = CallableQueueThread(func)
+queue.start()
+queue.add(1)  # Call func(1)
+queue.add(2)  # Call func(2)
+queue.wait()  # Wait to execute the function
+queue.stop()
+
+# Using with
+with CallableQueueThread(func) as queue:
+    for i in range(100):
+        queue.add(i)  # Call func(i) from i=1 to 99, executing sequentially
+
+# Passing a list of arguments to the function
+with CallableQueueThread(func, ArgsMode.ARGS) as queue:
+    for i in range(100):
+        queue.add((i, 'b'))  # Call func(i, 'b') from i=1 to 99, executing sequentially
+
+# Passing a named dictionary of arguments to the function
+with CallableQueueThread(func, ArgsMode.KWARGS) as queue:
+    for i in range(100):
+        queue.add({'a': i, 'b': 'c'})  # Call func(a=i, b='c') from i=1 to 99, executing sequentially
+```
+
+# Text
+<a id="text" name="text"></a>
 Simple functions related to text.
 
 ## Find URLs<a id="find-urls" name="find-urls"></a>
