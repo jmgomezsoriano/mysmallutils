@@ -692,7 +692,7 @@ queue = CallableQueueThread(func)
 queue.start()
 queue.add(1)  # Call func(1)
 queue.add(2)  # Call func(2)
-queue.wait()  # Wait to execute the function
+queue.wait()  # Wait to execute the function with the queued elements
 queue.stop()
 
 # Using with
