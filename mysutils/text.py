@@ -269,7 +269,7 @@ def markup(text: str, *styles: Union[AnsiCodes, str], start: int = 0, end: int =
         By default, at the beginning of the text.
     :param end: The end position to mark.
         By default, at the end of the text.
-    :param end:
+    :param match: A result of a search with regular expressions.
     :return:
     """
     if match and (start or end is not None):
@@ -277,7 +277,9 @@ def markup(text: str, *styles: Union[AnsiCodes, str], start: int = 0, end: int =
     if match:
         start, end = match.start(), match.end()
     marks = [AnsiCodes.get(style) for style in styles]
-    return text[0:start] + ''.join(marks) + text[start:end] + AnsiCodes.NORMAL.value + ('' if end is None else text[end:])
+    init = text[0:start]
+    final = '' if end is None else text[end:]
+    return init + ''.join(marks) + text[start:end] + AnsiCodes.NORMAL.value + final
 
 
 def is_color(color_code: str) -> bool:
