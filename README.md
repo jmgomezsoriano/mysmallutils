@@ -852,11 +852,22 @@ print(markup('This is a text with effects',
 print(markup('This is a text with effects', 
              'yellow', 'italic', 
              'SLOW_BLINK'))
+# Marking only a part of the text with start and end
+print(markup('This is a text with effects', 
+             AnsiCodes.YELLOW, AnsiCodes.ITALIC,
+             start=10, end=14))
+# Marking only a part of the text with match
+import re
+match = re.search('text', 'This is a text with effects')
+print(markup('This is a text with effects', 
+             AnsiCodes.YELLOW, AnsiCodes.ITALIC,
+             match=match))
 ```
 
 You can see the list of effects in the mysutils.text.AnsiCode enumeration.
+The only restriction is that the start/end and match parameters cannot be used together in the same call.
 
-Furthermore, you can set your own font, background and underline colors based on R, G, B scale.
+Furthermore, you can set your own font, background and underline colors based on the (R, G, B) scale.
 
 ```python
 from mysutils.text import AnsiCodes, markup, color, bg_color, un_color

@@ -1,5 +1,6 @@
 import unittest
 from fractions import Fraction
+import re
 
 from mysutils.text import clean_text, remove_urls, AnsiCodes, markup, color, bg_color, un_color, replace_urls, get_urls, \
     is_url, has_url, hash_text, is_float
@@ -101,6 +102,17 @@ class MyTestCase(unittest.TestCase):
                                                bg_color(60, 60, 60), un_color(80, 80, 255)) + ' with effects.',
                          'This is a \x1b[4m\x1b[38;2;255;255;20m\x1b[48;2;60;60;60m\x1b[58;2;80;80;255mtext\x1b[0m '
                          'with effects.')
+        text = markup('This is a text with effects', AnsiCodes.YELLOW, AnsiCodes.ITALIC, start=10, end=14)
+        self.assertEqual(text, 'This is a \033[33m\033[3mtext\033[0m with effects')
+        match = re.search('text', 'This is a text with effects')
+        text = markup('This is a text with effects', AnsiCodes.YELLOW, AnsiCodes.ITALIC, match=match)
+        self.assertEqual(text, 'This is a \033[33m\033[3mtext\033[0m with effects')
+        with self.assertRaises(ValueError):
+            markup('This is a text with effects', AnsiCodes.YELLOW, AnsiCodes.ITALIC,start=10, match=match)
+        with self.assertRaises(ValueError):
+            markup('This is a text with effects', AnsiCodes.YELLOW, AnsiCodes.ITALIC, end=10, match=match)
+        with self.assertRaises(ValueError):
+            markup('This is a text with effects', AnsiCodes.YELLOW, AnsiCodes.ITALIC, start=10, end=14, match=match)
 
     def test_hash(self) -> None:
         self.assertEqual(hash_text('This is a text'),

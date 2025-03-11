@@ -260,15 +260,24 @@ class AnsiCodes(Enum):
         return isinstance(code, AnsiCodes) or bool(AnsiCodes.get(code))
 
 
-def markup(text: str, *styles: Union[AnsiCodes, str]) -> str:
+def markup(text: str, *styles: Union[AnsiCodes, str], start: int = 0, end: int = None, match: Match = None) -> str:
     """ The same text but with the ANSI codes for the effects.
 
     :param text: The text to markup.
     :param styles: The styles.
+    :param start: The start position to mark.
+        By default, at the beginning of the text.
+    :param end: The end position to mark.
+        By default, at the end of the text.
+    :param end:
     :return:
     """
+    if match and (start or end is not None):
+        raise ValueError('Only start and end or match can be set, not both.')
+    if match:
+        start, end = match.start(), match.end()
     marks = [AnsiCodes.get(style) for style in styles]
-    return ''.join(marks) + text + AnsiCodes.NORMAL.value
+    return text[0:start] + ''.join(marks) + text[start:end] + AnsiCodes.NORMAL.value + ('' if end is None else text[end:])
 
 
 def is_color(color_code: str) -> bool:
