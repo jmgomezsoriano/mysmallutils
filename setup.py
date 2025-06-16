@@ -27,7 +27,7 @@ class CleanCommand(setuptools.Command):
 setuptools.setup(
     cmdclass={'clean': CleanCommand},
     name='mysmallutils',
-    version='2.0.22',
+    version='2.0.23',
     url='https://github.com/jmgomezsoriano/mysmallutils',
     license='LGPL2',
     author='José Manuel Gómez Soriano',
