@@ -1,11 +1,10 @@
 import functools
-from json import dumps, loads
 from logging import getLogger
 from time import sleep
-from typing import Union, Callable
+from typing import Callable
 from collections.abc import Container
 
-from deprecation import deprecated
+from requests import Session
 
 try:
     import requests
@@ -17,20 +16,6 @@ except ModuleNotFoundError as e:
 logger = getLogger(__name__)
 
 
-@deprecated(deprecated_in='2.0.23', removed_in='2.1.0', current_version='2.0.23')
-def json_post(host: str, msg: Union[list, dict, str]) -> Union[list, dict, str]:
-    """ Makes a http json post.
-    :param host: The host.
-    :param msg: Object to send to the server.
-    """
-    res = requests.post(host, dumps(msg), headers={'content-type': 'application/json'})
-    if not res.ok:
-        raise requests.RequestException(
-            f'Error {res.status_code} connecting with "{host}":\n{res.content.decode("utf-8")}'
-        )
-    return loads(res.content)
-
-
 @functools.wraps(requests.get)
 def retry_get(
         *args,
@@ -38,6 +23,7 @@ def retry_get(
         wait_time: float = 30,
         statuses: Container = tuple(),
         exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        session: Session = None,
         **kwargs
 ) -> requests.Response:
     """ Wrapper of get request to add tries. The arguments are the same but with the following extra parameters:
@@ -46,9 +32,10 @@ def retry_get(
     :param statuses: A list of response statuses that force the repetition.
         By default, any status is valid, and it automatically returns the requests.
     :param exceptions: Exceptions that must happen to try again.
+    :param session: The session of the request.
     """
     return _retry_request(
-        requests.get,
+        session.get if session else requests.get,
         *args,
         num_tries=num_tries,
         wait_time=wait_time,
@@ -65,6 +52,7 @@ def retry_delete(
         wait_time: float = 30,
         statuses: Container = tuple(),
         exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        session: Session = None,
         **kwargs
 ) -> requests.Response:
     """ Wrapper of delete request to add tries. The arguments are the same but with the following extra parameters:
@@ -73,9 +61,10 @@ def retry_delete(
     :param statuses: A list of response statuses that force the repetition.
         By default, any status is valid, and it automatically returns the requests.
     :param exceptions: Exceptions that must happen to try again.
+    :param session: The session of the request.
     """
     return _retry_request(
-        requests.delete,
+        session.delete if session else requests.delete,
         *args,
         num_tries=num_tries,
         wait_time=wait_time,
@@ -92,6 +81,7 @@ def retry_post(
         wait_time: float = 30,
         statuses: Container = tuple(),
         exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        session: Session = None,
         **kwargs
 ) -> requests.Response:
     """ Wrapper of post request to add tries. The arguments are the same but with the following extra parameters:
@@ -100,9 +90,10 @@ def retry_post(
     :param statuses: A list of response statuses that force the repetition.
         By default, any status is valid, and it automatically returns the requests.
     :param exceptions: Exceptions that must happen to try again.
+    :param session: The session of the request.
     """
     return _retry_request(
-        requests.post,
+        session.post if session else requests.post,
         *args,
         num_tries=num_tries,
         wait_time=wait_time,
@@ -119,6 +110,7 @@ def retry_patch(
         wait_time: float = 30,
         statuses: Container = tuple(),
         exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        session: Session = None,
         **kwargs
 ) -> requests.Response:
     """ Wrapper of patch request to add tries. The arguments are the same but with the following extra parameters:
@@ -127,9 +119,10 @@ def retry_patch(
     :param statuses: A list of response statuses that force the repetition.
         By default, any status is valid, and it automatically returns the requests.
     :param exceptions: Exceptions that must happen to try again.
+    :param session: The session of the request.
     """
     return _retry_request(
-        requests.patch,
+        session.patch if session else requests.patch,
         *args,
         num_tries=num_tries,
         wait_time=wait_time,
@@ -146,6 +139,7 @@ def retry_put(
         wait_time: float = 30,
         statuses: Container = tuple(),
         exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        session: Session = None,
         **kwargs
 ) -> requests.Response:
     """ Wrapper of put request to add tries. The arguments are the same but with the following extra parameters:
@@ -154,9 +148,10 @@ def retry_put(
     :param statuses: A list of response statuses that force the repetition.
         By default, any status is valid, and it automatically returns the requests.
     :param exceptions: Exceptions that must happen to try again.
+    :param session: The session of the request.
     """
     return _retry_request(
-        requests.put,
+        session.put if session else requests.put,
         *args,
         num_tries=num_tries,
         wait_time=wait_time,
@@ -173,6 +168,7 @@ def retry_head(
         wait_time: float = 30,
         statuses: Container = tuple(),
         exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        session: Session = None,
         **kwargs
 ) -> requests.Response:
     """ Wrapper of head request to add tries. The arguments are the same but with the following extra parameters:
@@ -181,9 +177,10 @@ def retry_head(
     :param statuses: A list of response statuses that force the repetition.
         By default, any status is valid, and it automatically returns the requests.
     :param exceptions: Exceptions that must happen to try again.
+    :param session: The session of the request.
     """
     return _retry_request(
-        requests.head,
+        session.head if session else requests.head,
         *args,
         num_tries=num_tries,
         wait_time=wait_time,
@@ -200,6 +197,7 @@ def retry_options(
         wait_time: float = 30,
         statuses: Container = tuple(),
         exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        session: Session = None,
         **kwargs
 ) -> requests.Response:
     """ Wrapper of options request to add tries. The arguments are the same but with the following extra parameters:
@@ -208,9 +206,10 @@ def retry_options(
     :param statuses: A list of response statuses that force the repetition.
         By default, any status is valid, and it automatically returns the requests.
     :param exceptions: Exceptions that must happen to try again.
+    :param session: The session of the request.
     """
     return _retry_request(
-        requests.options,
+        session.options if session else requests.options,
         *args,
         num_tries=num_tries,
         wait_time=wait_time,
@@ -245,7 +244,8 @@ def _retry_request(
     :param statuses: A list of response statuses that force the repetition.
         By default, any status is valid, and it automatically returns the requests.
     :param exceptions: Exceptions that must happen to try again.
-        """
+    :param session: The session of the request.
+    """
     resp = None
     details = ''
     num_try = 0

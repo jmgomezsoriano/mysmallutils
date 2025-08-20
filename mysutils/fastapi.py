@@ -3,7 +3,7 @@ from logging import getLogger
 from os.path import exists
 from typing import Any
 
-from mysutils.file import read_from, read_body
+from mysutils.file import read_body
 from mysutils.service import replace_endpoint
 
 try:
@@ -39,7 +39,7 @@ def gen_service_help(title: str, file: str = 'README.md', regex: str = '', *endp
     if exists(file):
         readme_text = ''.join(read_body(file, regex, until)[1:])
         help_text += markdown(readme_text, extensions=['fenced_code', 'codehilite'])
-        for e in endpoints:
+        for e in sorted(endpoints, key=lambda x: -len(x.path)):
             if isinstance(e, str):
                 help_text = replace_endpoint(help_text, e)
             elif str(e.__class__) == "<class 'fastapi.routing.APIRoute'>" and e.path != '/':

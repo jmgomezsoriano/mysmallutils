@@ -1,5 +1,5 @@
 from sys import stderr
-from typing import Union, List, Dict, Iterable
+from typing import Union, Dict, Iterable
 
 
 def ask(
