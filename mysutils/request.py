@@ -1,7 +1,7 @@
 import functools
 from logging import getLogger
 from time import sleep
-from typing import Callable
+from typing import Callable, Tuple, Union
 from collections.abc import Container
 
 from requests import Session
@@ -22,7 +22,9 @@ def retry_get(
         num_tries: int = 5,
         wait_time: float = 30,
         statuses: Container = tuple(),
-        exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        exceptions: Union[Exception, Container[Exception]] = (
+                requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout
+        ),
         session: Session = None,
         **kwargs
 ) -> requests.Response:
@@ -51,7 +53,9 @@ def retry_delete(
         num_tries: int = 5,
         wait_time: float = 30,
         statuses: Container = tuple(),
-        exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        exceptions: Union[Exception, Container[Exception]] = (
+                requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout
+        ),
         session: Session = None,
         **kwargs
 ) -> requests.Response:
@@ -80,7 +84,9 @@ def retry_post(
         num_tries: int = 5,
         wait_time: float = 30,
         statuses: Container = tuple(),
-        exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        exceptions: Union[Exception, Container[Exception]] = (
+                requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout
+        ),
         session: Session = None,
         **kwargs
 ) -> requests.Response:
@@ -109,7 +115,9 @@ def retry_patch(
         num_tries: int = 5,
         wait_time: float = 30,
         statuses: Container = tuple(),
-        exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        exceptions: Union[Exception, Container[Exception]] = (
+                requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout
+        ),
         session: Session = None,
         **kwargs
 ) -> requests.Response:
@@ -138,7 +146,9 @@ def retry_put(
         num_tries: int = 5,
         wait_time: float = 30,
         statuses: Container = tuple(),
-        exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        exceptions: Union[Exception, Container[Exception]] = (
+                requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout
+        ),
         session: Session = None,
         **kwargs
 ) -> requests.Response:
@@ -167,7 +177,9 @@ def retry_head(
         num_tries: int = 5,
         wait_time: float = 30,
         statuses: Container = tuple(),
-        exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        exceptions: Union[Exception, Container[Exception]] = (
+                requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout
+        ),
         session: Session = None,
         **kwargs
 ) -> requests.Response:
@@ -196,7 +208,9 @@ def retry_options(
         num_tries: int = 5,
         wait_time: float = 30,
         statuses: Container = tuple(),
-        exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        exceptions: Union[Exception, Container[Exception]] = (
+                requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout
+        ),
         session: Session = None,
         **kwargs
 ) -> requests.Response:
@@ -234,7 +248,9 @@ def _retry_request(
         num_tries: int = 5,
         wait_time: float = 30,
         statuses: Container = tuple(),
-        exceptions: Exception = (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout),
+        exceptions: Union[Exception, Container[Exception]] = (
+                requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout
+        ),
         **kwargs
 ) -> requests.Response:
     """ Try to make the request several times whether it is any error.

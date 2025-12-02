@@ -60,7 +60,7 @@ This module is divided into the following categories:
   * [Download a file](#download-a-file)
   * [Endpoint](#endpoint)
   * [Generate service help](#generate-service-help)
-  * [JSON post](#json-post)
+  * [Retry get, post, delete, patch, put, head, options](#retry-get-post-delete-patch-put-head-options)
 * [File unit tests](#unit-tests)
 * [Miscellany](#miscellany)
 
@@ -1880,14 +1880,23 @@ then it will return the real URL of the service.
 pip install "Markdown>=3.3.6,<4" "Pygments>=2.10.0,<3"
 ```
 
-## JSON post<a id="json-post" name="json-post"></a>
-A very easy way to send a dictionary by means to http post, ot a json service.
+## Retry get, post, delete, patch, put, head, options<a id="retry-get-post-delete-patch-put-head-options" name="retry-get-post-delete-patch-put-head-options"></a>
+
+Methods that wrap the request methods get, post, delete, patch, put, head and options,
+but with parameters to retry the attempt and wait if an error occurs.
 
 ```python
-from mysutils.request import json_post
+from mysutils.request import retry_get, retry_put, retry_head, retry_delete, retry_post, retry_patch, retry_options
 
-# Send the dictionary '{"msg": "Hello world!"}' to the service with that url 
-json_post('https://postman-echo.com/post', {"msg": "Hello world!"})
+ENDPOINT = 'http://www.example.com'
+
+response = retry_get(ENDPOINT, num_retries=3, wait_time=30)  # Get request with 3 attempts and waiting 30 seconds
+response = retry_post(ENDPOINT, num_retries=3, wait_time=30)  # Post request with 3 attempts and waiting 30 seconds
+response = retry_put(ENDPOINT, num_retries=3, wait_time=30)  # Put request with 3 attempts and waiting 30 seconds
+response = retry_delete(ENDPOINT, num_retries=3, wait_time=30)  # Delete request with 3 attempts and waiting 30 seconds
+response = retry_patch(ENDPOINT, num_retries=3, wait_time=30)  # Patch request with 3 attempts and waiting 30 seconds
+response = retry_head(ENDPOINT, num_retries=3, wait_time=30)  # Head request with 3 attempts and waiting 30 seconds
+response = retry_options(ENDPOINT, num_retries=3, wait_time=30)  # Head options with 3 attempts and waiting 30 seconds
 ```
 
 # File unit tests<a id="unit-tests" name="unit-tests"></a>

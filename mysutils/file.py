@@ -237,6 +237,27 @@ def gzip_compress(input_file: Union[PathLike, str, bytes], output_file: Union[Pa
                 writer.write(chunk)
 
 
+def compress_text(text: str, encoding: str = 'utf-8') -> bytes:
+    """ Compresses a string by first encoding it into bytes and then gzipping it.
+    :param text: The string to compress.
+    :param encoding: The encoding to use to convert the string to bytes. Defaults to 'utf-8'.
+
+    :return bytes: The compressed data.
+    """
+    return gzip.compress(text.encode(encoding))
+
+
+def decompress_text(data: bytes, encoding: str = 'utf-8') -> str:
+    """ Decompresses bytes and then decodes them back into a string.
+
+    :params data (bytes): The compressed binary data.
+    :params encoding (str, optional): The encoding to use to convert the bytes back to a string. Defaults to 'utf-8'.
+
+    :return: The decompressed and decoded string.
+    """
+    return gzip.decompress(data).decode(encoding)
+
+
 def remove_files(*files: Union[PathLike, str, bytes], ignore_errors: bool = False, recursive: bool = False) -> None:
     """ Remove several files and empty directories at once.
 
@@ -477,9 +498,9 @@ def read_body(filename: Union[PathLike, str, bytes], from_re: str = '', until_re
     """ Read from the line that matches with a from_re regular expression until the line that matches with until_re.
 
     :param filename: The path to the file.
-    :param from_re: The regular expression.
-    :param from_re: The regular expression.
-    :param ignore_case: If ignore case or not.
+    :param from_re: The regular expression of the initial condition.
+    :param until_re: The regular expression of the final condition.
+    :param ignore_case: If ignore lettercase or not.
     :param line_break: If True, the newline character is conserved, otherwise is removed.
     :return: A list of strings with each file line.
     """
