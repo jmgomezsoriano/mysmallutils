@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mysmallutils"
+version = "2.1.5"
+authors = [
+  { name="José Manuel Gómez Soriano", email="jmgomez.soriano@gmail.com" },
+]
+description = "Small Python utils to do life easier."
+readme = "README.md"
+license = { text = "LGPL2" }
+requires-python = ">=3.7, <4"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/jmgomezsoriano/mysmallutils"
+
+[tool.setuptools]
+# Esto equivale a find_packages(exclude=["test"])
+packages = { find = { exclude = ["test*"] } }
+
+[tool.setuptools.package-dir]
+"mysutils" = "mysutils"

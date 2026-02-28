@@ -9,49 +9,49 @@ from mysutils.file import read_file
 
 class MyTestCase(unittest.TestCase):
     def test_replace_urls(self) -> None:
-        body_html = ''.join(read_file(join('test', 'data', 'test_replace_url.html'), True))
-        replaced_html_1 = ''.join(read_file(join('test', 'data', 'test_replaced_url_01.html'), True))
+        body_html = ''.join(read_file(join('tests', 'data', 'test_replace_url.html'), True))
+        replaced_html_1 = ''.join(read_file(join('tests', 'data', 'test_replaced_url_01.html'), True))
         self.assertEqual(replace_endpoint(body_html, '/api/replace'), replaced_html_1)
-        replaced_html_2 = ''.join(read_file(join('test', 'data', 'test_replaced_url_02.html'), True))
+        replaced_html_2 = ''.join(read_file(join('tests', 'data', 'test_replaced_url_02.html'), True))
         self.assertEqual(replace_endpoint(body_html, '/api/delete'), replaced_html_2)
-        replaced_html_3 = ''.join(read_file(join('test', 'data', 'test_replaced_url_03.html'), True))
+        replaced_html_3 = ''.join(read_file(join('tests', 'data', 'test_replaced_url_03.html'), True))
         self.assertEqual(replace_endpoint(body_html, '/help'), replaced_html_3)
 
     def test_gen_service_help(self) -> None:
         body_html = gen_service_help('Generate service help',
-                                     'test/data/test_replace_url.md',
+                                     'tests/data/test_replace_url.md',
                                      '',
                                      '/api/replace',
                                      '/api/delete',
                                      '/help')
-        replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_04.html'), True))
+        replaced_html = ''.join(read_file(join('tests', 'data', 'test_replaced_url_04.html'), True))
         self.assertEqual(body_html, replaced_html)
         body_html = gen_service_help('Generate service help',
-                                     'test/data/test_replace_url.md',
+                                     'tests/data/test_replace_url.md',
                                      '# Web API',
                                      '/api/replace',
                                      '/api/delete',
                                      '/help')
-        replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_05.html'), True))
+        replaced_html = ''.join(read_file(join('tests', 'data', 'test_replaced_url_05.html'), True))
         self.assertEqual(body_html, replaced_html)
         body_html = gen_service_help('Generate service help',
-                                     'test/data/test_replace_url.md',
+                                     'tests/data/test_replace_url.md',
                                      '# Web API',
                                      '/api/replace',
                                      '/api/delete',
                                      '/help',
                                      until='# More information')
-        replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_06.html'), True))
+        replaced_html = ''.join(read_file(join('tests', 'data', 'test_replaced_url_06.html'), True))
         self.assertEqual(body_html, replaced_html)
         body_html = gen_service_help('Generate service help',
-                                     'test/data/test_replace_url.md',
+                                     'tests/data/test_replace_url.md',
                                      '# Web API',
                                      '/api/replace',
                                      '/api/delete',
                                      '/help',
                                      until='# More information',
                                      swagger=False)
-        replaced_html = ''.join(read_file(join('test', 'data', 'test_replaced_url_07.html'), True))
+        replaced_html = ''.join(read_file(join('tests', 'data', 'test_replaced_url_07.html'), True))
         self.assertEqual(body_html, replaced_html)
 
     def test_replace_endpoints(self) -> None:
@@ -68,7 +68,7 @@ curl -X GET -H "Accept: application/json" http://localhost:8000/api/types/intera
 curl -X GET -H "Accept: application/json" http://localhost:8000/api/types/interaction/?mode=dict
 """
         replaced_text = replace_endpoint(text, '/api/')
-        self.assertEqual(replaced_text, """
+        self.assertEqual(replaced_text, r"""
 curl -X GET -H "Accept: application/json" <script>document.write(window.location.href.replace(/\/[^\/]*$/, '/api/'));</script>types/interaction/
 curl -X GET -H "Accept: application/json" <script>document.write(window.location.href.replace(/\/[^\/]*$/, '/api/'));</script>types/interaction/?mode=dict
 """)

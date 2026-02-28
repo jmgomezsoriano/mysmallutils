@@ -6,7 +6,7 @@ import uvicorn
 from deprecation import deprecated
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from mysutils.request import json_post, retry_get, ServiceError
+from mysutils.request import retry_get, ServiceError
 
 HOST = "127.0.0.1"
 PORT = 8000
@@ -42,13 +42,6 @@ class RequestsTestCase(unittest.TestCase):
         if self.proc.is_alive():
             self.proc.terminate()
             self.proc.join()
-
-    @deprecated(deprecated_in='2.0.23', removed_in='2.1.0', current_version='2.0.23')
-    def test_post(self) -> None:
-        d = json_post('https://postman-echo.com/post', {"msg": "Hello world!"})
-        self.assertDictEqual(d['data'], {'msg': 'Hello world!'})
-        self.assertDictEqual(d['json'], {'msg': 'Hello world!'})
-        self.assertEqual(d['url'], 'https://postman-echo.com/post')
 
     def test_retry_get(self):
         response = retry_get(f"{BASE_URL}/ok", num_tries=2)

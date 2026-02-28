@@ -44,6 +44,7 @@ This module is divided into the following categories:
   * [Cat](#cat)
   * [Make directories](#make-directories)
   * [List files](#list-files)
+  * [Count files](#count-files)
   * [Generate output file paths](#generate-output-file-paths)
   * [Check file encoding](#check-file-encoding)
   * [Expand wildcards](#expand-wildcards)
@@ -62,7 +63,12 @@ This module is divided into the following categories:
   * [Generate service help](#generate-service-help)
   * [Retry get, post, delete, patch, put, head, options](#retry-get-post-delete-patch-put-head-options)
 * [File unit tests](#unit-tests)
+* [Time](#time)
+  * [Format shorthand](#format-shorthand)
+  * [Format timespan](#format-timespan)
+  * [Countdown timer](#countdown-timer)
 * [Miscellany](#miscellany)
+  * [Retry function](#retry-function)
 
 # Install
 
@@ -1090,16 +1096,16 @@ Move several files at once.
 from mysutils.file import move_files
 
 # Move several files to test/
-move_files('test/', '1.txt', '2.txt', '3.txt')
+move_files('tests/', '1.txt', '2.txt', '3.txt')
 
 # Create the folder test/ if it does not exist
-move_files('test/', '1.txt', '2.txt', '3.txt', force=True)
+move_files('tests/', '1.txt', '2.txt', '3.txt', force=True)
 
 # Replace the files if already exists in test/
-move_files('test/', '1.txt', '2.txt', '3.txt', replace=True)
+move_files('tests/', '1.txt', '2.txt', '3.txt', replace=True)
 
 # Moreover, you can use file wildcards
-move_files('test/', '*.txt', '*.py')
+move_files('tests/', '*.txt', '*.py')
 ```
 
 ## Remove files<a id="remove-files" name="remove-files"></a>
@@ -1158,16 +1164,16 @@ Its usage is very simple, for example:
 from mysutils.file import exist_files, not_exist_files, are_dir, not_are_dir
 
 # Returns True if all of the files exist, otherwise False.
-exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+exist_files('mysutils/collections.py', 'tests/filetests.py', 'mysutils/file.py')
 
 # Return True if any of the files exist, if it exists at least one, then return False
-not_exist_files('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+not_exist_files('mysutils/collections.py', 'tests/filetests.py', 'mysutils/file.py')
 
 # Returns True if all of the files are directories, otherwise False.
-are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+are_dir('mysutils/collections.py', 'tests/filetests.py', 'mysutils/file.py')
 
 # Return True if any of the files are directories, otherwise False.
-not_are_dir('mysutils/collections.py', 'test/filetests.py', 'mysutils/file.py')
+not_are_dir('mysutils/collections.py', 'tests/filetests.py', 'mysutils/file.py')
 ```
 
 ## Count lines<a id="count-lines" name="count-lines"></a> 
@@ -1302,14 +1308,13 @@ from mysutils.file import first_file, last_file, list_dir
 list_dir()
 
 # Return a sorted list of files of the 'test' directory.
-list_dir('test')
+list_dir('tests')
 
 # # Return the list of files thant end with '.txt' of the 'test' directory.
 
 
-
 # Return the same list but with the inverted order
-list_dir('test', '.*\.txt$', reverse=True)
+list_dir('tests', '.*\.txt$', reverse=True)
 
 # Return the path of the first file in the current folder
 first_file()
@@ -1318,16 +1323,33 @@ first_file()
 last_file()
 
 # Return the path of the first file in the 'test' folder
-first_file('test/')
+first_file('tests/')
 
 # Return the path of the last file in the 'test' folder
-last_file('test/')
+last_file('tests/')
 
 # Return the path of the first file in the 'test' folder that ends with .txt
-first_file('test/', r'.*\.txt$')
+first_file('tests/', r'.*\.txt$')
 
 # Return the path of the last file in the 'test' folder that ends with .txt
-last_file('test/', r'.*\.txt$')
+last_file('tests/', r'.*\.txt$')
+```
+
+## Count files<a id="count-files" name="count-files"></a>
+
+Count files.
+
+```python
+from mysutils.file import count_files
+
+# Count only files (not directories) from a given directory 
+count_files('my_folder/')
+# Count files and directories from a given directory
+count_files('my_folder/', include_dir=True)
+# Count only files (not directories) from a given directory recursively
+count_files('my_folder/', recursive=True)
+# Count files and directories from a given directory recursively 
+count_files('my_folder/', include_dir=True, recursive=True)
 ```
 
 ## Generate output file paths<a id="generate-output-file-paths" name="generate-output-file-paths"></a>
@@ -1906,12 +1928,13 @@ A small class that inherits from TestCase and have methods to assert the typical
 from mysutils import unittest
 from mysutils.file import touch, move_files
 
+
 class MyTestCase(unittest.FileTestCase):
   # Check if some files exists and they have been moved successfully
   def test_move_files(self) -> None:
     touch('1.txt', '2.txt', '3.txt')
-    move_files('test/', '1.txt', '2.txt', '3.txt')
-    self.assertExists('test/1.txt', 'test/2.txt', 'test/3.txt')
+    move_files('tests/', '1.txt', '2.txt', '3.txt')
+    self.assertExists('tests/1.txt', 'tests/2.txt', 'tests/3.txt')
     self.assertNotExists('1.txt', '2.txt', '3.txt')
 
   def test_encoding(self) -> None:
@@ -1923,13 +1946,104 @@ class MyTestCase(unittest.FileTestCase):
     self.assertEncoding('1.txt', '2.txt', '3.txt', encoding='iso8859-1')
 ```
 
+# Time<a id="time" name="time"></a>
+
+Functions related with time.
+
+## Format shorthand<a id="format-shorthand" name="format-shorthand"></a>
+
+Convert a duration expressed in days, hours, minutes and seconds in a shorthand format. 
+
+```python
+from mysutils.time import format_shorthand
+
+format_shorthand(1, 2, 30, 45)  # Returns "1d 2h 30m 45s"
+format_shorthand(5, 0, 0, 10)  # Returns "5d 10s"
+```
+
+## Format timespan<a id="format-timespan" name="format-timespan"></a>
+
+Convert a duration in seconds in a human-readable format. 
+
+```python
+from mysutils.time import format_timespan
+
+format_timespan(30)  # Returns "00:30"
+format_timespan(65)  # Returns "01:05"
+format_timespan(3725)  # Returns "01:02:05"
+format_timespan(303725)  # Returns "3d 12:22:05"
+format_timespan(303725, shorthand=True)  # Returns "3d 12h 22m 5s"
+```
+
+## Countdown timer<a id="countdown-timer" name="countdown-timer"></a>
+
+Create a text countdown timer using tqdm.
+
+```python
+from mysutils.time import countdown_timer
+
+# A countdown timer of 2.5 seconds
+countdown_timer(2.5)
+# A countdown timer of 1 hour
+countdown_timer(3600)
+# A countdown timer of 1 hour changing the default message
+countdown_timer(3600, description='Waiting an hour')
+# A countdown timer of 1 hour changing the default message and living the progress bar
+countdown_timer(3600, description='Waiting an hour', leave=True)
+```
+
 # Miscellany<a id="miscellany" name="miscellany"></a>
 
-Other no classifiable functions, like conditional() function that executes a function if a condition is True.
+Other no classifiable functions.
+
+## Retry function<a id="retry-function" name="retry-function"></a>
+
+Retry a function a number of attempts if an exception occurs
+
+```python
+from mysutils.misc import retry
+from random import randint
+
+# Retry the function if any exception occurs
+@retry(retries=3, delay=0)
+def func():
+  num = randint(0, 2)
+  # This can cause ZeroDivisionError and it will be caught
+  print(1 / num)
+  # Thi can cause NoneType error and it will be caught
+  num = None if num == 2 else 1
+  print(1 / num)
+
+# Only retry the function if the exception is ZeroDivisionError
+@retry(retries=3, delay=0, exceptions=ZeroDivisionError)
+def func():
+  num = randint(0, 2)
+  # This can cause ZeroDivisionError and it will be caught
+  print(1 / num)
+  # Thi can cause NoneType error, and it won't be caught
+  num = None if num == 2 else 1
+  print(1 / num)
+
+# Only retry the function if the exception is ZeroDivisionError
+# This time, each attempt will print a message with the number of attempts.
+@retry(retries=3, delay=0, exceptions=ZeroDivisionError, msg='Attempt number {attempts}.')
+def func():
+  num = randint(0, 2)
+  # This can cause ZeroDivisionError and it will be caught
+  print(1 / num)
+  # Thi can cause NoneType error, and it won't be caught
+  num = None if num == 2 else 1
+  print(1 / num)
+```
+
+
+## Conditional function<a id="conditional-function" name="conditional-function"></a>
+
+Function that executes a function if a condition is True.
 For example, if you need to do the following:
 
 ```python
-from mysutils.misc import conditional
+
 
 # The function to execute
 def my_func(a: int, b: str, **kwargs) -> str:
@@ -1938,11 +2052,19 @@ def my_func(a: int, b: str, **kwargs) -> str:
 # Instead of doing this:
 if a > b:
   my_func(1, 'apple', c='Lucas')
+```
+You can simply do:
 
-# You can do
+```python
+from mysutils.misc import conditional
+
+# The function to execute
+def my_func(a: int, b: str, **kwargs) -> str:
+    return f'Intent {a} of {b} for {kwargs["c"]}'
+
 conditional(my_func, a > b, 1, 'apple', c='Lucas')
 ```
 
 # How to collaborate
 
-I you want to collaborate with this project, please, <a href="mailto:jmgomez.soriano@gmail.com">contact with me</a>.
+If you want to collaborate with this project, please, <a href="mailto:jmgomez.soriano@gmail.com">contact with me</a>.

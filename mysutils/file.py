@@ -8,6 +8,7 @@ from io import DEFAULT_BUFFER_SIZE
 from json import dump, load
 from os import makedirs, remove, rmdir, scandir, PathLike
 from os.path import exists, dirname, join, basename, isdir
+from pathlib import Path
 from shutil import copyfile, rmtree
 from sys import stdout
 from shutil import move
@@ -646,3 +647,31 @@ def to_filename(text: str, ext: str = '') -> str:
     """
     valid_chars = f'-_.() {ascii_letters}{digits}'
     return ''.join(c if c in valid_chars else '_' for c in text) + ext
+
+
+def count_files(
+        folders: Union[List[Union[PathLike, str]], Union[PathLike, str]],
+        include_dir: bool = True,
+        recursive: bool = False
+) -> int:
+    """
+    Counts files and optionally directories within one or more paths.
+
+    :param folders: A single path or a list of paths to scan.
+    :param include_dir: If True, directories will be included in the final count.
+    :param recursive: If True, the function will crawl through subdirectories.
+
+    :return: The total count of items found based on the provided criteria.
+    """
+    folders = [Path(f) for f in (folders if isinstance(folders, list) else [folders])]
+
+    count = 0
+    for folder in folders:
+        for file in folder.iterdir():
+            if file.is_dir():
+                count += 1 if include_dir else 0
+                count += count_files(file, include_dir, recursive) if recursive else 0
+            else:
+                count += 1
+
+    return count

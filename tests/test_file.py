@@ -1,12 +1,15 @@
 import shutil
+import tempfile
 from os import remove, rmdir, mkdir
 from os.path import exists, join, basename
+from pathlib import Path
+from unittest import TestCase
 
 from mysutils import unittest
 from mysutils.file import save_json, load_json, save_pickle, load_pickle, copy_files, remove_files, gzip_compress, \
     gzip_decompress, open_file, first_line, exist_files, count_lines, touch, read_file, cat, mkdirs, move_files, \
     first_file, last_file, output_file_path, list_dir, head, body, tail, last_line, read_files, read_from, read_until, \
-    has_encoding, write_file, expand_wildcards, to_filename, read_line, read_body
+    has_encoding, write_file, expand_wildcards, to_filename, read_line, read_body, count_files
 from mysutils.tmp import removable_files, removable_tmp, removable_tmps
 from mysutils.yaml import load_yaml, save_yaml
 
@@ -236,9 +239,9 @@ class FileTestCase(unittest.FileTestCase):
             self.assertEqual(line, 'First line')
 
     def test_exist_files(self) -> None:
-        self.assertTrue(exist_files('mysutils/collections/utils.py', 'test/filetests.py', 'mysutils/file.py'))
-        self.assertFalse(exist_files('mysutils/collections/utils.py', 'test/filetests.py', 'test/mysutils/file.py'))
-        self.assertFalse(exist_files('data/test/collections/utils.py', 'test/mysutils/file.py'))
+        self.assertTrue(exist_files('mysutils/collections/utils.py', 'tests/test_file.py', 'mysutils/file.py'))
+        self.assertFalse(exist_files('mysutils/collections/utils.py', 'tests/filetests.py', 'tests/mysutils/file.py'))
+        self.assertFalse(exist_files('data/test/collections/utils.py', 'tests/mysutils/file.py'))
 
     def test_count_lines(self) -> None:
         with removable_tmp(suffix='.gz') as tmp:
@@ -467,6 +470,46 @@ class FileTestCase(unittest.FileTestCase):
             self.assertDictEqual(default, load_yaml(yaml_tmp + '.yaml', default=default))
             self.assertDictEqual(default, load_pickle(pickle_tmp + '.pkl', default=default))
 
+
+class TestCountFiles(TestCase):
+    def setUp(self):
+        # Creamos una estructura temporal para las pruebas
+        self.test_dir = tempfile.TemporaryDirectory()
+        self.base_path = Path(self.test_dir.name)
+
+        # Estructura:
+        # /file1.txt
+        # /file2.txt
+        # /subdir/
+        # /subdir/file3.txt
+        (self.base_path / "file1.txt").touch()
+        (self.base_path / "file2.txt").touch()
+        subdir = self.base_path / "subdir"
+        subdir.mkdir()
+        (subdir / "file3.txt").touch()
+
+    def tearDown(self):
+        self.test_dir.cleanup()
+
+    def test_count_simple(self):
+        # 2 archivos + 1 carpeta = 3
+        result = count_files(self.base_path, include_dir=True, recursive=False)
+        self.assertEqual(result, 3)
+
+    def test_count_only_files(self):
+        # Solo los 2 archivos de la raíz
+        result = count_files(self.base_path, include_dir=False, recursive=False)
+        self.assertEqual(result, 2)
+
+    def test_count_recursive(self):
+        # 3 archivos + 1 carpeta = 4
+        result = count_files(self.base_path, include_dir=True, recursive=True)
+        self.assertEqual(result, 4)
+
+    def test_count_recursive_only_files(self):
+        # 3 archivos en total
+        result = count_files(self.base_path, include_dir=False, recursive=True)
+        self.assertEqual(result, 3)
 
 if __name__ == '__main__':
     unittest.main()
