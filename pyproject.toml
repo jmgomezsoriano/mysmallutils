@@ -21,9 +21,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/jmgomezsoriano/mysmallutils"
 
-[tool.setuptools]
-# Esto equivale a find_packages(exclude=["test"])
-packages = { find = { exclude = ["test*"] } }
-
-[tool.setuptools.package-dir]
-"mysutils" = "mysutils"
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mysutils", "mysutils.*"]
+exclude = ["tests", "tests.*", "venv", ".git"]
