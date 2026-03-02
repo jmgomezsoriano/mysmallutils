@@ -376,10 +376,10 @@ class FileTestCase(unittest.FileTestCase):
         self.assertListEqual(tail('README.md', 3),
                              ['# How to collaborate',
                               '',
-                              'I you want to collaborate with this project, please, '
+                              'If you want to collaborate with this project, please, '
                               '<a href="mailto:jmgomez.soriano@gmail.com">contact with me</a>.'])
         self.assertEqual(last_line('README.md'),
-                         'I you want to collaborate with this project, please, '
+                         'If you want to collaborate with this project, please, '
                          '<a href="mailto:jmgomez.soriano@gmail.com">contact with me</a>.')
 
     def test_read_files(self) -> None:
