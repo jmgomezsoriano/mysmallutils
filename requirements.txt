@@ -4,3 +4,8 @@ PyYAML>=5.4.1,<7
 setuptools>=57.4.0
 fastapi==0.115.12
 uvicorn==0.34.3
+deprecation==2.1.0
+pytest~=9.0.2
+build==1.4.0
+Pygments>=2.10.0,~=2.20
+markdown>=3.3.6,~=3.10

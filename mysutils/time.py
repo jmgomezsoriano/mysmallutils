@@ -59,7 +59,12 @@ def format_timespan(seconds: float, shorthand: bool = False) -> str:
     return format_shorthand(d, h, m, s) if shorthand else f"{m:02d}:{s:02d}"
 
 
-def countdown_timer(seconds: float, description: str = None, leave: bool = False) -> None:
+def countdown_timer(
+        seconds: float,
+        description: str = None,
+        leave: bool = False,
+        stop_condition: Union[Callable[[], bool], Iterator[bool]] = lambda: False
+) -> None:
     """
     Pauses execution for a specified duration while displaying a progress bar.
 
@@ -69,14 +74,20 @@ def countdown_timer(seconds: float, description: str = None, leave: bool = False
         seconds: Total duration of the pause in seconds.
         description: Text prefix to display before the progress bar.
         leave: Whether to keep the progress bar visible after completion.
+        stop_condition: A callable or generator/iterator that dynamically returns/yields
+                        a boolean. Defaults to a lambda returning False (no early exit).
     """
-    if description is None:
-        description = f'Waiting {format_timespan(seconds, True)}'
+    description = f'Waiting {format_timespan(seconds, True)}' if description is None else description
     bar_format = '{l_bar}{bar}| [{elapsed}<{remaining}]'
 
     with tqdm(total=seconds, desc=description, leave=leave, bar_format=bar_format) as pbar:
         remaining = seconds
         while remaining > 0:
+            # Check if the stop condition changes to True
+            should_stop = stop_condition() if callable(stop_condition) else next(stop_condition)
+            if should_stop:
+                pbar.set_description(f"{description} (Interrupted)")
+                break
             # Dormimos 1 segundo o el tiempo que falte si es menor a 1
             step = min(1.0, remaining)
             time.sleep(step)
