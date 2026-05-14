@@ -10,15 +10,15 @@ try:
     from markdown import markdown
 except ImportError:
     raise ImportError('To use these functions you need to import the markdown module:\n\n'
-                      'pip install markdown==3.3.6\n\n'
+                      'pip install "markdown>=3.3.6,~=3.10"\n\n'
                       'Optionally, if you want colourful code, you also need to install Pygments:\n\n'
-                      'pip install Pygments>=2.10.0,~=2.11.2')
+                      'pip install "Pygments>=2.10.0,~=2.20"')
 
 logger = getLogger(__name__)
 try:
     import pygments
 except ImportError:
-    logger.warning('If you wants to colourful code, please install Pygments:\n\npip install Pygments>=2.10.0,~=2.11.2')
+    logger.warning('If you wants to colourful code, please install Pygments:\n\npip install Pygments>=2.10.0,~=2.20')
 
 
 def gen_service_help(title: str, file: str = 'README.md', regex: str = '', *endpoints: Any,

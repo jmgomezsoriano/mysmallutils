@@ -1,4 +1,3 @@
-import codecs
 import gzip
 import pickle
 import os
@@ -632,7 +631,7 @@ def has_encoding(file: Union[PathLike, str, bytes], encoding: str) -> bool:
     :return: True if the file content is compatible with that encoding.
     """
     try:
-        with codecs.open(file, 'r', encoding=encoding) as fh:
+        with open(file, 'r', encoding=encoding) as fh:
             fh.readlines()
     except UnicodeDecodeError:
         return False
