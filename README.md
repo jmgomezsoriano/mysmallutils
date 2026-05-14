@@ -1980,16 +1980,32 @@ format_timespan(303725, shorthand=True)  # Returns "3d 12h 22m 5s"
 Create a text countdown timer using tqdm.
 
 ```python
+import os
 from mysutils.time import countdown_timer
 
 # A countdown timer of 2.5 seconds
 countdown_timer(2.5)
+
 # A countdown timer of 1 hour
 countdown_timer(3600)
+
 # A countdown timer of 1 hour changing the default message
 countdown_timer(3600, description='Waiting an hour')
+
 # A countdown timer of 1 hour changing the default message and living the progress bar
 countdown_timer(3600, description='Waiting an hour', leave=True)
+
+# Stop the timer early using a callable (e.g., interrupt when a file is created)
+countdown_timer(3600, stop_condition=lambda: os.path.exists('stop_signal.txt'))
+
+# Stop the timer early using a generator
+def stop_after_two_seconds():
+    yield False  # 1st check: continue
+    yield False  # 2nd check: continue
+    while True:
+        yield True   # 3rd check onwards: interrupt!
+
+countdown_timer(3600, stop_condition=stop_after_two_seconds())
 ```
 
 # Miscellany<a id="miscellany" name="miscellany"></a>
