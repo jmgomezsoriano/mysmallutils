@@ -42,5 +42,44 @@ class TestCountdownTimer(TestCase):
             countdown_timer(0)
             mock_tqdm.return_value.__enter__.return_value.update.assert_not_called()
 
+    @patch('time.sleep', return_value=None)
+    @patch('mysutils.time.tqdm')
+    def test_timer_stop_condition_callable(self, mock_tqdm, mock_sleep):
+        mock_pbar = MagicMock()
+        mock_tqdm.return_value.__enter__.return_value = mock_pbar
+
+        # Creamos un callable (closure) que devuelve True en la 3ra iteración
+        iteraciones = [0]
+
+        def stop_cond():
+            iteraciones[0] += 1
+            return iteraciones[0] == 3
+
+        countdown_timer(5.0, description="Test Callable", stop_condition=stop_cond)
+
+        # Como el bucle se rompe en el tercer chequeo, update() solo se llama 2 veces
+        self.assertEqual(mock_pbar.update.call_count, 2)
+        mock_pbar.set_description.assert_called_once_with("Test Callable (Interrupted)")
+
+    @patch('time.sleep', return_value=None)
+    @patch('mysutils.time.tqdm')
+    def test_timer_stop_condition_iterator(self, mock_tqdm, mock_sleep):
+        mock_pbar = MagicMock()
+        mock_tqdm.return_value.__enter__.return_value = mock_pbar
+
+        # Creamos un generador que arroja False dos veces y luego True
+        def stop_cond_gen():
+            yield False
+            yield False
+            yield True
+            while True:
+                yield True
+
+        countdown_timer(5.0, description="Test Generator", stop_condition=stop_cond_gen())
+
+        # Igual que el anterior, al dar True a la tercera vez, solo hace update() 2 veces
+        self.assertEqual(mock_pbar.update.call_count, 2)
+        mock_pbar.set_description.assert_called_once_with("Test Generator (Interrupted)")
+
 if __name__ == '__main__':
     unittest.main()
