@@ -1,4 +1,6 @@
 import time
+from typing import Union, Callable, Iterator
+
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError as e:
