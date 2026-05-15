@@ -9,3 +9,4 @@ pytest~=9.0.2
 build==1.4.0
 Pygments>=2.10.0,~=2.20
 markdown>=3.3.6,~=3.10
+twine==6.2.0
