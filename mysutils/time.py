@@ -81,17 +81,17 @@ def countdown_timer(
     """
     description = f'Waiting {format_timespan(seconds, True)}' if description is None else description
     bar_format = '{l_bar}{bar}| [{elapsed}<{remaining}]'
+    start_time = time.time()
 
     with tqdm(total=seconds, desc=description, leave=leave, bar_format=bar_format) as pbar:
-        remaining = seconds
-        while remaining > 0:
+        should_stop = stop_condition() if callable(stop_condition) else next(stop_condition)
+        previous_time = start_time
+        while time.time() - start_time <= seconds and not should_stop:
+            time.sleep(min(1.0, seconds - (time.time() - start_time)))
+            pbar.update(min(time.time() - previous_time, seconds - pbar.n))
+            previous_time = time.time()
             # Check if the stop condition changes to True
             should_stop = stop_condition() if callable(stop_condition) else next(stop_condition)
-            if should_stop:
-                pbar.set_description(f"{description} (Interrupted)")
-                break
-            # Dormimos 1 segundo o el tiempo que falte si es menor a 1
-            step = min(1.0, remaining)
-            time.sleep(step)
-            pbar.update(step)
-            remaining -= step
+
+        if should_stop:
+            pbar.set_description(f"{description} (Interrupted)")
