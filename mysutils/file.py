@@ -674,3 +674,69 @@ def count_files(
                 count += 1
 
     return count
+
+
+import csv
+import unittest
+import tempfile
+import os
+from pathlib import Path
+from typing import List, Dict, Any
+from mysutils.file import open_file
+
+
+def load_csv(
+        filename: str,
+        delimiter: str = ',',
+        encoding: str = 'utf-8',
+        **kwargs
+) -> List[Dict[str, str]]:
+    """
+    Loads a CSV file (compressed or uncompressed) and returns it as a list of dictionaries.
+
+    Args:
+        filename: Path to the file (can end in .gz, .bz2, etc., for compressed reading).
+        delimiter: Separation character for the CSV.
+        encoding: File encoding.
+        **kwargs: Additional parameters for csv.DictReader (e.g., quotechar, quoting).
+
+    Returns:
+        A list of dictionaries, where the keys are the CSV headers.
+    """
+    with open_file(filename, mode='rt', encoding=encoding) as f:
+        reader = csv.DictReader(f, delimiter=delimiter, **kwargs)
+        return list(reader)
+
+
+def save_csv(
+        filename: str,
+        data: List[Dict[str, Any]],
+        delimiter: str = ',',
+        encoding: str = 'utf-8',
+        **kwargs
+) -> None:
+    """
+    Saves a list of dictionaries to a CSV file (compressed or uncompressed).
+    It dynamically collects all keys in case they differ across records.
+
+    Args:
+        filename: Destination path (can end in .gz, .bz2, etc., for on-the-fly compression).
+        data: List of dictionaries to save.
+        delimiter: Separation character for the CSV.
+        encoding: File encoding.
+        **kwargs: Additional parameters for csv.DictWriter (e.g., lineterminator, quoting).
+    """
+    # Collect all unique keys for the header while maintaining the order of appearance
+    headers = []
+    seen_keys = set()
+    for row in data:
+        for key in row.keys():
+            if key not in seen_keys:
+                seen_keys.add(key)
+                headers.append(key)
+
+    with open_file(filename, mode='wt', encoding=encoding) as f:
+        # restval='' ensures that if a dictionary is missing a key, an empty string is written
+        writer = csv.DictWriter(f, fieldnames=headers, delimiter=delimiter, restval='', **kwargs)
+        writer.writeheader()
+        writer.writerows(data)

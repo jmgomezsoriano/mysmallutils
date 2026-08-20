@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Set, Iterable, Hashable, Any
+from typing import Set, Iterable, Hashable, Any, List, Dict
 from datetime import datetime
 
 
@@ -372,3 +372,23 @@ class OrderedSet(Set, Iterable):
     def __rsub__(self, s: set): # real signature unknown
         """ Return value-self. """
         return s - set(self.items.keys())
+
+
+def extract_ordered_keys(data: List[Dict[str, Any]]) -> List[str]:
+    """
+    Extracts all unique keys from a list of dictionaries, preserving the
+    original order of their first appearance.
+
+    Args:
+        data: A list of dictionaries to process.
+
+    Returns:
+        A list containing the unique keys (headers) in their order of appearance.
+    """
+    unique_keys = OrderedSet()
+
+    for row in data:
+        for key in row.keys():
+            unique_keys.add(key)
+
+    return list(unique_keys)

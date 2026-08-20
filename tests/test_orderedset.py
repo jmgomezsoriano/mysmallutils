@@ -1,8 +1,10 @@
 import time
 import unittest
 from datetime import datetime
+from typing import List, Dict, Any
 
 from mysutils.collections import OrderedSet
+from mysutils.collections.orderedset import extract_ordered_keys
 
 
 class MyTestCase(unittest.TestCase):
@@ -238,6 +240,42 @@ class MyTestCase(unittest.TestCase):
         symmetric_diff = s3.symmetric_difference(s4)
         self.assertSetEqual(symmetric_diff, {1, 2, 4, 5})
 
+
+class TestExtractOrderedKeys(unittest.TestCase):
+
+    def test_uniform_dictionaries(self):
+        """Tests data where all dictionaries share the exact same keys."""
+        data = [
+            {"id": 1, "name": "Alice"},
+            {"id": 2, "name": "Bob"},
+            {"id": 3, "name": "Charlie"}
+        ]
+        expected = ["id", "name"]
+        self.assertEqual(extract_ordered_keys(data), expected)
+
+    def test_asymmetric_dictionaries(self):
+        """Tests data where dictionaries have missing or new keys."""
+        data = [
+            {"id": 1, "name": "Alice"},
+            {"id": 2},                                # 'name' is missing
+            {"id": 3, "name": "Charlie", "age": 30},  # 'age' is introduced
+            {"city": "Madrid", "id": 4}               # 'city' is introduced, order changed
+        ]
+        # The expected order is based on the first time a key is encountered
+        expected = ["id", "name", "age", "city"]
+        self.assertEqual(extract_ordered_keys(data), expected)
+
+    def test_empty_list(self):
+        """Tests behavior when an empty list is provided."""
+        data: List[Dict[str, Any]] = []
+        expected: List[str] = []
+        self.assertEqual(extract_ordered_keys(data), expected)
+
+    def test_empty_dictionaries(self):
+        """Tests behavior when the list contains empty dictionaries."""
+        data: List[Dict[str, Any]] = [{}, {}, {}]
+        expected: List[str] = []
+        self.assertEqual(extract_ordered_keys(data), expected)
 
 if __name__ == '__main__':
     unittest.main()
