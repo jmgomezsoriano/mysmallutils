@@ -18,6 +18,7 @@ This module is divided into the following categories:
   * [OrderedSet](#orderedset)
   * [LRUDict](#lrudict)
   * [CallableQueueThread](#callablequeuethread)
+  * [Extract ordered keys from dictionaries](#extract-ordered-keys]
 * [Text](#text)
   * [Find URLs](#find-urls)
   * [Get URLs](#get-urls)
@@ -35,6 +36,7 @@ This module is divided into the following categories:
   * [Load and save json files](#load-and-save-json-files)
   * [Load and save pickle files](#load-and-save-pickle-files)
   * [Load and save Yaml files](#load-and-save-yaml-files)
+  * [Load and Save CSV files](#load-and-save-CSV-files)
   * [Copy files](#copy-files)
   * [Move files](#move-files)
   * [Remove files](#remove-files)
@@ -48,6 +50,7 @@ This module is divided into the following categories:
   * [Generate output file paths](#generate-output-file-paths)
   * [Check file encoding](#check-file-encoding)
   * [Expand wildcards](#expand-wildcards)
+  * [Text to filename](#text-to-filename)
 * [Removable files](#remove-files)
 * [Compressing files](#compressing-files)
   * [Gzip](#gzip)
@@ -717,6 +720,24 @@ with CallableQueueThread(func, ArgsMode.KWARGS) as queue:
         queue.add({'a': i, 'b': 'c'})  # Call func(a=i, b='c') from i=1 to 99, executing sequentially
 ```
 
+## Extract ordered keys from dictionaries<a id="extract-ordered-keys" name="extract-ordered-keys"></a>
+Extracts all unique keys from a list of dictionaries, preserving the original order of their first appearance[cite: 225]. [cite_start]It uses `OrderedSet` from `mysutils.collections` under the hood to handle uniqueness and maintain insertion order natively.
+
+```python
+from mysutils.collections.orderedset import extract_ordered_keys
+
+# A list of dictionaries with asymmetric keys (missing or extra keys)
+data = [
+    {"id": 1, "name": "Alice"},
+    {"id": 2},                                # 'name' is missing
+    {"id": 3, "name": "Charlie", "age": 30},  # 'age' is introduced
+    {"city": "Madrid", "id": 4}               # 'city' is introduced, order changed
+]
+
+# Extract the keys preserving the order of appearance
+extract_ordered_keys(data)  # returns ['id', 'name', 'age', 'city']
+```
+
 # Text
 <a id="text" name="text"></a>
 Simple functions related to text.
@@ -1071,6 +1092,42 @@ d = load_tar_yaml('data/file.tar.xz', 'data.yaml')
 ```
 You can also load a YAML file from a [compressed tar file](#open-and-load-files-inside-a-tar-archive).
 
+## Load and Save CSV files<a id="load-and-save-CSV-files" name="load-and-save-CSV-files">
+
+Saves and loads a list of dictionaries to or from a CSV file. It dynamically collects all keys in case they differ 
+across records. It also supports transparent on-the-fly compression and decompression if the filename ends 
+in .gz, .bz2, etc.
+
+```python
+from mysutils.file import save_csv, load_csv
+
+# Data to save with asymmetric keys
+data = [
+    {"id": "1", "name": "Ana", "age": "25"},
+    {"id": "2", "name": "Luis"},  
+    {"id": "3", "name": "Eva", "age": "30", "city": "Madrid"}
+]
+
+# Save to a standard CSV file with a custom delimiter
+save_csv("people.csv", data, delimiter=";")
+
+# Save to a compressed CSV file automatically
+save_csv("people.csv.gz", data, delimiter=";")
+
+# Load from the uncompressed CSV
+load_csv("people.csv", delimiter=";") 
+# Returns: 
+# [
+#     {'id': '1', 'name': 'Ana', 'age': '25', 'city': ''}, 
+#     {'id': '2', 'name': 'Luis', 'age': '', 'city': ''}, 
+#     {'id': '3', 'name': 'Eva', 'age': '30', 'city': 'Madrid'}
+# ]
+
+# Load from the compressed CSV
+load_csv("people.csv.gz", delimiter=";")
+# Returns the exact same list of dictionaries as above
+```
+
 ## Copy files<a id="copy-files" name="copy-files"></a>
 
 A very simple way to copy several files into a directory. For example:
@@ -1258,9 +1315,6 @@ line = read_line('test2.txt.gz', r'^# Web API')
 
 # Read several files at once and return a unique list with the content of all the files
 lines = read_files('README.md', 'requirements.txt')
-
-
-
 ```
 
 ## Write in a file<a id="write-in-a-file" name="write-in-a-file"></a>
@@ -1399,7 +1453,7 @@ touch('1.txt', '2.txt', '3.json', '4.yaml')
 expand_wildcards('*.txt', '*.yaml')
 ```
 
-## Text to filename
+## Text to filename<a id="text-to-filename" name="text-to-filename">
 
 Convert a text into a filename, removing unsupported characters.
 
