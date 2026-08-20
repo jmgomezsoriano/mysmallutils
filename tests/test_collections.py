@@ -62,6 +62,20 @@ class MyTestCase(unittest.TestCase):
             self.assertDictEqual({'a': 1, 'c': 3}, del_keys(d.copy(), 'b', 'd', 'e', ignore_errors=False))
         self.assertDictEqual({'a': 1, 'b': 2, 'c': 3}, d)
 
+    def test_del_list_dict_items(self):
+        l = [{'a': 1, 'b': 2, 'c': 3}, {'a': 4, 'b': 5, 'c': 6}]
+        self.assertListEqual(l, del_keys([item.copy() for item in l]))
+        self.assertListEqual([{'a': 1, 'b': 2}, {'a': 4, 'b': 5}], del_keys([item.copy() for item in l], 'c'))
+        self.assertListEqual([{'b': 2}, {'b': 5}], del_keys([item.copy() for item in l], 'a', 'c'))
+        self.assertListEqual([{}, {}], del_keys([item.copy() for item in l], 'a', 'b', 'c'))
+        self.assertListEqual(l, del_keys([item.copy() for item in l], 'd'))
+        self.assertListEqual([{'a': 1, 'c': 3}, {'a': 4, 'c': 6}], del_keys([item.copy() for item in l], 'b', 'd', 'e'))
+
+        with self.assertRaises(KeyError):
+            del_keys([item.copy() for item in l], 'd', ignore_errors=False)
+        with self.assertRaises(KeyError):
+            del_keys([item.copy() for item in l], 'b', 'd', 'e', ignore_errors=False)
+
     def test_add_dict_item(self) -> None:
         d = {'b': 2}
         self.assertDictEqual({'a': 1, 'b': 2, 'c': 3}, add_keys(d, a=1, c=3))
@@ -98,6 +112,30 @@ class MyTestCase(unittest.TestCase):
             mod_value(mod_key(del_keys(add_keys(d, country='Colombia'),
                                        'email'), 'name', 'firstname'), 'lastname', 'Smith'),
             {'firstname': 'Pablo', 'lastname': 'Smith', 'country': 'Colombia'})
+
+    def test_mod_list_dicts(self):
+        l = [
+            {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pablo@example.com'},
+            {'name': 'Walter', 'lastname': 'White', 'email': 'walter@example.com'}
+        ]
+
+        # Test mod_key with a list of dicts
+        self.assertListEqual(
+            mod_key([item.copy() for item in l], 'name', 'firstname'),
+            [
+                {'firstname': 'Pablo', 'lastname': 'Escobar', 'email': 'pablo@example.com'},
+                {'firstname': 'Walter', 'lastname': 'White', 'email': 'walter@example.com'}
+            ]
+        )
+
+        # Test mod_keys with a list of dicts
+        self.assertListEqual(
+            mod_keys([item.copy() for item in l], name='firstname', lastname='familyname'),
+            [
+                {'firstname': 'Pablo', 'familyname': 'Escobar', 'email': 'pablo@example.com'},
+                {'firstname': 'Walter', 'familyname': 'White', 'email': 'walter@example.com'}
+            ]
+        )
 
     def test_merge_dict(self) -> None:
         lst = [{'a': 1, 'b': 10}, {'a': 2, 'b': 11}, {'a': 3, 'b': 12}]

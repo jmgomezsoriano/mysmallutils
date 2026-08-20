@@ -3,3 +3,4 @@
 /dist/
 /mysmallutils.egg-info
 /git-test/
+/*.log

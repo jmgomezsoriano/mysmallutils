@@ -61,17 +61,19 @@ def concat_lists(*lists: list) -> list:
     return result
 
 
-def del_keys(d: dict, *keys: Any, ignore_errors: bool = True) -> dict:
+def del_keys(d: Union[dict, List[dict]], *keys: Any, ignore_errors: bool = True) -> Union[dict, List[dict]]:
     """ Remove the dictionary items from their keys and return the modified dictionary.
 
-    :param d: The dictionary.
+    :param d: The dictionary or list of dicts to modify the keys.
     :param keys: A key or a list of keys.
     :param ignore_errors: If True, ignore if the key does not exist.
-    :return: The modified dictionary.
+    :return: The modified dictionary or the list of modified dictionaries.
     """
-    for key in keys:
-        if not (key not in d and ignore_errors):
-            del d[key]
+    lst = d if isinstance(d, list) else [d]
+    for elem in lst:
+        for key in keys:
+            if not (key not in elem and ignore_errors):
+                del elem[key]
 
     return d
 
@@ -92,29 +94,33 @@ def add_keys(d: dict, modify: bool = True, **kwargs) -> dict:
     return d
 
 
-def mod_key(d: dict, old_key: Any, new_key: Any) -> dict:
+def mod_key(d: Union[dict, List[dict]], old_key: Any, new_key: Any) -> Union[dict, List[dict]]:
     """ Modify the name of a dictionary key without change anything else.
 
-    :param d: The dictionary to modify.
+    :param d: The dictionary or list of dicts to modify the keys.
     :param old_key: The old key to replace for.
     :param new_key: The new key to replace with.
-    :return: The modified dictionary.
+    :return: The modified dictionary or the list of modified dictionaries.
     """
-    value = d[old_key]
-    del_keys(d, old_key)[new_key] = value
+    lst = d if isinstance(d, list) else [d]
+    for elem in lst:
+        value = elem[old_key]
+        del_keys(elem, old_key)[new_key] = value
     return d
 
 
-def mod_keys(d: dict, **kwargs) -> dict:
+def mod_keys(d: Union[dict, List[dict]], **kwargs) -> Union[dict, List[dict]]:
     """ Modify the names of a dictionary keys without change anything else with just an instruction.
 
-    :param d: The dictionary to modify.
+    :param d: The dictionary or list of dicts to modify the keys.
     :param kwargs: The old keys assigned to the name of the new ones.
-    :return: The modified dictionary.
+    :return: The modified dictionary or the list of modified dictionaries.
     """
-    for old_key, new_key in kwargs.items():
-        value = d[old_key]
-        del_keys(d, old_key)[new_key] = value
+    lst = d if isinstance(d, list) else [d]
+    for elem in lst:
+        for old_key, new_key in kwargs.items():
+            value = elem[old_key]
+            del_keys(elem, old_key)[new_key] = value
     return d
 
 
@@ -142,7 +148,7 @@ def mod_values(d: dict, **kwargs) -> dict:
     return d
 
 
-def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Callable = None) -> list:
+def filter_lst(lst: list, n: int = 0, init: int = 0, filter_func: Optional[Callable] = None) -> list:
     """ Filter a list.
 
     :param lst: The list to filter.

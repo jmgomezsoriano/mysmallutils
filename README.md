@@ -205,18 +205,37 @@ from mysutils.collections import del_keys
 d = {'a': 1, 'b': 2, 'c': 3}
 
 # Remove the element c from the dictionary and print the results
-print(del_keys(d.copy(), 'c'))
+del_keys(d.copy(), 'c')
+# Returns: {'a': 1, 'b': 2}
+
 # Remove the elements a and c from the dictionary and print the results
-print(del_keys(d.copy(), 'a', 'c'))
+del_keys(d.copy(), 'a', 'c')
+# Returns: {'b': 2}
+
 # If an element does not exist, ignore the key error
-print(del_keys(d.copy(), 'a', 'd'))
+del_keys(d.copy(), 'a', 'd')
+# Returns: {'b': 2, 'c': 3}
+
 # If an element does not exist, raise the KeyError exception
-print(del_keys(d.copy(), 'a', 'd', ignore_errors=False))
+del_keys(d.copy(), 'a', 'd', ignore_errors=False)
+
+# --- Applying deletions to a list of dictionaries ---
+
+l = [{'a': 1, 'b': 2, 'c': 3}, {'a': 4, 'b': 5, 'c': 6}]
+
+# Remove the element 'c' from all dictionaries in the list
+del_keys([item.copy() for item in l], 'c')
+# Returns: [{'a': 1, 'b': 2}, {'a': 4, 'b': 5}]
+
+# Remove elements 'a' and 'c' from all dictionaries
+del_keys([item.copy() for item in l], 'a', 'c')
+# Returns: [{'b': 2}, {'b': 5}]
 ```
 
 ### Modify keys
 
-With just one sentence you can modify one or more keys without changing their values.
+With just one sentence you can modify one or more keys without changing their values. 
+It also supports applying these modifications to a list of dictionaries simultaneously.
 
 ```python
 from mysutils.collections import mod_key, mod_keys 
@@ -224,9 +243,34 @@ from mysutils.collections import mod_key, mod_keys
 # Modify just one key: name by firstname
 d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
 mod_key(d, 'name', 'firstname')
+# Returns: {'firstname': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
+
 # Modify several keys: name by firstname and lastname by familyname
 d = {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pabloescobar@example.com'}
 mod_keys(d, name='firstname', lastname='familyname')
+# Returns: {'firstname': 'Pablo', 'familyname': 'Escobar', 'email': 'pabloescobar@example.com'}
+
+# --- Applying modifications to a list of dictionaries ---
+l = [
+    {'name': 'Pablo', 'lastname': 'Escobar', 'email': 'pablo@example.com'},
+    {'name': 'Walter', 'lastname': 'White', 'email': 'walter@example.com'}
+]
+
+# Modify one key in all dictionaries within the list
+mod_key(l, 'name', 'firstname')
+# Returns:
+# [
+#     {'firstname': 'Pablo', 'lastname': 'Escobar', 'email': 'pablo@example.com'},
+#     {'firstname': 'Walter', 'lastname': 'White', 'email': 'walter@example.com'}
+# ]
+
+# Modify several keys in all dictionaries within the list
+mod_keys(l, name='firstname', lastname='familyname')
+# Returns:
+# [
+#     {'firstname': 'Pablo', 'familyname': 'Escobar', 'email': 'pablo@example.com'},
+#     {'firstname': 'Walter', 'familyname': 'White', 'email': 'walter@example.com'}
+# ]
 ```
 
 ### Modify values
@@ -721,7 +765,8 @@ with CallableQueueThread(func, ArgsMode.KWARGS) as queue:
 ```
 
 ## Extract ordered keys from dictionaries<a id="extract-ordered-keys" name="extract-ordered-keys"></a>
-Extracts all unique keys from a list of dictionaries, preserving the original order of their first appearance[cite: 225]. [cite_start]It uses `OrderedSet` from `mysutils.collections` under the hood to handle uniqueness and maintain insertion order natively.
+Extracts all unique keys from a list of dictionaries, preserving the original order of their first appearance. 
+It uses `OrderedSet` from `mysutils.collections` under the hood to handle uniqueness and maintain insertion order natively.
 
 ```python
 from mysutils.collections.orderedset import extract_ordered_keys
